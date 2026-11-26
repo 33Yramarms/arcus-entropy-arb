@@ -1,0 +1,20 @@
+2026-11-26 18:42:03,589 INFO root arcus clock offset -10 ms (rtt 200 ms)
+2026-11-26 18:42:03,806 INFO phase0.recorder hyperliquid BTC connected wss://api.hyperliquid.xyz/ws
+2026-11-26 18:42:03,808 INFO phase0.recorder hyperliquid ETH connected wss://api.hyperliquid.xyz/ws
+2026-11-26 18:42:03,956 INFO phase0.recorder hyperliquid SOL connected wss://api.hyperliquid.xyz/ws
+2026-11-26 18:42:03,976 INFO phase0.recorder hyperliquid BTC snapshot time=1795718523536
+2026-11-26 18:42:03,978 INFO phase0.recorder hyperliquid ETH snapshot time=1795718523536
+2026-11-26 18:42:04,121 INFO phase0.recorder hyperliquid SOL snapshot time=1795718523536
+2026-11-26 18:42:04,190 INFO phase0.recorder arcus BTC-USD connected wss://api.arcus.xyz/v1/ws
+2026-11-26 18:42:04,203 INFO phase0.recorder arcus SOL-USD connected wss://api.arcus.xyz/v1/ws
+2026-11-26 18:42:04,234 INFO phase0.recorder arcus ETH-USD connected wss://api.arcus.xyz/v1/ws
+2026-11-26 18:42:04,362 INFO phase0.recorder arcus BTC-USD baseline updates-snapshot seq=983210428
+2026-11-26 18:42:04,375 INFO phase0.recorder arcus SOL-USD baseline updates-snapshot seq=737960743
+2026-11-26 18:42:04,384 WARNING phase0.recorder arcus BTC-USD baseline_gap_resync first delta 983210431 after snapshot skipped ids; rebuilding
+2026-11-26 18:42:04,416 INFO phase0.recorder arcus ETH-USD baseline updates-snapshot seq=855997282
+2026-11-26 18:42:04,418 WARNING phase0.recorder arcus ETH-USD baseline_gap_resync first delta 855997291 after snapshot skipped ids; rebuilding
+2026-11-26 18:42:04,527 INFO phase0.recorder arcus BTC-USD baseline l2Orderbook seq=983210436
+2026-11-26 18:42:04,589 WARNING phase0.recorder arcus SOL-USD baseline_gap_resync first delta 737960754 after snapshot skipped ids; rebuilding
+2026-11-26 18:42:04,590 INFO phase0.recorder arcus ETH-USD baseline l2Orderbook seq=855997303
+2026-11-26 18:42:04,726 INFO phase0.recorder arcus SOL-USD baseline l2Orderbook seq=737960754
+2026-11-26 18:52:04,718 INFO root done: 600 ticks -> reports/spreads_v15.sqlite

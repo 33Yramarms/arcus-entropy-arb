@@ -1,0 +1,2075 @@
+{
+  "docs": {
+    "arcus_markets": "https://docs.arcus.xyz/api-reference/public/get-markets.md",
+    "arcus_funding_rates": "https://docs.arcus.xyz/api-reference/public/get-market-funding-rates.md",
+    "arcus_funding_concept": "https://docs.arcus.xyz/concepts/perpetuals/funding.md",
+    "arcus_prices": "https://docs.arcus.xyz/concepts/perpetuals/prices.md",
+    "hl_funding": "https://hyperliquid.gitbook.io/hyperliquid-docs/trading/funding.md",
+    "hl_perp_info": "https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals.md",
+    "hl_contract_specs": "https://hyperliquid.gitbook.io/hyperliquid-docs/trading/contract-specifications.md",
+    "hl_oracle": "https://hyperliquid.gitbook.io/hyperliquid-docs/hypercore/oracle.md",
+    "usdt_usd_cross_check (third-party, NOT a venue doc)": "https://api.kraken.com/0/public/Ticker?pair=USDTZUSD"
+  },
+  "samples": [
+    {
+      "t_start_ms": 1795718110636,
+      "t_end_ms": 1795718111261,
+      "symbols": {
+        "BTC": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "BTC-USD",
+              "oraclePrice": "60551.6",
+              "markPrice": "60554.4",
+              "fundingRate": "0.0000125",
+              "nextFundingRate": "0.0000125",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "60559.1",
+                  "0.00297243"
+                ]
+              ],
+              "asks": [
+                [
+                  "60559.2",
+                  "4.06126465"
+                ]
+              ],
+              "timestamp_us": 1795718110718770,
+              "lastSequenceId": 983195221
+            },
+            "hl_universe": {
+              "szDecimals": 5,
+              "name": "BTC",
+              "maxLeverage": 40,
+              "marginTableId": 56
+            },
+            "hl_ctx": {
+              "funding": "0.0000020404",
+              "openInterest": "35466.5239",
+              "prevDayPx": "59652.0",
+              "dayNtlVlm": "2358859285.6570210457",
+              "premium": "-0.0004453388",
+              "oraclePx": "60628.0",
+              "markPx": "60601.0",
+              "midPx": "60600.5",
+              "impactPxs": [
+                "60598.7",
+                "60601.0"
+              ],
+              "dayBaseVlm": "38963.21034"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "60600.0",
+                "sz": "0.18962",
+                "n": 4
+              },
+              "ask": {
+                "px": "60601.0",
+                "sz": "18.85652",
+                "n": 64
+              },
+              "time": 1795718110080
+            }
+          },
+          "arcus": {
+            "oracle": "60551.6",
+            "mark": "60554.4",
+            "mid": "60559.15"
+          },
+          "hl": {
+            "oracle": "60628.0",
+            "mark": "60601.0",
+            "mid": "60600.5",
+            "ctx_midPx": "60600.5"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "12.61733793987276967082620442729837031557",
+            "book_premium_diff_bps": "-5.788451502520164619927466821685967009955",
+            "mid_diff_bps": "6.828886437352605050898737605612403305610",
+            "hl_premium_bps": "-4.535858019396978293857623540278419212245",
+            "arcus_premium_bps": "1.246870437775384960925888002959459370190"
+          }
+        },
+        "ETH": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "ETH-USD",
+              "oraclePrice": "1697.65",
+              "markPrice": "1697.25",
+              "fundingRate": "0.0000125",
+              "nextFundingRate": "0.0000125",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "1697.34",
+                  "1"
+                ]
+              ],
+              "asks": [
+                [
+                  "1697.35",
+                  "125.5818121"
+                ]
+              ],
+              "timestamp_us": 1795718110718770,
+              "lastSequenceId": 855960092
+            },
+            "hl_universe": {
+              "szDecimals": 4,
+              "name": "ETH",
+              "maxLeverage": 25,
+              "marginTableId": 55
+            },
+            "hl_ctx": {
+              "funding": "-0.0000036169",
+              "openInterest": "664502.3288",
+              "prevDayPx": "1680.9",
+              "dayNtlVlm": "495734547.1503798962",
+              "premium": "-0.000511834",
+              "oraclePx": "1699.77",
+              "markPx": "1698.9",
+              "midPx": "1698.85",
+              "impactPxs": [
+                "1698.8",
+                "1698.9"
+              ],
+              "dayBaseVlm": "292592.1801000002"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "1698.8",
+                "sz": "49.0182",
+                "n": 8
+              },
+              "ask": {
+                "px": "1698.9",
+                "sz": "385.009",
+                "n": 56
+              },
+              "time": 1795718110080
+            }
+          },
+          "arcus": {
+            "oracle": "1697.65",
+            "mark": "1697.25",
+            "mid": "1697.345"
+          },
+          "hl": {
+            "oracle": "1699.77",
+            "mark": "1698.9",
+            "mid": "1698.85",
+            "ctx_midPx": "1698.85"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "12.48785085264925043442405678437840544282",
+            "book_premium_diff_bps": "-3.622654846405325008099431567166377050629",
+            "mid_diff_bps": "8.865196006243925426324625217212028392189",
+            "hl_premium_bps": "-5.412496984886190484594974614212511104444",
+            "arcus_premium_bps": "-1.796601183989632727594027037375195122670"
+          }
+        },
+        "SOL": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "SOL-USD",
+              "oraclePrice": "71.205",
+              "markPrice": "71.174",
+              "fundingRate": "0.000011168021060276",
+              "nextFundingRate": "0.00000984965944949995",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "71.173",
+                  "272.502334"
+                ]
+              ],
+              "asks": [
+                [
+                  "71.174",
+                  "8.496362"
+                ]
+              ],
+              "timestamp_us": 1795718110718770,
+              "lastSequenceId": 737931632
+            },
+            "hl_universe": {
+              "szDecimals": 2,
+              "name": "SOL",
+              "maxLeverage": 20,
+              "marginTableId": 54
+            },
+            "hl_ctx": {
+              "funding": "-0.0000001081",
+              "openInterest": "4095015.1200000001",
+              "prevDayPx": "69.626",
+              "dayNtlVlm": "128915063.7018400431",
+              "premium": "-0.0004908836",
+              "oraclePx": "71.3",
+              "markPx": "71.265",
+              "midPx": "71.2645",
+              "impactPxs": [
+                "71.2555",
+                "71.265"
+              ],
+              "dayBaseVlm": "1821582.8199999998"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "71.264",
+                "sz": "0.64",
+                "n": 1
+              },
+              "ask": {
+                "px": "71.265",
+                "sz": "631.53",
+                "n": 12
+              },
+              "time": 1795718110080
+            }
+          },
+          "arcus": {
+            "oracle": "71.205",
+            "mark": "71.174",
+            "mid": "71.1735"
+          },
+          "hl": {
+            "oracle": "71.3",
+            "mark": "71.265",
+            "mid": "71.2645",
+            "ctx_midPx": "71.2645"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "13.34175970788568218523980057580226107717",
+            "book_premium_diff_bps": "-0.5617583034899234604311494979285162558809",
+            "mid_diff_bps": "12.78000140439575872480865107787374482129",
+            "hl_premium_bps": "-4.978962131837307152875175315568022440393",
+            "arcus_premium_bps": "-4.423846639983147250895302296187065515062"
+          }
+        }
+      },
+      "usdt_usd": {
+        "raw": {
+          "a": "0.99873000",
+          "b": "0.99872000"
+        },
+        "mid": "0.99872500",
+        "implied_usdt_premium_bps": "12.76627700317905329294850934942051115000"
+      }
+    },
+    {
+      "t_start_ms": 1795718114319,
+      "t_end_ms": 1795718114829,
+      "symbols": {
+        "BTC": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "BTC-USD",
+              "oraclePrice": "60550.5",
+              "markPrice": "60550.3",
+              "fundingRate": "0.0000125",
+              "nextFundingRate": "0.0000125",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "60551.9",
+                  "0.00010033"
+                ]
+              ],
+              "asks": [
+                [
+                  "60552",
+                  "5.28335646"
+                ]
+              ],
+              "timestamp_us": 1795718114287052,
+              "lastSequenceId": 983195500
+            },
+            "hl_universe": {
+              "szDecimals": 5,
+              "name": "BTC",
+              "maxLeverage": 40,
+              "marginTableId": 56
+            },
+            "hl_ctx": {
+              "funding": "0.0000020404",
+              "openInterest": "35466.51532",
+              "prevDayPx": "59652.0",
+              "dayNtlVlm": "2358923730.5473208427",
+              "premium": "-0.0004288518",
+              "oraclePx": "60627.0",
+              "markPx": "60600.0",
+              "midPx": "60600.5",
+              "impactPxs": [
+                "60598.0",
+                "60601.0"
+              ],
+              "dayBaseVlm": "38964.27221"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "60600.0",
+                "sz": "0.00667",
+                "n": 1
+              },
+              "ask": {
+                "px": "60601.0",
+                "sz": "18.13265",
+                "n": 66
+              },
+              "time": 1795718113847
+            }
+          },
+          "arcus": {
+            "oracle": "60550.5",
+            "mark": "60550.3",
+            "mid": "60551.95"
+          },
+          "hl": {
+            "oracle": "60627.0",
+            "mark": "60600.0",
+            "mid": "60600.5",
+            "ctx_midPx": "60600.5"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "12.63408229494388981098421978348651125920",
+            "book_premium_diff_bps": "-4.615981701224597649895541737888209015615",
+            "mid_diff_bps": "8.018100593719292161088678045598302243582",
+            "hl_premium_bps": "-4.370989823016147920893331354017187061870",
+            "arcus_premium_bps": "0.2394695336950149049140799828242541349782"
+          }
+        },
+        "ETH": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "ETH-USD",
+              "oraclePrice": "1697.6",
+              "markPrice": "1697.08",
+              "fundingRate": "0.0000125",
+              "nextFundingRate": "0.0000125",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "1697.04",
+                  "1.3283927"
+                ]
+              ],
+              "asks": [
+                [
+                  "1697.05",
+                  "0.4135449"
+                ]
+              ],
+              "timestamp_us": 1795718114287052,
+              "lastSequenceId": 855960493
+            },
+            "hl_universe": {
+              "szDecimals": 4,
+              "name": "ETH",
+              "maxLeverage": 25,
+              "marginTableId": 55
+            },
+            "hl_ctx": {
+              "funding": "-0.0000036169",
+              "openInterest": "664502.3288",
+              "prevDayPx": "1680.9",
+              "dayNtlVlm": "495734559.5625699162",
+              "premium": "-0.0004765519",
+              "oraclePx": "1699.71",
+              "markPx": "1698.9",
+              "midPx": "1698.85",
+              "impactPxs": [
+                "1698.8",
+                "1698.9"
+              ],
+              "dayBaseVlm": "292592.1874000002"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "1698.8",
+                "sz": "174.5009",
+                "n": 29
+              },
+              "ask": {
+                "px": "1698.9",
+                "sz": "43.523",
+                "n": 4
+              },
+              "time": 1795718113847
+            }
+          },
+          "arcus": {
+            "oracle": "1697.6",
+            "mark": "1697.08",
+            "mid": "1697.045"
+          },
+          "hl": {
+            "oracle": "1699.71",
+            "mark": "1698.9",
+            "mid": "1698.85",
+            "ctx_midPx": "1698.85"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "12.42931196983977379830348727615457115928",
+            "book_premium_diff_bps": "-1.796654099905749293119698397737983034873",
+            "mid_diff_bps": "10.63265786993402450518378887841658812441",
+            "hl_premium_bps": "-5.059686652428943760994522595030917038789",
+            "arcus_premium_bps": "-3.269321394910461828463713477851083883129"
+          }
+        },
+        "SOL": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "SOL-USD",
+              "oraclePrice": "71.205",
+              "markPrice": "71.173",
+              "fundingRate": "0.000011168021060276",
+              "nextFundingRate": "0.00000984965944949995",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "71.171",
+                  "226.275389"
+                ]
+              ],
+              "asks": [
+                [
+                  "71.172",
+                  "7.807716"
+                ]
+              ],
+              "timestamp_us": 1795718114287052,
+              "lastSequenceId": 737931957
+            },
+            "hl_universe": {
+              "szDecimals": 2,
+              "name": "SOL",
+              "maxLeverage": 20,
+              "marginTableId": 54
+            },
+            "hl_ctx": {
+              "funding": "-0.0000001081",
+              "openInterest": "4095063.6000000001",
+              "prevDayPx": "69.626",
+              "dayNtlVlm": "128917386.2745400369",
+              "premium": "-0.000490918",
+              "oraclePx": "71.295",
+              "markPx": "71.2581",
+              "midPx": "71.2595",
+              "impactPxs": [
+                "71.259",
+                "71.26"
+              ],
+              "dayBaseVlm": "1821615.3699999996"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "71.259",
+                "sz": "412.09",
+                "n": 5
+              },
+              "ask": {
+                "px": "71.26",
+                "sz": "285.06",
+                "n": 3
+              },
+              "time": 1795718113847
+            }
+          },
+          "arcus": {
+            "oracle": "71.205",
+            "mark": "71.173",
+            "mid": "71.1715"
+          },
+          "hl": {
+            "oracle": "71.295",
+            "mark": "71.2581",
+            "mid": "71.2595",
+            "ctx_midPx": "71.2595"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "12.63956182852327785970086370339161575732",
+            "book_premium_diff_bps": "-0.2808791517449617302155747489642581279405",
+            "mid_diff_bps": "12.35868267677831612948528895442735762938",
+            "hl_premium_bps": "-4.979311312153727470369591135423241461533",
+            "arcus_premium_bps": "-4.704725791728108981110877045151323643003"
+          }
+        }
+      },
+      "usdt_usd": {
+        "raw": {
+          "a": "0.99873000",
+          "b": "0.99872000"
+        },
+        "mid": "0.99872500",
+        "implied_usdt_premium_bps": "12.76627700317905329294850934942051115000"
+      }
+    },
+    {
+      "t_start_ms": 1795718117845,
+      "t_end_ms": 1795718118041,
+      "symbols": {
+        "BTC": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "BTC-USD",
+              "oraclePrice": "60546.7",
+              "markPrice": "60548.4",
+              "fundingRate": "0.0000125",
+              "nextFundingRate": "0.0000125",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "60551.9",
+                  "0.00034806"
+                ]
+              ],
+              "asks": [
+                [
+                  "60552",
+                  "4.74915995"
+                ]
+              ],
+              "timestamp_us": 1795718117820961,
+              "lastSequenceId": 983195670
+            },
+            "hl_universe": {
+              "szDecimals": 5,
+              "name": "BTC",
+              "maxLeverage": 40,
+              "marginTableId": 56
+            },
+            "hl_ctx": {
+              "funding": "0.000002042",
+              "openInterest": "35466.53908",
+              "prevDayPx": "59652.0",
+              "dayNtlVlm": "2358927363.450720787",
+              "premium": "-0.0005773291",
+              "oraclePx": "60624.0",
+              "markPx": "60598.0",
+              "midPx": "60588.5",
+              "impactPxs": [
+                "60588.0",
+                "60589.0"
+              ],
+              "dayBaseVlm": "38964.33207"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "60588.0",
+                "sz": "5.1558",
+                "n": 22
+              },
+              "ask": {
+                "px": "60589.0",
+                "sz": "9.25576",
+                "n": 37
+              },
+              "time": 1795718117660
+            }
+          },
+          "arcus": {
+            "oracle": "60546.7",
+            "mark": "60548.4",
+            "mid": "60551.95"
+          },
+          "hl": {
+            "oracle": "60624.0",
+            "mark": "60598.0",
+            "mid": "60588.5",
+            "ctx_midPx": "60588.5"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "12.76700464269728986055391953649001514533",
+            "book_premium_diff_bps": "-6.730342033504716194276484102354050674934",
+            "mid_diff_bps": "6.036662609192573666277435434135964470401",
+            "hl_premium_bps": "-5.855766693058854579044602797571918712061",
+            "arcus_premium_bps": "0.8670992803901781599988108352726077556663"
+          }
+        },
+        "ETH": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "ETH-USD",
+              "oraclePrice": "1697.41",
+              "markPrice": "1696.97",
+              "fundingRate": "0.0000125",
+              "nextFundingRate": "0.0000125",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "1697.02",
+                  "1.4498107"
+                ]
+              ],
+              "asks": [
+                [
+                  "1697.03",
+                  "0.0088392"
+                ]
+              ],
+              "timestamp_us": 1795718117820961,
+              "lastSequenceId": 855961030
+            },
+            "hl_universe": {
+              "szDecimals": 4,
+              "name": "ETH",
+              "maxLeverage": 25,
+              "marginTableId": 55
+            },
+            "hl_ctx": {
+              "funding": "-0.0000036188",
+              "openInterest": "664502.5812",
+              "prevDayPx": "1680.9",
+              "dayNtlVlm": "495735782.0782698989",
+              "premium": "-0.0007060069",
+              "oraclePx": "1699.7",
+              "markPx": "1698.8",
+              "midPx": "1698.45",
+              "impactPxs": [
+                "1698.4",
+                "1698.5"
+              ],
+              "dayBaseVlm": "292592.9064000002"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "1698.4",
+                "sz": "199.3053",
+                "n": 36
+              },
+              "ask": {
+                "px": "1698.5",
+                "sz": "167.6401",
+                "n": 15
+              },
+              "time": 1795718117660
+            }
+          },
+          "arcus": {
+            "oracle": "1697.41",
+            "mark": "1696.97",
+            "mid": "1697.025"
+          },
+          "hl": {
+            "oracle": "1699.7",
+            "mark": "1698.8",
+            "mid": "1698.45",
+            "ctx_midPx": "1698.45"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "13.49114238751980959226115081211964110026",
+            "book_premium_diff_bps": "-5.095999198779316723714364826412004171061",
+            "mid_diff_bps": "8.395143188740492868546785985707636929204",
+            "hl_premium_bps": "-7.354238983350002941695593340001176678237",
+            "arcus_premium_bps": "-2.268161493098308599572289547015747521224"
+          }
+        },
+        "SOL": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "SOL-USD",
+              "oraclePrice": "71.204",
+              "markPrice": "71.182",
+              "fundingRate": "0.000011168021060276",
+              "nextFundingRate": "0.00000984965944949995",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "71.184",
+                  "226.269719"
+                ]
+              ],
+              "asks": [
+                [
+                  "71.192",
+                  "124.96921"
+                ]
+              ],
+              "timestamp_us": 1795718117820961,
+              "lastSequenceId": 737932728
+            },
+            "hl_universe": {
+              "szDecimals": 2,
+              "name": "SOL",
+              "maxLeverage": 20,
+              "marginTableId": 54
+            },
+            "hl_ctx": {
+              "funding": "-0.0000001217",
+              "openInterest": "4095063.3000000003",
+              "prevDayPx": "69.626",
+              "dayNtlVlm": "128917442.644200027",
+              "premium": "-0.0005919069",
+              "oraclePx": "71.295",
+              "markPx": "71.259",
+              "midPx": "71.2495",
+              "impactPxs": [
+                "71.249",
+                "71.2528"
+              ],
+              "dayBaseVlm": "1821616.1599999995"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "71.249",
+                "sz": "405.46",
+                "n": 9
+              },
+              "ask": {
+                "px": "71.25",
+                "sz": "5.37",
+                "n": 1
+              },
+              "time": 1795718117660
+            }
+          },
+          "arcus": {
+            "oracle": "71.204",
+            "mark": "71.182",
+            "mid": "71.188"
+          },
+          "hl": {
+            "oracle": "71.295",
+            "mark": "71.259",
+            "mid": "71.2495",
+            "ctx_midPx": "71.2495"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "12.78018088871411718442784113252064490759",
+            "book_premium_diff_bps": "-4.143025672715016010336497949553395876636",
+            "mid_diff_bps": "8.637155215999101174091343182967249030953",
+            "hl_premium_bps": "-6.381934216985763377515954835542464408444",
+            "arcus_premium_bps": "-2.247064771642042581877422616706926577159"
+          }
+        }
+      },
+      "usdt_usd": {
+        "raw": {
+          "a": "0.99873000",
+          "b": "0.99872000"
+        },
+        "mid": "0.99872500",
+        "implied_usdt_premium_bps": "12.76627700317905329294850934942051115000"
+      }
+    },
+    {
+      "t_start_ms": 1795718121136,
+      "t_end_ms": 1795718121340,
+      "symbols": {
+        "BTC": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "BTC-USD",
+              "oraclePrice": "60546.5",
+              "markPrice": "60548.4",
+              "fundingRate": "0.0000125",
+              "nextFundingRate": "0.0000125",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "60551.9",
+                  "0.00044806"
+                ]
+              ],
+              "asks": [
+                [
+                  "60552",
+                  "5.91424431"
+                ]
+              ],
+              "timestamp_us": 1795718120823977,
+              "lastSequenceId": 983195744
+            },
+            "hl_universe": {
+              "szDecimals": 5,
+              "name": "BTC",
+              "maxLeverage": 40,
+              "marginTableId": 56
+            },
+            "hl_ctx": {
+              "funding": "0.0000020339",
+              "openInterest": "35466.54784",
+              "prevDayPx": "59652.0",
+              "dayNtlVlm": "2358928063.8133206367",
+              "premium": "-0.0005113824",
+              "oraclePx": "60620.0",
+              "markPx": "60590.0",
+              "midPx": "60588.5",
+              "impactPxs": [
+                "60588.0",
+                "60589.0"
+              ],
+              "dayBaseVlm": "38964.34361"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "60588.0",
+                "sz": "8.93494",
+                "n": 34
+              },
+              "ask": {
+                "px": "60589.0",
+                "sz": "0.90254",
+                "n": 10
+              },
+              "time": 1795718120836
+            }
+          },
+          "arcus": {
+            "oracle": "60546.5",
+            "mark": "60548.4",
+            "mid": "60551.95"
+          },
+          "hl": {
+            "oracle": "60620.0",
+            "mark": "60590.0",
+            "mid": "60588.5",
+            "ctx_midPx": "60588.5"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "12.13943002485692814613561477542054454015",
+            "book_premium_diff_bps": "-6.102747475081135986390625387099171710999",
+            "mid_diff_bps": "6.036682549775792159744989388321372829148",
+            "hl_premium_bps": "-5.196304849884526558891454965357967667436",
+            "arcus_premium_bps": "0.9001346072853096380467904833475097652218"
+          }
+        },
+        "ETH": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "ETH-USD",
+              "oraclePrice": "1697.52",
+              "markPrice": "1697.09",
+              "fundingRate": "0.0000125",
+              "nextFundingRate": "0.0000125",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "1697.15",
+                  "0.1118786"
+                ]
+              ],
+              "asks": [
+                [
+                  "1697.16",
+                  "0.5034039"
+                ]
+              ],
+              "timestamp_us": 1795718120823977,
+              "lastSequenceId": 855961398
+            },
+            "hl_universe": {
+              "szDecimals": 4,
+              "name": "ETH",
+              "maxLeverage": 25,
+              "marginTableId": 55
+            },
+            "hl_ctx": {
+              "funding": "-0.000003619",
+              "openInterest": "664502.5812",
+              "prevDayPx": "1680.9",
+              "dayNtlVlm": "495736134.890519917",
+              "premium": "-0.0005766063",
+              "oraclePx": "1699.6",
+              "markPx": "1698.7",
+              "midPx": "1698.45",
+              "impactPxs": [
+                "1698.4",
+                "1698.62"
+              ],
+              "dayBaseVlm": "292593.1139000002"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "1698.4",
+                "sz": "319.6611",
+                "n": 63
+              },
+              "ask": {
+                "px": "1698.5",
+                "sz": "0.0134",
+                "n": 1
+              },
+              "time": 1795718120836
+            }
+          },
+          "arcus": {
+            "oracle": "1697.52",
+            "mark": "1697.09",
+            "mid": "1697.155"
+          },
+          "hl": {
+            "oracle": "1699.6",
+            "mark": "1698.7",
+            "mid": "1698.45",
+            "ctx_midPx": "1698.45"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "12.25316932937461708845845704321598567322",
+            "book_premium_diff_bps": "-4.624393232480324237711484989867571516094",
+            "mid_diff_bps": "7.628776096894292850746972053348414157123",
+            "hl_premium_bps": "-6.766297952459402212285243586726288538480",
+            "arcus_premium_bps": "-2.150195579433526556388142702295112870541"
+          }
+        },
+        "SOL": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "SOL-USD",
+              "oraclePrice": "71.215",
+              "markPrice": "71.187",
+              "fundingRate": "0.000011168021060276",
+              "nextFundingRate": "0.00000984965944949995",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "71.19",
+                  "2.810113"
+                ]
+              ],
+              "asks": [
+                [
+                  "71.191",
+                  "132.208656"
+                ]
+              ],
+              "timestamp_us": 1795718120823977,
+              "lastSequenceId": 737932984
+            },
+            "hl_universe": {
+              "szDecimals": 2,
+              "name": "SOL",
+              "maxLeverage": 20,
+              "marginTableId": 54
+            },
+            "hl_ctx": {
+              "funding": "-0.0000000606",
+              "openInterest": "4095063.3000000003",
+              "prevDayPx": "69.626",
+              "dayNtlVlm": "128917638.8677000254",
+              "premium": "-0.0004908492",
+              "oraclePx": "71.305",
+              "markPx": "71.268",
+              "midPx": "71.2695",
+              "impactPxs": [
+                "71.269",
+                "71.27"
+              ],
+              "dayBaseVlm": "1821618.9099999995"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "71.269",
+                "sz": "349.92",
+                "n": 5
+              },
+              "ask": {
+                "px": "71.27",
+                "sz": "396.02",
+                "n": 5
+              },
+              "time": 1795718120836
+            }
+          },
+          "arcus": {
+            "oracle": "71.215",
+            "mark": "71.187",
+            "mid": "71.1905"
+          },
+          "hl": {
+            "oracle": "71.305",
+            "mark": "71.268",
+            "mid": "71.2695",
+            "ctx_midPx": "71.2695"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "12.63778698307940742821034894334058835919",
+            "book_premium_diff_bps": "-1.544618409043038685670153759741627466124",
+            "mid_diff_bps": "11.09316857403636874254019518359896089307",
+            "hl_premium_bps": "-4.978613000490849169062478087090666853657",
+            "arcus_premium_bps": "-3.440286456504949799901706101242715720003"
+          }
+        }
+      },
+      "usdt_usd": {
+        "raw": {
+          "a": "0.99873000",
+          "b": "0.99872000"
+        },
+        "mid": "0.99872500",
+        "implied_usdt_premium_bps": "12.76627700317905329294850934942051115000"
+      }
+    },
+    {
+      "t_start_ms": 1795718124362,
+      "t_end_ms": 1795718124867,
+      "symbols": {
+        "BTC": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "BTC-USD",
+              "oraclePrice": "60546.1",
+              "markPrice": "60548.2",
+              "fundingRate": "0.0000125",
+              "nextFundingRate": "0.0000125",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "60551.9",
+                  "0.00044806"
+                ]
+              ],
+              "asks": [
+                [
+                  "60552",
+                  "5.93194621"
+                ]
+              ],
+              "timestamp_us": 1795718124428284,
+              "lastSequenceId": 983195771
+            },
+            "hl_universe": {
+              "szDecimals": 5,
+              "name": "BTC",
+              "maxLeverage": 40,
+              "marginTableId": 56
+            },
+            "hl_ctx": {
+              "funding": "0.0000020339",
+              "openInterest": "35466.57968",
+              "prevDayPx": "59652.0",
+              "dayNtlVlm": "2358948671.7097206116",
+              "premium": "-0.0005113824",
+              "oraclePx": "60620.0",
+              "markPx": "60590.0",
+              "midPx": "60588.5",
+              "impactPxs": [
+                "60588.0",
+                "60589.0"
+              ],
+              "dayBaseVlm": "38964.68317"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "60588.0",
+                "sz": "8.61128",
+                "n": 34
+              },
+              "ask": {
+                "px": "60589.0",
+                "sz": "0.93552",
+                "n": 12
+              },
+              "time": 1795718124071
+            }
+          },
+          "arcus": {
+            "oracle": "60546.1",
+            "mark": "60548.2",
+            "mid": "60551.95"
+          },
+          "hl": {
+            "oracle": "60620.0",
+            "mark": "60590.0",
+            "mid": "60588.5",
+            "ctx_midPx": "60588.5"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "12.20557558620621311694725176353225063216",
+            "book_premium_diff_bps": "-6.168853154868769417022731439349520448055",
+            "mid_diff_bps": "6.036722431337443699924520324182730184108",
+            "hl_premium_bps": "-5.196304849884526558891454965357967667436",
+            "arcus_premium_bps": "0.9662059158228193062806687796571538051171"
+          }
+        },
+        "ETH": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "ETH-USD",
+              "oraclePrice": "1697.52",
+              "markPrice": "1697.08",
+              "fundingRate": "0.0000125",
+              "nextFundingRate": "0.0000125",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "1697.12",
+                  "0.4612312"
+                ]
+              ],
+              "asks": [
+                [
+                  "1697.13",
+                  "0.5124953"
+                ]
+              ],
+              "timestamp_us": 1795718124428284,
+              "lastSequenceId": 855961661
+            },
+            "hl_universe": {
+              "szDecimals": 4,
+              "name": "ETH",
+              "maxLeverage": 25,
+              "marginTableId": 55
+            },
+            "hl_ctx": {
+              "funding": "-0.000003619",
+              "openInterest": "664502.9966",
+              "prevDayPx": "1680.9",
+              "dayNtlVlm": "495736507.9363399148",
+              "premium": "-0.0005295364",
+              "oraclePx": "1699.6",
+              "markPx": "1698.7",
+              "midPx": "1698.65",
+              "impactPxs": [
+                "1698.6",
+                "1698.7"
+              ],
+              "dayBaseVlm": "292593.3333000002"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "1698.6",
+                "sz": "217.9682",
+                "n": 50
+              },
+              "ask": {
+                "px": "1698.7",
+                "sz": "163.2111",
+                "n": 11
+              },
+              "time": 1795718124071
+            }
+          },
+          "arcus": {
+            "oracle": "1697.52",
+            "mark": "1697.08",
+            "mid": "1697.125"
+          },
+          "hl": {
+            "oracle": "1699.6",
+            "mark": "1698.7",
+            "mid": "1698.65",
+            "ctx_midPx": "1698.65"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "12.25316932937461708845845704321598567322",
+            "book_premium_diff_bps": "-3.269475470097554078891559451435034638767",
+            "mid_diff_bps": "8.983693859277063009566897591780951034450",
+            "hl_premium_bps": "-5.589550482466462697105201223817368792657",
+            "arcus_premium_bps": "-2.326923983222583533625524294264574202366"
+          }
+        },
+        "SOL": {
+          "raw": {
+            "arcus_market": {
+              "marketDisplayName": "SOL-USD",
+              "oraclePrice": "71.214",
+              "markPrice": "71.184",
+              "fundingRate": "0.000011168021060276",
+              "nextFundingRate": "0.00000984965944949995",
+              "nextFundingAt": 1795719600,
+              "category": "CRYPTO",
+              "isOutsideRth": false,
+              "regularTradingHours": null,
+              "currentSettlementPrice": null
+            },
+            "arcus_l2_top": {
+              "bids": [
+                [
+                  "71.185",
+                  "2.010797"
+                ]
+              ],
+              "asks": [
+                [
+                  "71.186",
+                  "132.208818"
+                ]
+              ],
+              "timestamp_us": 1795718124304926,
+              "lastSequenceId": 737933125
+            },
+            "hl_universe": {
+              "szDecimals": 2,
+              "name": "SOL",
+              "maxLeverage": 20,
+              "marginTableId": 54
+            },
+            "hl_ctx": {
+              "funding": "-0.0000000606",
+              "openInterest": "4095265.0600000001",
+              "prevDayPx": "69.626",
+              "dayNtlVlm": "128925220.2302000225",
+              "premium": "-0.0005188977",
+              "oraclePx": "71.305",
+              "markPx": "71.268",
+              "midPx": "71.267",
+              "impactPxs": [
+                "71.266",
+                "71.268"
+              ],
+              "dayBaseVlm": "1821725.1599999995"
+            },
+            "hl_l2_top": {
+              "bid": {
+                "px": "71.266",
+                "sz": "95.3",
+                "n": 1
+              },
+              "ask": {
+                "px": "71.267",
+                "sz": "42.08",
+                "n": 2
+              },
+              "time": 1795718124071
+            }
+          },
+          "arcus": {
+            "oracle": "71.214",
+            "mark": "71.184",
+            "mid": "71.1855"
+          },
+          "hl": {
+            "oracle": "71.305",
+            "mark": "71.268",
+            "mid": "71.2665",
+            "ctx_midPx": "71.267"
+          },
+          "decomposition": {
+            "oracle_diff_bps": "12.77838627236217597663380795910916392844",
+            "book_premium_diff_bps": "-1.404218271688151206223495380121886145983",
+            "mid_diff_bps": "11.37416800067402477041031257898727778246",
+            "hl_premium_bps": "-5.399340859687258957997335390225089404670",
+            "arcus_premium_bps": "-4.002022074311230937736961833347375516050"
+          }
+        }
+      },
+      "usdt_usd": {
+        "raw": {
+          "a": "0.99873000",
+          "b": "0.99872000"
+        },
+        "mid": "0.99872500",
+        "implied_usdt_premium_bps": "12.76627700317905329294850934942051115000"
+      }
+    }
+  ],
+  "aggregate": {
+    "BTC": {
+      "oracle_diff_bps": "12.61733793987276967082620442729837031557",
+      "oracle_diff_bps_min": "12.13943002485692814613561477542054454015",
+      "oracle_diff_bps_max": "12.76700464269728986055391953649001514533",
+      "book_premium_diff_bps": "-6.102747475081135986390625387099171710999",
+      "book_premium_diff_bps_min": "-6.730342033504716194276484102354050674934",
+      "book_premium_diff_bps_max": "-4.615981701224597649895541737888209015615",
+      "mid_diff_bps": "6.036722431337443699924520324182730184108",
+      "mid_diff_bps_min": "6.036662609192573666277435434135964470401",
+      "mid_diff_bps_max": "8.018100593719292161088678045598302243582",
+      "hl_premium_bps": "-5.196304849884526558891454965357967667436",
+      "hl_premium_bps_min": "-5.855766693058854579044602797571918712061",
+      "hl_premium_bps_max": "-4.370989823016147920893331354017187061870",
+      "arcus_premium_bps": "0.9001346072853096380467904833475097652218",
+      "arcus_premium_bps_min": "0.2394695336950149049140799828242541349782",
+      "arcus_premium_bps_max": "1.246870437775384960925888002959459370190"
+    },
+    "ETH": {
+      "oracle_diff_bps": "12.42931196983977379830348727615457115928",
+      "oracle_diff_bps_min": "12.25316932937461708845845704321598567322",
+      "oracle_diff_bps_max": "13.49114238751980959226115081211964110026",
+      "book_premium_diff_bps": "-3.622654846405325008099431567166377050629",
+      "book_premium_diff_bps_min": "-5.095999198779316723714364826412004171061",
+      "book_premium_diff_bps_max": "-1.796654099905749293119698397737983034873",
+      "mid_diff_bps": "8.865196006243925426324625217212028392189",
+      "mid_diff_bps_min": "7.628776096894292850746972053348414157123",
+      "mid_diff_bps_max": "10.63265786993402450518378887841658812441",
+      "hl_premium_bps": "-5.589550482466462697105201223817368792657",
+      "hl_premium_bps_min": "-7.354238983350002941695593340001176678237",
+      "hl_premium_bps_max": "-5.059686652428943760994522595030917038789",
+      "arcus_premium_bps": "-2.268161493098308599572289547015747521224",
+      "arcus_premium_bps_min": "-3.269321394910461828463713477851083883129",
+      "arcus_premium_bps_max": "-1.796601183989632727594027037375195122670"
+    },
+    "SOL": {
+      "oracle_diff_bps": "12.77838627236217597663380795910916392844",
+      "oracle_diff_bps_min": "12.63778698307940742821034894334058835919",
+      "oracle_diff_bps_max": "13.34175970788568218523980057580226107717",
+      "book_premium_diff_bps": "-1.404218271688151206223495380121886145983",
+      "book_premium_diff_bps_min": "-4.143025672715016010336497949553395876636",
+      "book_premium_diff_bps_max": "-0.2808791517449617302155747489642581279405",
+      "mid_diff_bps": "11.37416800067402477041031257898727778246",
+      "mid_diff_bps_min": "8.637155215999101174091343182967249030953",
+      "mid_diff_bps_max": "12.78000140439575872480865107787374482129",
+      "hl_premium_bps": "-4.979311312153727470369591135423241461533",
+      "hl_premium_bps_min": "-6.381934216985763377515954835542464408444",
+      "hl_premium_bps_max": "-4.978613000490849169062478087090666853657",
+      "arcus_premium_bps": "-4.002022074311230937736961833347375516050",
+      "arcus_premium_bps_min": "-4.704725791728108981110877045151323643003",
+      "arcus_premium_bps_max": "-2.247064771642042581877422616706926577159"
+    }
+  },
+  "funding": {
+    "BTC": {
+      "arcus": {
+        "raw_fundingRate": "0.0000125",
+        "raw_nextFundingRate": "0.0000125",
+        "nextFundingAt_s": 1795719600,
+        "interval": "1 h (charged once an hour)",
+        "unit": "decimal fraction per hour (schema: 'Hourly funding rate (decimal string)')",
+        "percent_per_hour": "0.0012500",
+        "annualized_fraction": "0.1095000",
+        "annualized_current_fraction": "0.1095000",
+        "sign": "positive => longs pay shorts"
+      },
+      "hl": {
+        "raw_ctx_funding": "0.0000020404",
+        "raw_ctx_premium": "-0.0004453388",
+        "raw_predicted_HlPerp": {
+          "fundingRate": "0.0000020749",
+          "nextFundingTime": 1795716000000,
+          "fundingIntervalHours": 1
+        },
+        "predicted_hourly": "0.0000020749",
+        "interval": "1 h (8 h formula / 8)",
+        "unit": "decimal fraction per hour",
+        "percent_per_hour": "0.0002074900",
+        "annualized_fraction": "0.0181761240",
+        "annualized_ctx_fraction": "0.0178739040",
+        "sign": "positive => longs pay shorts",
+        "formula_check_last_hours": [
+          {
+            "time": 1795698000109,
+            "premium": "-0.000540806",
+            "fundingRate": "-0.0000051008",
+            "recomputed_hourly": "-0.00000510075",
+            "abs_err": "0.00000000005"
+          },
+          {
+            "time": 1795701600000,
+            "premium": "-0.0005522544",
+            "fundingRate": "-0.0000065318",
+            "recomputed_hourly": "-0.0000065318",
+            "abs_err": "0.0000000000"
+          },
+          {
+            "time": 1795705200000,
+            "premium": "-0.0005795452",
+            "fundingRate": "-0.0000099432",
+            "recomputed_hourly": "-0.00000994315",
+            "abs_err": "0.00000000005"
+          },
+          {
+            "time": 1795708800065,
+            "premium": "-0.0005514966",
+            "fundingRate": "-0.0000064371",
+            "recomputed_hourly": "-0.000006437075",
+            "abs_err": "0.000000000025"
+          },
+          {
+            "time": 1795712400027,
+            "premium": "-0.0005472825",
+            "fundingRate": "-0.0000059103",
+            "recomputed_hourly": "-0.0000059103125",
+            "abs_err": "0.0000000000125"
+          },
+          {
+            "time": 1795716000039,
+            "premium": "-0.0005093278",
+            "fundingRate": "-0.000001166",
+            "recomputed_hourly": "-0.000001165975",
+            "abs_err": "0.000000000025"
+          }
+        ]
+      },
+      "hl_minus_arcus_annual_forecast": "-0.0913238760",
+      "carry_short_arcus_long_hl_annual_forecast": "0.0913238760",
+      "realized_last_hours": [
+        {
+          "hour_ms": 1795716000000,
+          "arcus": "0.0000125",
+          "hl": "-0.000001166",
+          "hl_minus_arcus_annual": "-0.119714160"
+        },
+        {
+          "hour_ms": 1795712400000,
+          "arcus": "0.0000125",
+          "hl": "-0.0000059103",
+          "hl_minus_arcus_annual": "-0.1612742280"
+        },
+        {
+          "hour_ms": 1795708800000,
+          "arcus": "0.0000125",
+          "hl": "-0.0000064371",
+          "hl_minus_arcus_annual": "-0.1658889960"
+        },
+        {
+          "hour_ms": 1795705200000,
+          "arcus": "0.0000125",
+          "hl": "-0.0000099432",
+          "hl_minus_arcus_annual": "-0.1966024320"
+        },
+        {
+          "hour_ms": 1795701600000,
+          "arcus": "0.0000125",
+          "hl": "-0.0000065318",
+          "hl_minus_arcus_annual": "-0.1667185680"
+        },
+        {
+          "hour_ms": 1795698000000,
+          "arcus": "0.0000125",
+          "hl": "-0.0000051008",
+          "hl_minus_arcus_annual": "-0.1541830080"
+        }
+      ]
+    },
+    "ETH": {
+      "arcus": {
+        "raw_fundingRate": "0.0000125",
+        "raw_nextFundingRate": "0.0000125",
+        "nextFundingAt_s": 1795719600,
+        "interval": "1 h (charged once an hour)",
+        "unit": "decimal fraction per hour (schema: 'Hourly funding rate (decimal string)')",
+        "percent_per_hour": "0.0012500",
+        "annualized_fraction": "0.1095000",
+        "annualized_current_fraction": "0.1095000",
+        "sign": "positive => longs pay shorts"
+      },
+      "hl": {
+        "raw_ctx_funding": "-0.0000036169",
+        "raw_ctx_premium": "-0.000511834",
+        "raw_predicted_HlPerp": {
+          "fundingRate": "-0.0000035747",
+          "nextFundingTime": 1795716000000,
+          "fundingIntervalHours": 1
+        },
+        "predicted_hourly": "-0.0000035747",
+        "interval": "1 h (8 h formula / 8)",
+        "unit": "decimal fraction per hour",
+        "percent_per_hour": "-0.0003574700",
+        "annualized_fraction": "-0.0313143720",
+        "annualized_ctx_fraction": "-0.0316840440",
+        "sign": "positive => longs pay shorts",
+        "formula_check_last_hours": [
+          {
+            "time": 1795698000109,
+            "premium": "-0.0004044341",
+            "fundingRate": "0.0000119457",
+            "recomputed_hourly": "0.0000119457375",
+            "abs_err": "0.0000000000375"
+          },
+          {
+            "time": 1795701600000,
+            "premium": "-0.0003892103",
+            "fundingRate": "0.0000125",
+            "recomputed_hourly": "0.0000125000",
+            "abs_err": "0.0000000000"
+          },
+          {
+            "time": 1795705200000,
+            "premium": "-0.0004347819",
+            "fundingRate": "0.0000081523",
+            "recomputed_hourly": "0.0000081522625",
+            "abs_err": "0.0000000000375"
+          },
+          {
+            "time": 1795708800065,
+            "premium": "-0.0005246745",
+            "fundingRate": "-0.0000030843",
+            "recomputed_hourly": "-0.0000030843125",
+            "abs_err": "0.0000000000125"
+          },
+          {
+            "time": 1795712400027,
+            "premium": "-0.0005513625",
+            "fundingRate": "-0.0000064203",
+            "recomputed_hourly": "-0.0000064203125",
+            "abs_err": "0.0000000000125"
+          },
+          {
+            "time": 1795716000039,
+            "premium": "-0.0005135232",
+            "fundingRate": "-0.0000016904",
+            "recomputed_hourly": "-0.0000016904",
+            "abs_err": "0.0000000000"
+          }
+        ]
+      },
+      "hl_minus_arcus_annual_forecast": "-0.1408143720",
+      "carry_short_arcus_long_hl_annual_forecast": "0.1408143720",
+      "realized_last_hours": [
+        {
+          "hour_ms": 1795716000000,
+          "arcus": "0.0000125",
+          "hl": "-0.0000016904",
+          "hl_minus_arcus_annual": "-0.1243079040"
+        },
+        {
+          "hour_ms": 1795712400000,
+          "arcus": "0.0000125",
+          "hl": "-0.0000064203",
+          "hl_minus_arcus_annual": "-0.1657418280"
+        },
+        {
+          "hour_ms": 1795708800000,
+          "arcus": "0.0000125",
+          "hl": "-0.0000030843",
+          "hl_minus_arcus_annual": "-0.1365184680"
+        },
+        {
+          "hour_ms": 1795705200000,
+          "arcus": "0.0000125",
+          "hl": "0.0000081523",
+          "hl_minus_arcus_annual": "-0.0380858520"
+        },
+        {
+          "hour_ms": 1795701600000,
+          "arcus": "0.0000125",
+          "hl": "0.0000125",
+          "hl_minus_arcus_annual": "0.0000000"
+        },
+        {
+          "hour_ms": 1795698000000,
+          "arcus": "0.0000125",
+          "hl": "0.0000119457",
+          "hl_minus_arcus_annual": "-0.0048556680"
+        }
+      ]
+    },
+    "SOL": {
+      "arcus": {
+        "raw_fundingRate": "0.000011168021060276",
+        "raw_nextFundingRate": "0.00000984965944949995",
+        "nextFundingAt_s": 1795719600,
+        "interval": "1 h (charged once an hour)",
+        "unit": "decimal fraction per hour (schema: 'Hourly funding rate (decimal string)')",
+        "percent_per_hour": "0.00098496594494999500",
+        "annualized_fraction": "0.08628301677761956200",
+        "annualized_current_fraction": "0.097831864488017760",
+        "sign": "positive => longs pay shorts"
+      },
+      "hl": {
+        "raw_ctx_funding": "-0.0000001081",
+        "raw_ctx_premium": "-0.0004908836",
+        "raw_predicted_HlPerp": {
+          "fundingRate": "-0.0000000932",
+          "nextFundingTime": 1795716000000,
+          "fundingIntervalHours": 1
+        },
+        "predicted_hourly": "-0.0000000932",
+        "interval": "1 h (8 h formula / 8)",
+        "unit": "decimal fraction per hour",
+        "percent_per_hour": "-0.0000093200",
+        "annualized_fraction": "-0.0008164320",
+        "annualized_ctx_fraction": "-0.0009469560",
+        "sign": "positive => longs pay shorts",
+        "formula_check_last_hours": [
+          {
+            "time": 1795698000109,
+            "premium": "-0.0003863381",
+            "fundingRate": "0.0000125",
+            "recomputed_hourly": "0.0000125000",
+            "abs_err": "0.0000000000"
+          },
+          {
+            "time": 1795701600000,
+            "premium": "-0.0004097712",
+            "fundingRate": "0.0000112786",
+            "recomputed_hourly": "0.0000112786",
+            "abs_err": "0.0000000000"
+          },
+          {
+            "time": 1795705200000,
+            "premium": "-0.0004534684",
+            "fundingRate": "0.0000058165",
+            "recomputed_hourly": "0.00000581645",
+            "abs_err": "0.00000000005"
+          },
+          {
+            "time": 1795708800065,
+            "premium": "-0.0004723063",
+            "fundingRate": "0.0000034617",
+            "recomputed_hourly": "0.0000034617125",
+            "abs_err": "0.0000000000125"
+          },
+          {
+            "time": 1795712400027,
+            "premium": "-0.0004491142",
+            "fundingRate": "0.0000063607",
+            "recomputed_hourly": "0.000006360725",
+            "abs_err": "0.000000000025"
+          },
+          {
+            "time": 1795716000039,
+            "premium": "-0.0005000617",
+            "fundingRate": "-0.0000000077",
+            "recomputed_hourly": "-0.0000000077125",
+            "abs_err": "0.0000000000125"
+          }
+        ]
+      },
+      "hl_minus_arcus_annual_forecast": "-0.08709944877761956200",
+      "carry_short_arcus_long_hl_annual_forecast": "0.08709944877761956200",
+      "realized_last_hours": [
+        {
+          "hour_ms": 1795716000000,
+          "arcus": "0.000011168021060276",
+          "hl": "-0.0000000077",
+          "hl_minus_arcus_annual": "-0.097899316488017760"
+        },
+        {
+          "hour_ms": 1795712400000,
+          "arcus": "0.0000125",
+          "hl": "0.0000063607",
+          "hl_minus_arcus_annual": "-0.0537802680"
+        },
+        {
+          "hour_ms": 1795708800000,
+          "arcus": "0.0000125",
+          "hl": "0.0000034617",
+          "hl_minus_arcus_annual": "-0.0791755080"
+        },
+        {
+          "hour_ms": 1795705200000,
+          "arcus": "0.0000125",
+          "hl": "0.0000058165",
+          "hl_minus_arcus_annual": "-0.0585474600"
+        },
+        {
+          "hour_ms": 1795701600000,
+          "arcus": "0.0000125",
+          "hl": "0.0000112786",
+          "hl_minus_arcus_annual": "-0.0106994640"
+        },
+        {
+          "hour_ms": 1795698000000,
+          "arcus": "0.0000125",
+          "hl": "0.0000125",
+          "hl_minus_arcus_annual": "0.0000000"
+        }
+      ]
+    }
+  },
+  "raw_funding": {
+    "predictedFundings_raw": [
+      [
+        "BTC",
+        [
+          [
+            "BinPerp",
+            {
+              "fundingRate": "0.0001",
+              "nextFundingTime": 1795737600000,
+              "fundingIntervalHours": 8
+            }
+          ],
+          [
+            "HlPerp",
+            {
+              "fundingRate": "0.0000020749",
+              "nextFundingTime": 1795716000000,
+              "fundingIntervalHours": 1
+            }
+          ],
+          [
+            "BybitPerp",
+            {
+              "fundingRate": "0.00008897",
+              "nextFundingTime": 1795737600000,
+              "fundingIntervalHours": 8
+            }
+          ]
+        ]
+      ],
+      [
+        "ETH",
+        [
+          [
+            "BinPerp",
+            {
+              "fundingRate": "0.00004153",
+              "nextFundingTime": 1795737600000,
+              "fundingIntervalHours": 8
+            }
+          ],
+          [
+            "HlPerp",
+            {
+              "fundingRate": "-0.0000035747",
+              "nextFundingTime": 1795716000000,
+              "fundingIntervalHours": 1
+            }
+          ],
+          [
+            "BybitPerp",
+            {
+              "fundingRate": "0.00007248",
+              "nextFundingTime": 1795737600000,
+              "fundingIntervalHours": 8
+            }
+          ]
+        ]
+      ],
+      [
+        "SOL",
+        [
+          [
+            "BinPerp",
+            {
+              "fundingRate": "0.0001",
+              "nextFundingTime": 1795737600000,
+              "fundingIntervalHours": 8
+            }
+          ],
+          [
+            "HlPerp",
+            {
+              "fundingRate": "-0.0000000932",
+              "nextFundingTime": 1795716000000,
+              "fundingIntervalHours": 1
+            }
+          ],
+          [
+            "BybitPerp",
+            {
+              "fundingRate": "0.0001",
+              "nextFundingTime": 1795737600000,
+              "fundingIntervalHours": 8
+            }
+          ]
+        ]
+      ]
+    ],
+    "symbols": {
+      "BTC": {
+        "hl_fundingHistory_raw": [
+          {
+            "coin": "BTC",
+            "fundingRate": "-0.0000051008",
+            "premium": "-0.000540806",
+            "time": 1795698000109
+          },
+          {
+            "coin": "BTC",
+            "fundingRate": "-0.0000065318",
+            "premium": "-0.0005522544",
+            "time": 1795701600000
+          },
+          {
+            "coin": "BTC",
+            "fundingRate": "-0.0000099432",
+            "premium": "-0.0005795452",
+            "time": 1795705200000
+          },
+          {
+            "coin": "BTC",
+            "fundingRate": "-0.0000064371",
+            "premium": "-0.0005514966",
+            "time": 1795708800065
+          },
+          {
+            "coin": "BTC",
+            "fundingRate": "-0.0000059103",
+            "premium": "-0.0005472825",
+            "time": 1795712400027
+          },
+          {
+            "coin": "BTC",
+            "fundingRate": "-0.000001166",
+            "premium": "-0.0005093278",
+            "time": 1795716000039
+          }
+        ],
+        "arcus_fundingRates_raw": {
+          "fundingRates": [
+            {
+              "marketId": 1,
+              "marketDisplayName": "BTC-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795716000000000
+            },
+            {
+              "marketId": 1,
+              "marketDisplayName": "BTC-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795712400000000
+            },
+            {
+              "marketId": 1,
+              "marketDisplayName": "BTC-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795708800000000
+            },
+            {
+              "marketId": 1,
+              "marketDisplayName": "BTC-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795705200000000
+            },
+            {
+              "marketId": 1,
+              "marketDisplayName": "BTC-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795701600000000
+            },
+            {
+              "marketId": 1,
+              "marketDisplayName": "BTC-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795698000000000
+            }
+          ],
+          "total": 6
+        }
+      },
+      "ETH": {
+        "hl_fundingHistory_raw": [
+          {
+            "coin": "ETH",
+            "fundingRate": "0.0000119457",
+            "premium": "-0.0004044341",
+            "time": 1795698000109
+          },
+          {
+            "coin": "ETH",
+            "fundingRate": "0.0000125",
+            "premium": "-0.0003892103",
+            "time": 1795701600000
+          },
+          {
+            "coin": "ETH",
+            "fundingRate": "0.0000081523",
+            "premium": "-0.0004347819",
+            "time": 1795705200000
+          },
+          {
+            "coin": "ETH",
+            "fundingRate": "-0.0000030843",
+            "premium": "-0.0005246745",
+            "time": 1795708800065
+          },
+          {
+            "coin": "ETH",
+            "fundingRate": "-0.0000064203",
+            "premium": "-0.0005513625",
+            "time": 1795712400027
+          },
+          {
+            "coin": "ETH",
+            "fundingRate": "-0.0000016904",
+            "premium": "-0.0005135232",
+            "time": 1795716000039
+          }
+        ],
+        "arcus_fundingRates_raw": {
+          "fundingRates": [
+            {
+              "marketId": 2,
+              "marketDisplayName": "ETH-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795716000000000
+            },
+            {
+              "marketId": 2,
+              "marketDisplayName": "ETH-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795712400000000
+            },
+            {
+              "marketId": 2,
+              "marketDisplayName": "ETH-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795708800000000
+            },
+            {
+              "marketId": 2,
+              "marketDisplayName": "ETH-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795705200000000
+            },
+            {
+              "marketId": 2,
+              "marketDisplayName": "ETH-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795701600000000
+            },
+            {
+              "marketId": 2,
+              "marketDisplayName": "ETH-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795698000000000
+            }
+          ],
+          "total": 6
+        }
+      },
+      "SOL": {
+        "hl_fundingHistory_raw": [
+          {
+            "coin": "SOL",
+            "fundingRate": "0.0000125",
+            "premium": "-0.0003863381",
+            "time": 1795698000109
+          },
+          {
+            "coin": "SOL",
+            "fundingRate": "0.0000112786",
+            "premium": "-0.0004097712",
+            "time": 1795701600000
+          },
+          {
+            "coin": "SOL",
+            "fundingRate": "0.0000058165",
+            "premium": "-0.0004534684",
+            "time": 1795705200000
+          },
+          {
+            "coin": "SOL",
+            "fundingRate": "0.0000034617",
+            "premium": "-0.0004723063",
+            "time": 1795708800065
+          },
+          {
+            "coin": "SOL",
+            "fundingRate": "0.0000063607",
+            "premium": "-0.0004491142",
+            "time": 1795712400027
+          },
+          {
+            "coin": "SOL",
+            "fundingRate": "-0.0000000077",
+            "premium": "-0.0005000617",
+            "time": 1795716000039
+          }
+        ],
+        "arcus_fundingRates_raw": {
+          "fundingRates": [
+            {
+              "marketId": 3,
+              "marketDisplayName": "SOL-USD",
+              "fundingRate": "0.000011168021060276",
+              "time": 1795716000000000
+            },
+            {
+              "marketId": 3,
+              "marketDisplayName": "SOL-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795712400000000
+            },
+            {
+              "marketId": 3,
+              "marketDisplayName": "SOL-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795708800000000
+            },
+            {
+              "marketId": 3,
+              "marketDisplayName": "SOL-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795705200000000
+            },
+            {
+              "marketId": 3,
+              "marketDisplayName": "SOL-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795701600000000
+            },
+            {
+              "marketId": 3,
+              "marketDisplayName": "SOL-USD",
+              "fundingRate": "0.0000125",
+              "time": 1795698000000000
+            }
+          ],
+          "total": 6
+        }
+      }
+    }
+  }
+}

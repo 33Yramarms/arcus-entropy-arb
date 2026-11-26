@@ -40,6 +40,12 @@ class OrderBook:
     exchange_ts_ms: int | None = None      # exchange timestamp of the last applied frame
     confirmed_ms: int | None = None        # local time at which the current state was last proven current
     valid: bool = False                    # False until a snapshot is applied / after a detected gap
+    provisional: bool = False              # Arcus: baselined from a snapshot, not yet proven by a contiguous delta
+    # --- latency / idleness diagnostics (PR #1.5): kept separate on purpose ---
+    last_msg_ms: int | None = None         # local receive time of the last frame on this book's connection (any)
+    last_change_ms: int | None = None      # local receive time of the last frame that changed the book
+    latency_ms: int | None = None          # (local recv + clock offset) - exchange timestamp, latest timestamped frame
+    clock_offset_ms: int = 0               # venue server clock - local clock (Arcus: GET /v1/time); added to recv
 
     # ------------------------------------------------------------------ views
     def sorted_bids(self, n: int | None = None) -> list[Level]:
@@ -63,14 +69,37 @@ class OrderBook:
         return (b + a) / TWO
 
     def age_ms(self, now_ms: int) -> int | None:
+        """Time since the local book was last PROVEN current (phase0 'age'; diagnostic only since PR #1.5)."""
         return None if self.confirmed_ms is None else now_ms - self.confirmed_ms
+
+    @property
+    def ready(self) -> bool:
+        """False (= NOT_READY) while no snapshot is applied, after a gap, or during an Arcus resync / provisional
+        baseline. Arbitrage evaluation is skipped for NOT_READY books."""
+        return self.valid and not self.provisional
+
+    def idle_ms(self, now_ms: int) -> int | None:
+        """``book_idle_ms``: how long the book content has not changed (a quiet book is NOT stale by itself)."""
+        return None if self.last_change_ms is None else now_ms - self.last_change_ms
+
+    def silence_ms(self, now_ms: int) -> int | None:
+        """Connection health: time since ANY frame arrived on this book's connection (heartbeats, pongs included)."""
+        return None if self.last_msg_ms is None else now_ms - self.last_msg_ms
+
+    def note_exchange_ts(self, exch_ms: int | None, recv_ms: int) -> None:
+        """``network_latency_ms`` = local receive time (corrected by the measured clock offset) - exchange timestamp."""
+        if isinstance(exch_ms, int):
+            self.latency_ms = recv_ms + self.clock_offset_ms - exch_ms
 
     def invalidate(self) -> None:
         self.bids.clear()
         self.asks.clear()
         self.last_seq = None
         self.valid = False
+        self.provisional = False
         self.confirmed_ms = None
+        self.last_change_ms = None
+        self.latency_ms = None
 
     def truncate(self, n: int) -> None:
         if len(self.bids) > n:
@@ -103,7 +132,9 @@ def arcus_apply_snapshot(book: OrderBook, contents: dict[str, Any], recv_ms: int
     book.last_seq = seq
     ts = contents.get("timestamp")
     book.exchange_ts_ms = ts // 1000 if isinstance(ts, int) else None      # Arcus timestamps are µs
+    book.note_exchange_ts(book.exchange_ts_ms, recv_ms)
     book.confirmed_ms = recv_ms
+    book.last_change_ms = recv_ms
     book.valid = True
 
 
@@ -130,7 +161,9 @@ def arcus_apply_delta(book: OrderBook, contents: dict[str, Any], recv_ms: int, n
     book.last_seq = seq
     ts = contents.get("timestamp")
     book.exchange_ts_ms = ts // 1000 if isinstance(ts, int) else book.exchange_ts_ms
+    book.note_exchange_ts(ts // 1000 if isinstance(ts, int) else None, recv_ms)
     book.confirmed_ms = recv_ms
+    book.last_change_ms = recv_ms
 
 
 class ArcusSync:
@@ -142,7 +175,6 @@ class ArcusSync:
     def __init__(self, book: OrderBook, depth: int, max_buffer: int = 5_000) -> None:
         self.book, self.depth, self.max_buffer = book, depth, max_buffer
         self.buffer: list[tuple[dict[str, Any], int]] = []
-        self.provisional = False        # baselined from a snapshot, no delta seen yet
         self.baseline_gaps = 0          # snapshot -> first delta gaps handled by resync (not a mid-stream gap)
 
     @property
@@ -152,17 +184,16 @@ class ArcusSync:
     def on_delta(self, contents: dict[str, Any], recv_ms: int) -> None:
         if self.book.valid:
             seq = contents.get("lastSequenceId")
-            if self.provisional and isinstance(seq, int) and self.book.last_seq is not None \
+            if self.book.provisional and isinstance(seq, int) and self.book.last_seq is not None \
                     and seq > self.book.last_seq + 1:
                 # first delta after the snapshot skipped ids: rebuild per the documented resync procedure
                 self.baseline_gaps += 1
-                self.book.invalidate()
-                self.provisional = False
+                self.book.invalidate()                      # -> NOT_READY until the rebuild completes
                 self.buffer = [(contents, recv_ms)]
                 return
             arcus_apply_delta(self.book, contents, recv_ms, self.depth)     # LIVE: strict +1 (gap -> SequenceGap)
             if isinstance(seq, int) and self.book.last_seq == seq:
-                self.provisional = False
+                self.book.provisional = False
             return
         self.buffer.append((contents, recv_ms))
         if len(self.buffer) > self.max_buffer:
@@ -185,7 +216,10 @@ class ArcusSync:
             arcus_apply_delta(self.book, c, t, self.depth)
         if later:
             self.book.confirmed_ms = recv_ms                    # proven current at the snapshot's arrival
-        self.provisional = not later
+            self.book.last_change_ms = recv_ms
+            ts = contents.get("timestamp")
+            self.book.note_exchange_ts(ts // 1000 if isinstance(ts, int) else None, recv_ms)
+        self.book.provisional = not later
         self.buffer.clear()
         return True
 
@@ -197,6 +231,9 @@ def arcus_heartbeat(book: OrderBook, contents: dict[str, Any], recv_ms: int, n_l
     ahead: deltas still in flight, nothing proven), ``"ahead"`` (our deltas are newer) or ``"mismatch"`` (same sequence,
     different levels: integrity failure)."""
     seq = contents.get("lastSequenceId")
+    ts = contents.get("timestamp")
+    if book.valid:
+        book.note_exchange_ts(ts // 1000 if isinstance(ts, int) else None, recv_ms)   # every frame measures latency
     if not book.valid or not isinstance(seq, int) or book.last_seq is None:
         return "behind"
     if seq > book.last_seq:
@@ -209,6 +246,9 @@ def arcus_heartbeat(book: OrderBook, contents: dict[str, Any], recv_ms: int, n_l
             book.sorted_asks(k[1]) != [x for x in hb_a if x[1] > ZERO][:k[1]]:
         return "mismatch"
     book.confirmed_ms = recv_ms
+    # NOTE: a matching heartbeat does NOT clear ``provisional``: live (2026-11-27) the first delta after a snapshot
+    # skipped ids even after an l2Orderbook frame at the same lastSequenceId had matched, so only a contiguous delta
+    # proves the baseline (clearing it here turned the known first-delta skip into gap reconnect loops).
     return "confirmed"
 
 
@@ -222,7 +262,9 @@ def hl_apply_snapshot(book: OrderBook, wsbook: dict[str, Any], recv_ms: int) -> 
     book.replace(_hl_levels(levels[0]), _hl_levels(levels[1]))
     t = wsbook.get("time")
     book.exchange_ts_ms = t if isinstance(t, int) else None
+    book.note_exchange_ts(book.exchange_ts_ms, recv_ms)
     book.confirmed_ms = recv_ms
+    book.last_change_ms = recv_ms
     book.valid = True
 
 
@@ -246,7 +288,10 @@ def hl_apply_diff(book: OrderBook, diff: dict[str, Any], recv_ms: int) -> None:
                 side[p] = s
     t = diff.get("t")
     book.exchange_ts_ms = t if isinstance(t, int) else book.exchange_ts_ms
+    book.note_exchange_ts(t if isinstance(t, int) else None, recv_ms)
     book.confirmed_ms = recv_ms
+    if any(removes[i] or upserts[i] for i in (0, 1)):
+        book.last_change_ms = recv_ms
 
 
 def hl_check_against_snapshot(book: OrderBook, wsbook: dict[str, Any]) -> bool | None:

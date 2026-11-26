@@ -1,0 +1,425 @@
+{
+  "probed_at_ms": 1795718237521,
+  "rank_by": "volume",
+  "candidates": 10,
+  "io_dex": {
+    "name": "io",
+    "fullName": "EntropyIO",
+    "deployer": "0x320c8988e3d1b5198f335802d7bfd2728a8fcac6"
+  },
+  "io_collateralToken": 0,
+  "ranked": [
+    {
+      "symbol": "NVDA",
+      "coin": "io:NVDA",
+      "arcus_vol24h_usd": "14003568.07",
+      "hl_vol24h_usd": "15231568.9318500068",
+      "min_vol24h_usd": "14003568.07",
+      "min_depth10_usd": "43208.15954"
+    },
+    {
+      "symbol": "SNDK",
+      "coin": "io:SNDK",
+      "arcus_vol24h_usd": "2634532.55",
+      "hl_vol24h_usd": "2949061.8231619992",
+      "min_vol24h_usd": "2634532.55",
+      "min_depth10_usd": "50775.717507"
+    },
+    {
+      "symbol": "DRAM",
+      "coin": "io:DRAM",
+      "arcus_vol24h_usd": "838205.05",
+      "hl_vol24h_usd": "1414447.6569400008",
+      "min_vol24h_usd": "838205.05",
+      "min_depth10_usd": "23708.28083"
+    },
+    {
+      "symbol": "MU",
+      "coin": "io:MU",
+      "arcus_vol24h_usd": "2284982.9",
+      "hl_vol24h_usd": "796170.2003499999",
+      "min_vol24h_usd": "796170.2003499999",
+      "min_depth10_usd": "4228.7248"
+    },
+    {
+      "symbol": "NBIS",
+      "coin": "io:NBIS",
+      "arcus_vol24h_usd": "715589.19",
+      "hl_vol24h_usd": "1891935.0423099997",
+      "min_vol24h_usd": "715589.19",
+      "min_depth10_usd": "52528.159590415"
+    },
+    {
+      "symbol": "AAPL",
+      "coin": "io:AAPL",
+      "arcus_vol24h_usd": "8249501.18",
+      "hl_vol24h_usd": "577742.6575699999",
+      "min_vol24h_usd": "577742.6575699999"
+    },
+    {
+      "symbol": "CRCL",
+      "coin": "io:CRCL",
+      "arcus_vol24h_usd": "837337.09",
+      "hl_vol24h_usd": "254860.410492",
+      "min_vol24h_usd": "254860.410492"
+    },
+    {
+      "symbol": "GOOGL",
+      "coin": "io:GOOGL",
+      "arcus_vol24h_usd": "5758478.92",
+      "hl_vol24h_usd": "149696.98488",
+      "min_vol24h_usd": "149696.98488"
+    },
+    {
+      "symbol": "META",
+      "coin": "io:META",
+      "arcus_vol24h_usd": "894285.48",
+      "hl_vol24h_usd": "91560.45576",
+      "min_vol24h_usd": "91560.45576"
+    },
+    {
+      "symbol": "INTC",
+      "coin": "io:INTC",
+      "arcus_vol24h_usd": "594707.23",
+      "hl_vol24h_usd": "86998.65994",
+      "min_vol24h_usd": "86998.65994"
+    }
+  ],
+  "top": [
+    {
+      "symbol": "NVDA",
+      "coin": "io:NVDA",
+      "arcus_vol24h_usd": "14003568.07",
+      "hl_vol24h_usd": "15231568.9318500068",
+      "min_vol24h_usd": "14003568.07",
+      "min_depth10_usd": "43208.15954",
+      "io": {
+        "maker_fee": "0.0000300",
+        "taker_fee": "0.0000900",
+        "maker_bps": "0.3000000",
+        "taker_bps": "0.9000000",
+        "growth_mode": true,
+        "deployerFeeScale": "1.0",
+        "marginMode_raw": null,
+        "onlyIsolated_raw": null,
+        "margin_mode": "cross",
+        "strictIsolated": false,
+        "max_leverage": 25,
+        "min_notional_usd": "10",
+        "min_notional_note": "TODO: VERIFY_FROM_DOCS ($10 commonly observed; not on the docs pages)",
+        "step": "0.001",
+        "funding_hourly": "0.00000625",
+        "oraclePx": "150.34",
+        "markPx": "150.29",
+        "premium": "0.000129706"
+      },
+      "arcus": {
+        "maker_bps": "0",
+        "taker_bps": "2.250000",
+        "max_leverage": "20",
+        "off_hours_max_leverage": "13.33333333333333333333333333333333333333",
+        "min_notional_usd": "5",
+        "step": "0.0000001",
+        "funding_hourly_next": "0.00000474537037037",
+        "funding_hourly_last": "0.000005138888888888",
+        "isOutsideRth": true,
+        "regularTradingHours": {
+          "startSecondsOfDay": 14400,
+          "endSecondsOfDay": 72000,
+          "timezone": "America/New_York",
+          "isOvernight": false
+        },
+        "oraclePrice": "150.2",
+        "markPrice": "150.17",
+        "category": "EQUITIES"
+      },
+      "funding_diff_annual_hl_minus_arcus": "0.01318055555555880",
+      "books": {
+        "arcus": {
+          "best_bid": "150.13",
+          "best_ask": "150.14",
+          "mid": "150.135",
+          "spread_bps": "0.6660672061811036733606420887867585839411",
+          "depth10_bid_usd": "539323.728416037",
+          "depth10_ask_usd": "281661.955768137"
+        },
+        "hl": {
+          "best_bid": "150.35",
+          "best_ask": "150.38",
+          "mid": "150.365",
+          "spread_bps": "1.995145146809430386060585907624779702723",
+          "depth10_bid_usd": "68760.55505",
+          "depth10_ask_usd": "43208.15954"
+        }
+      }
+    },
+    {
+      "symbol": "SNDK",
+      "coin": "io:SNDK",
+      "arcus_vol24h_usd": "2634532.55",
+      "hl_vol24h_usd": "2949061.8231619992",
+      "min_vol24h_usd": "2634532.55",
+      "min_depth10_usd": "50775.717507",
+      "io": {
+        "maker_fee": "0.0000300",
+        "taker_fee": "0.0000900",
+        "maker_bps": "0.3000000",
+        "taker_bps": "0.9000000",
+        "growth_mode": true,
+        "deployerFeeScale": "1.0",
+        "marginMode_raw": null,
+        "onlyIsolated_raw": null,
+        "margin_mode": "cross",
+        "strictIsolated": false,
+        "max_leverage": 15,
+        "min_notional_usd": "10",
+        "min_notional_note": "TODO: VERIFY_FROM_DOCS ($10 commonly observed; not on the docs pages)",
+        "step": "0.0001",
+        "funding_hourly": "-0.0000190705",
+        "oraclePx": "75.18",
+        "markPx": "75.1",
+        "premium": "-0.0008645916"
+      },
+      "arcus": {
+        "maker_bps": "0",
+        "taker_bps": "2.250000",
+        "max_leverage": "10",
+        "off_hours_max_leverage": "6.666666666666666666666666666666666666667",
+        "min_notional_usd": "5",
+        "step": "0.0000001",
+        "funding_hourly_next": "0.00000474537037037",
+        "funding_hourly_last": "0.000005138888888888",
+        "isOutsideRth": true,
+        "regularTradingHours": {
+          "startSecondsOfDay": 14400,
+          "endSecondsOfDay": 72000,
+          "timezone": "America/New_York",
+          "isOvernight": false
+        },
+        "oraclePrice": "75.06",
+        "markPrice": "75.04",
+        "category": "EQUITIES"
+      },
+      "funding_diff_annual_hl_minus_arcus": "-0.20862702444444120",
+      "books": {
+        "arcus": {
+          "best_bid": "75.04",
+          "best_ask": "75.05",
+          "mid": "75.045",
+          "spread_bps": "1.332533813045506029715504030914784462656",
+          "depth10_bid_usd": "330943.774877981",
+          "depth10_ask_usd": "202145.321954744"
+        },
+        "hl": {
+          "best_bid": "75.11",
+          "best_ask": "75.12",
+          "mid": "75.115",
+          "spread_bps": "1.331292018904346668441722691872462224589",
+          "depth10_bid_usd": "57421.471103",
+          "depth10_ask_usd": "50775.717507"
+        }
+      }
+    },
+    {
+      "symbol": "DRAM",
+      "coin": "io:DRAM",
+      "arcus_vol24h_usd": "838205.05",
+      "hl_vol24h_usd": "1414447.6569400008",
+      "min_vol24h_usd": "838205.05",
+      "min_depth10_usd": "23708.28083",
+      "io": {
+        "maker_fee": "0.0000300",
+        "taker_fee": "0.0000900",
+        "maker_bps": "0.3000000",
+        "taker_bps": "0.9000000",
+        "growth_mode": true,
+        "deployerFeeScale": "1.0",
+        "marginMode_raw": null,
+        "onlyIsolated_raw": null,
+        "margin_mode": "cross",
+        "strictIsolated": false,
+        "max_leverage": 25,
+        "min_notional_usd": "10",
+        "min_notional_note": "TODO: VERIFY_FROM_DOCS ($10 commonly observed; not on the docs pages)",
+        "step": "0.01",
+        "funding_hourly": "-0.0000205153",
+        "oraclePx": "35.128",
+        "markPx": "35.094",
+        "premium": "-0.0009522318"
+      },
+      "arcus": {
+        "maker_bps": "0",
+        "taker_bps": "2.250000",
+        "max_leverage": "10",
+        "off_hours_max_leverage": "6.666666666666666666666666666666666666667",
+        "min_notional_usd": "5",
+        "step": "0.0000001",
+        "funding_hourly_next": "0.00000474537037037",
+        "funding_hourly_last": "0.000005138888888888",
+        "isOutsideRth": true,
+        "regularTradingHours": {
+          "startSecondsOfDay": 14400,
+          "endSecondsOfDay": 72000,
+          "timezone": "America/New_York",
+          "isOvernight": false
+        },
+        "oraclePrice": "35.09",
+        "markPrice": "35.09",
+        "category": "EQUITIES"
+      },
+      "funding_diff_annual_hl_minus_arcus": "-0.22128347244444120",
+      "books": {
+        "arcus": {
+          "best_bid": "35.09",
+          "best_ask": "35.1",
+          "mid": "35.095",
+          "spread_bps": "2.849408747684855392506054993588830317709",
+          "depth10_bid_usd": "116137.020671057",
+          "depth10_ask_usd": "194258.427697950"
+        },
+        "hl": {
+          "best_bid": "35.087",
+          "best_ask": "35.105",
+          "mid": "35.096",
+          "spread_bps": "5.128789605653065876453157054935035331662",
+          "depth10_bid_usd": "30681.71435",
+          "depth10_ask_usd": "23708.28083"
+        }
+      }
+    },
+    {
+      "symbol": "MU",
+      "coin": "io:MU",
+      "arcus_vol24h_usd": "2284982.9",
+      "hl_vol24h_usd": "796170.2003499999",
+      "min_vol24h_usd": "796170.2003499999",
+      "min_depth10_usd": "4228.7248",
+      "io": {
+        "maker_fee": "0.0000300",
+        "taker_fee": "0.0000900",
+        "maker_bps": "0.3000000",
+        "taker_bps": "0.9000000",
+        "growth_mode": true,
+        "deployerFeeScale": "1.0",
+        "marginMode_raw": "noCross",
+        "onlyIsolated_raw": true,
+        "margin_mode": "noCross",
+        "strictIsolated": false,
+        "max_leverage": 15,
+        "min_notional_usd": "10",
+        "min_notional_note": "TODO: VERIFY_FROM_DOCS ($10 commonly observed; not on the docs pages)",
+        "step": "0.001",
+        "funding_hourly": "0.00000625",
+        "oraclePx": "608.01",
+        "markPx": "607.63",
+        "premium": "-0.000277956"
+      },
+      "arcus": {
+        "maker_bps": "0",
+        "taker_bps": "2.250000",
+        "max_leverage": "10",
+        "off_hours_max_leverage": "6.666666666666666666666666666666666666667",
+        "min_notional_usd": "5",
+        "step": "0.0000001",
+        "funding_hourly_next": "0.00000474537037037",
+        "funding_hourly_last": "0.000005138888888888",
+        "isOutsideRth": true,
+        "regularTradingHours": {
+          "startSecondsOfDay": 14400,
+          "endSecondsOfDay": 72000,
+          "timezone": "America/New_York",
+          "isOvernight": false
+        },
+        "oraclePrice": "607.18",
+        "markPrice": "607.12",
+        "category": "EQUITIES"
+      },
+      "funding_diff_annual_hl_minus_arcus": "0.01318055555555880",
+      "books": {
+        "arcus": {
+          "best_bid": "607.08",
+          "best_ask": "607.09",
+          "mid": "607.085",
+          "spread_bps": "0.1647215793505028126209674098355255030185",
+          "depth10_bid_usd": "276162.217566642",
+          "depth10_ask_usd": "218075.768472547"
+        },
+        "hl": {
+          "best_bid": "607.58",
+          "best_ask": "608.04",
+          "mid": "607.81",
+          "spread_bps": "7.568154521972326878465309883022655106036",
+          "depth10_bid_usd": "4228.7248",
+          "depth10_ask_usd": "4363.41102"
+        }
+      }
+    },
+    {
+      "symbol": "NBIS",
+      "coin": "io:NBIS",
+      "arcus_vol24h_usd": "715589.19",
+      "hl_vol24h_usd": "1891935.0423099997",
+      "min_vol24h_usd": "715589.19",
+      "min_depth10_usd": "52528.159590415",
+      "io": {
+        "maker_fee": "0.0000300",
+        "taker_fee": "0.0000900",
+        "maker_bps": "0.3000000",
+        "taker_bps": "0.9000000",
+        "growth_mode": true,
+        "deployerFeeScale": "1.0",
+        "marginMode_raw": null,
+        "onlyIsolated_raw": null,
+        "margin_mode": "cross",
+        "strictIsolated": false,
+        "max_leverage": 15,
+        "min_notional_usd": "10",
+        "min_notional_note": "TODO: VERIFY_FROM_DOCS ($10 commonly observed; not on the docs pages)",
+        "step": "0.01",
+        "funding_hourly": "0.0000051964",
+        "oraclePx": "87.497",
+        "markPx": "87.452",
+        "premium": "0.0003017246"
+      },
+      "arcus": {
+        "maker_bps": "0",
+        "taker_bps": "2.250000",
+        "max_leverage": "5",
+        "off_hours_max_leverage": "3.333333333333333333333333333333333333333",
+        "min_notional_usd": "5",
+        "step": "0.0000001",
+        "funding_hourly_next": "0.00000474537037037",
+        "funding_hourly_last": "0.000005138888888888",
+        "isOutsideRth": true,
+        "regularTradingHours": {
+          "startSecondsOfDay": 14400,
+          "endSecondsOfDay": 72000,
+          "timezone": "America/New_York",
+          "isOvernight": false
+        },
+        "oraclePrice": "87.38",
+        "markPrice": "87.4",
+        "category": "EQUITIES"
+      },
+      "funding_diff_annual_hl_minus_arcus": "0.00395101955555880",
+      "books": {
+        "arcus": {
+          "best_bid": "87.41",
+          "best_ask": "87.42",
+          "mid": "87.415",
+          "spread_bps": "1.143968426471429388548876051020991820626",
+          "depth10_bid_usd": "52528.159590415",
+          "depth10_ask_usd": "116057.131469081"
+        },
+        "hl": {
+          "best_bid": "87.512",
+          "best_ask": "87.543",
+          "mid": "87.5275",
+          "spread_bps": "3.541744023306960669503870212219016880409",
+          "depth10_bid_usd": "64086.41776",
+          "depth10_ask_usd": "74141.30798"
+        }
+      }
+    }
+  ]
+}

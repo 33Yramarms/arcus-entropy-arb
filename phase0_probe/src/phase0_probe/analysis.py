@@ -1,8 +1,9 @@
 """Opportunity statistics from the SQLite snapshots (Decimal arithmetic throughout).
 
 Per (symbol, Q, mode), each second takes the BETTER of the two directions. A second is:
-* ``stale`` if any row of that second is stale (either book older than the threshold or invalid);
-* an opportunity if the best ``ok`` row has ``net_bps > 0``.
+* ``not_ready`` / ``stale`` if any row of that second has that status (gated: never an opportunity);
+* an opportunity if the best ``ok`` row has ``net_resid_bps > 0`` (exit at the rolling-median basis, PR #1.5);
+  the Phase 0 zero-convergence share (``net_bps > 0``) is reported alongside for comparison.
 Durations are runs of consecutive opportunity seconds (1 s grid). Funding differential = mean over the window of
 (HL − Arcus) hourly rate × 8760, using predicted rates when present, else current.
 """
@@ -40,24 +41,32 @@ def _bounds(db: sqlite3.Connection, window_ms: int | None) -> tuple[int, int]:
 
 def summarize(db: sqlite3.Connection, window_ms: int | None = 24 * 3600 * 1000) -> dict[str, Any]:
     lo, hi = _bounds(db, window_ms)
-    cur = db.execute("SELECT ts_ms, symbol, q_usd, mode, direction, status, net_bps, open_spread_bps, basis_bps "
-                     "FROM opportunities WHERE ts_ms BETWEEN ? AND ? ORDER BY ts_ms", (lo, hi))
+    cur = db.execute("SELECT ts_ms, symbol, q_usd, mode, direction, status, net_bps, open_spread_bps, basis_bps, "
+                     "net_resid_bps, residual_bps FROM opportunities WHERE ts_ms BETWEEN ? AND ? ORDER BY ts_ms",
+                     (lo, hi))
     sec: dict[tuple[str, str, str], dict[int, dict[str, Any]]] = {}
-    for ts, sym, q, mode, direction, status, net, spread, basis in cur:
-        d = sec.setdefault((sym, q, mode), {}).setdefault(ts, {"stale": False, "best": None, "status": set(),
-                                                               "spread": None, "basis": None})
+    for ts, sym, q, mode, direction, status, net, spread, basis, net_r, resid in cur:
+        d = sec.setdefault((sym, q, mode), {}).setdefault(ts, {"best": None, "best0": None, "status": set(),
+                                                               "spread": None, "basis": None, "resid": None})
         d["status"].add(status)
-        if status == "stale":
-            d["stale"] = True
-        if status == "ok" and net is not None:
-            n = Decimal(net)
+        if status != "ok":
+            continue
+        if net is not None:
+            n0 = Decimal(net)
+            if d["best0"] is None or n0 > d["best0"]:
+                d["best0"] = n0
+        if net_r is not None:
+            n = Decimal(net_r)
             if d["best"] is None or n > d["best"]:
                 d["best"], d["spread"], d["dir"] = n, Decimal(spread), direction
-            d["basis"] = Decimal(basis)
+        d["basis"] = Decimal(basis)
+        d["resid"] = None if resid is None else Decimal(resid)
     rows = []
     for (sym, q, mode), per in sorted(sec.items(), key=lambda kv: (kv[0][0], Decimal(kv[0][1]), kv[0][2])):
         stamps = sorted(per)
-        opp = [t for t in stamps if not per[t]["stale"] and per[t]["best"] is not None and per[t]["best"] > ZERO]
+        gated = {t for t in stamps if per[t]["status"] & {"stale", "not_ready"}}
+        live = [t for t in stamps if t not in gated]
+        opp = [t for t in live if per[t]["best"] is not None and per[t]["best"] > ZERO]
         runs: list[int] = []
         prev = None
         for t in opp:
@@ -66,27 +75,66 @@ def summarize(db: sqlite3.Connection, window_ms: int | None = 24 * 3600 * 1000) 
             else:
                 runs.append(1)
             prev = t
-        nets = [per[t]["best"] for t in stamps if per[t]["best"] is not None and not per[t]["stale"]]
-        spreads = [per[t]["spread"] for t in stamps if per[t]["spread"] is not None and not per[t]["stale"]]
-        bases = [per[t]["basis"] for t in stamps if per[t]["basis"] is not None and not per[t]["stale"]]
+        nets = [per[t]["best"] for t in live if per[t]["best"] is not None]
+        nets0 = [per[t]["best0"] for t in live if per[t]["best0"] is not None]
+        spreads = [per[t]["spread"] for t in live if per[t]["spread"] is not None]
+        bases = [per[t]["basis"] for t in live if per[t]["basis"] is not None]
+        resids = [abs(per[t]["resid"]) for t in live if per[t]["resid"] is not None]
         dirs: dict[str, int] = {}
         for t in opp:
             dirs[per[t]["dir"]] = dirs.get(per[t]["dir"], 0) + 1
         n = len(stamps)
+        n_stale = sum(1 for t in stamps if "stale" in per[t]["status"])
+        n_nr = sum(1 for t in stamps if "not_ready" in per[t]["status"])
+        pct = (lambda k: Decimal(k) / Decimal(n) * HUNDRED if n else None)
         rows.append({
             "symbol": sym, "q_usd": q, "mode": mode, "seconds": n, "opp_seconds": len(opp),
-            "stale_seconds": sum(1 for t in stamps if per[t]["stale"]),
+            "stale_seconds": n_stale, "not_ready_seconds": n_nr,
+            "warmup_seconds": sum(1 for t in live if per[t]["best"] is None and per[t]["best0"] is not None),
             "insufficient_depth_seconds": sum(1 for t in stamps if "insufficient_depth" in per[t]["status"]),
-            "pct_net_pos": Decimal(len(opp)) / Decimal(n) * HUNDRED if n else None,
-            "pct_stale": Decimal(sum(1 for t in stamps if per[t]["stale"])) / Decimal(n) * HUNDRED if n else None,
+            "pct_net_pos": pct(len(opp)), "pct_stale": pct(n_stale), "pct_not_ready": pct(n_nr),
+            "pct_net_pos_zero_convergence": pct(sum(1 for t in live if per[t]["best0"] is not None
+                                                    and per[t]["best0"] > ZERO)),
             "runs": len(runs), "avg_duration_s": _mean([Decimal(r) for r in runs]),
             "max_run_s": max(runs) if runs else 0,
             "max_net_bps": max(nets) if nets else None, "median_net_bps": _median(nets),
+            "max_net_bps_zero_convergence": max(nets0) if nets0 else None,
             "median_open_spread_bps": _median(spreads), "median_basis_bps": _median(bases),
+            "median_abs_residual_bps": _median(resids), "max_abs_residual_bps": max(resids) if resids else None,
             "opp_by_direction": dirs,
         })
     return {"window": {"from_ms": lo, "to_ms": hi, "seconds": (hi - lo) // 1000 + 1 if hi >= lo else 0},
-            "rows": rows, "funding": funding_summary(db, lo, hi)}
+            "rows": rows, "funding": funding_summary(db, lo, hi), "health": health_summary(db, lo, hi)}
+
+
+def _pct_int(xs: list[int], p: int) -> int | None:
+    if not xs:
+        return None
+    ys = sorted(xs)
+    return ys[min(len(ys) - 1, len(ys) * p // 100)]
+
+
+def health_summary(db: sqlite3.Connection, lo: int, hi: int, max_latency_ms: int = 500) -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    pairs = db.execute("SELECT DISTINCT symbol, venue FROM book_health WHERE ts_ms BETWEEN ? AND ? ORDER BY 1, 2",
+                       (lo, hi)).fetchall()
+    for sym, venue in pairs:
+        rows = db.execute("SELECT ready, network_latency_ms, book_idle_ms, conn_silence_ms FROM book_health "
+                          "WHERE symbol=? AND venue=? AND ts_ms BETWEEN ? AND ?", (sym, venue, lo, hi)).fetchall()
+        lat = [r[1] for r in rows if r[1] is not None]
+        idle = [r[2] for r in rows if r[2] is not None]
+        sil = [r[3] for r in rows if r[3] is not None]
+        n = len(rows)
+        out[f"{sym}/{venue}"] = {
+            "samples": n, "pct_not_ready": Decimal(sum(1 for r in rows if not r[0])) / Decimal(n) * HUNDRED if n else None,
+            "latency_ms_p50": _pct_int(lat, 50), "latency_ms_p90": _pct_int(lat, 90), "latency_ms_max": max(lat, default=None),
+            "pct_latency_over_threshold": (Decimal(sum(1 for x in lat if x > max_latency_ms)) / Decimal(len(lat))
+                                           * HUNDRED) if lat else None,
+            "book_idle_ms_p50": _pct_int(idle, 50), "book_idle_ms_p90": _pct_int(idle, 90),
+            "book_idle_ms_max": max(idle, default=None),
+            "conn_silence_ms_p50": _pct_int(sil, 50), "conn_silence_ms_max": max(sil, default=None),
+        }
+    return out
 
 
 def funding_summary(db: sqlite3.Connection, lo: int, hi: int) -> dict[str, Any]:

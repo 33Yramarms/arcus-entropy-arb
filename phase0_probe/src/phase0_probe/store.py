@@ -12,11 +12,14 @@ CREATE TABLE IF NOT EXISTS opportunities (
   ts_ms INTEGER NOT NULL, symbol TEXT NOT NULL, q_usd TEXT NOT NULL, direction TEXT NOT NULL, mode TEXT NOT NULL,
   status TEXT NOT NULL, base_qty TEXT, mid_a TEXT, mid_b TEXT, ref_mid TEXT, basis_bps TEXT, open_buy_px TEXT,
   open_sell_px TEXT, open_spread_bps TEXT, open_slip_bps TEXT, close_slip_bps TEXT, fees_bps TEXT, buffer_bps TEXT,
-  net_bps TEXT, net_usd TEXT, age_a_ms INTEGER, age_b_ms INTEGER);
+  net_bps TEXT, net_usd TEXT, basis_median_bps TEXT, residual_bps TEXT, net_resid_bps TEXT,
+  lat_a_ms INTEGER, lat_b_ms INTEGER, idle_a_ms INTEGER, idle_b_ms INTEGER, silence_a_ms INTEGER,
+  silence_b_ms INTEGER);
 CREATE INDEX IF NOT EXISTS ix_opp ON opportunities(symbol, q_usd, mode, ts_ms);
 CREATE TABLE IF NOT EXISTS book_health (
-  ts_ms INTEGER NOT NULL, symbol TEXT NOT NULL, venue TEXT NOT NULL, valid INTEGER NOT NULL, age_ms INTEGER,
-  exch_lag_ms INTEGER, best_bid TEXT, best_ask TEXT, n_bids INTEGER, n_asks INTEGER, last_seq INTEGER);
+  ts_ms INTEGER NOT NULL, symbol TEXT NOT NULL, venue TEXT NOT NULL, ready INTEGER NOT NULL, valid INTEGER NOT NULL,
+  network_latency_ms INTEGER, book_idle_ms INTEGER, conn_silence_ms INTEGER, proven_age_ms INTEGER,
+  best_bid TEXT, best_ask TEXT, n_bids INTEGER, n_asks INTEGER, last_seq INTEGER);
 CREATE TABLE IF NOT EXISTS funding (
   ts_ms INTEGER NOT NULL, symbol TEXT NOT NULL, venue TEXT NOT NULL, current_hourly TEXT, predicted_hourly TEXT);
 CREATE TABLE IF NOT EXISTS events (
@@ -40,14 +43,15 @@ class Store:
 
     def opportunities(self, ts_ms: int, rows: Iterable[Opportunity]) -> None:
         self.db.executemany(
-            "INSERT INTO opportunities VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO opportunities VALUES (" + ",".join("?" * 29) + ")",
             [(ts_ms, o.symbol, s(o.q_usd), o.direction.value, o.mode.value, o.status, s(o.base_qty), s(o.mid_a),
               s(o.mid_b), s(o.ref_mid), s(o.basis_bps), s(o.open_buy_px), s(o.open_sell_px), s(o.open_spread_bps),
               s(o.open_slip_bps), s(o.close_slip_bps), s(o.fees_bps), s(o.buffer_bps), s(o.net_bps), s(o.net_usd),
-              o.age_a_ms, o.age_b_ms) for o in rows])
+              s(o.basis_median_bps), s(o.residual_bps), s(o.net_resid_bps), o.lat_a_ms, o.lat_b_ms, o.idle_a_ms,
+              o.idle_b_ms, o.silence_a_ms, o.silence_b_ms) for o in rows])
 
     def book_health(self, rows: Iterable[tuple[Any, ...]]) -> None:
-        self.db.executemany("INSERT INTO book_health VALUES (?,?,?,?,?,?,?,?,?,?,?)", list(rows))
+        self.db.executemany("INSERT INTO book_health VALUES (" + ",".join("?" * 14) + ")", list(rows))
 
     def funding(self, rows: Iterable[tuple[Any, ...]]) -> None:
         self.db.executemany("INSERT INTO funding VALUES (?,?,?,?,?)", list(rows))

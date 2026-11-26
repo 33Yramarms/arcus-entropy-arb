@@ -197,6 +197,24 @@ Hyperliquid (hyperliquid.gitbook.io/hyperliquid-docs):
 * Static guard: trades may only be touched by `trades.py`, `feeds.py`, `store.py`, `realism.py`, `record_spreads.py`,
   `analyze_opportunity.py`; pricing modules (`model.py`, `book.py`, …) are scanned and never import them.
 
+## PR #1.7 — dynamic funding-differential back-test (offline, read-only)
+
+```bash
+uv run python scripts/backtest_dynamic_funding.py               # live fetch (public endpoints) -> reports/backtest_funding_cache.json
+uv run python scripts/backtest_dynamic_funding.py --from-cache  # fully offline, reproducible
+uv run python scripts/backtest_dynamic_funding.py --from-pr16-report reports/rwa_funding_basis.json  # PR #1.6 dataset
+```
+
+* Logic: `src/phase0_probe/backtest.py` (pure, Decimal only). Output: `reports/backtest_dynamic_funding.{json,md}`.
+* No look-ahead: the decision for hourly payment *i* only receives realized diffs `0..i−1` (`decide()` asserts it);
+  a position opened at *i* earns payment *i* onward, a close at *i* forfeits payment *i*; tested by perturbing future rates.
+* Strategy A (all hours) / B (Arcus off-hours window: 20:00–04:00 ET + weekends + NYSE holidays, PR #1.6 calendar),
+  K ∈ {1, 3}, entry_apr ∈ {12, 18, 25, 35} %, exit_apr ∈ {0, 4} % (direction-aware: `dir × rolling ≤ exit_apr`),
+  2-hour reversal exit, data-gap / window-end / end-of-data forced closes; costs 2.8 / 8.3 bps per round trip
+  (half at open, half at close).
+* Capital per $1 notional per leg = 1.5 × Arcus off-hours IMF + 1.5 × (1 / io maxLeverage); portfolio = equal capital,
+  always allocated. Best parameters are in-sample — see the 50/50 out-of-sample table in the report.
+
 ## TODO: VERIFY_FROM_DOCS
 
 * HL minimum order value ($10 used) — not on the fees / tick-and-lot-size / contract-spec pages.

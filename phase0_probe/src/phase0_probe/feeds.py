@@ -87,6 +87,7 @@ class ArcusBookFeed:
 
     def handle(self, msg: dict[str, Any], recv: int) -> None:
         self.stats.frames += 1
+        self.book.last_msg_ms = recv                     # connection health: any frame counts
         typ, ch, c = msg.get("type"), msg.get("channel"), msg.get("contents")
         if typ == "error":
             self.sink("arcus", self.market, "server_error", json.dumps(msg, default=str)[:300])
@@ -165,8 +166,11 @@ def hl_decode(payload: str) -> Any:
 
 
 class HlBookFeed:
-    """One connection per coin: ``l2`` (snapshot + diffs), ``l2Book`` (checksum when ``time`` matches) and
-    ``activeAssetCtx`` (``funding``). Client ``{"method":"ping"}`` every 30 s (websocket/timeouts-and-heartbeats)."""
+    """One connection per coin: ``l2`` (snapshot + diffs; documented as item 23 of websocket/subscriptions.md),
+    ``l2Book`` (checksum when ``time`` matches; pushed only every ~12 s with the default ``fast: false`` — see README)
+    and ``activeAssetCtx`` (``funding``). Client ``{"method":"ping"}`` every ``ping_every_ms`` (docs require < 60 s;
+    5 s here so a pong proves connection health even when the book is idle)."""
+    ping_every_ms = 5_000
 
     def __init__(self, symbol: str, coin: str, sink: EventSink, url: str = HL_WS) -> None:
         self.symbol, self.coin, self.sink, self.url = symbol, coin, sink, url
@@ -197,7 +201,7 @@ class HlBookFeed:
             self.sink("hyperliquid", self.symbol, "connected", self.url)
             last_ping = now_ms()
             while not stop.is_set():
-                if now_ms() - last_ping >= 30_000:
+                if now_ms() - last_ping >= self.ping_every_ms:
                     await ws.send(json.dumps({"method": "ping"}))
                     last_ping = now_ms()
                 try:
@@ -208,6 +212,7 @@ class HlBookFeed:
 
     def handle(self, msg: dict[str, Any], recv: int) -> None:
         self.stats.frames += 1
+        self.book.last_msg_ms = recv                     # connection health: any frame (pong, ctx, ...) counts
         ch, data = msg.get("channel"), msg.get("data")
         if ch == "error":
             self.sink("hyperliquid", self.symbol, "server_error", json.dumps(msg, default=str)[:300])
@@ -220,6 +225,8 @@ class HlBookFeed:
             elif isinstance(data.get("c"), str):
                 hl_apply_diff(self.book, hl_decode(data["c"]), recv)
         elif ch == "l2Book" and isinstance(data, dict) and data.get("coin") == self.coin:
+            if self.book.valid:
+                self.book.note_exchange_ts(data.get("time") if isinstance(data.get("time"), int) else None, recv)
             ok = hl_check_against_snapshot(self.book, data)
             if ok is True:
                 self.stats.checks_ok += 1

@@ -11,7 +11,7 @@ import aiohttp
 from phase0_probe.dec import now_ms
 from phase0_probe.discovery import parse_predicted
 from phase0_probe.feeds import ArcusBookFeed, ArcusMarketsFeed, HlBookFeed
-from phase0_probe.model import Direction, Mode, VenueSpec, evaluate
+from phase0_probe.model import Direction, Mode, RollingMedian, VenueSpec, evaluate, mid_basis_bps
 from phase0_probe.store import Store, s
 from phase0_probe.venues import hl_info
 
@@ -29,9 +29,13 @@ class Pair:
 
 class Recorder:
     def __init__(self, store: Store, pairs: list[Pair], markets: ArcusMarketsFeed, *, qs: list[Decimal],
-                 stale_ms: int = 500, buffer_bps: Decimal = Decimal(2)) -> None:
+                 max_latency_ms: int = 500, conn_timeout_ms: int = 5000, buffer_bps: Decimal = Decimal(2),
+                 resid_window_s: int = 300, resid_min_samples: int = 30) -> None:
         self.store, self.pairs, self.markets = store, pairs, markets
-        self.qs, self.stale_ms, self.buffer_bps = qs, stale_ms, buffer_bps
+        self.qs, self.max_latency_ms, self.conn_timeout_ms, self.buffer_bps = qs, max_latency_ms, conn_timeout_ms, \
+            buffer_bps
+        self.resid_window_ms, self.resid_min_samples = resid_window_s * 1000, resid_min_samples
+        self.medians: dict[str, RollingMedian] = {}
         self.hl_predicted: dict[str, Decimal] = {}
         self.ticks = 0
 
@@ -43,16 +47,23 @@ class Recorder:
     def sample(self, ts: int) -> None:
         rows, health = [], []
         for p in self.pairs:
+            rm = self.medians.setdefault(p.symbol, RollingMedian(self.resid_window_ms, self.resid_min_samples))
+            med = rm.median(ts)                                # previous window only (no look-ahead)
             for q in self.qs:
                 for d in Direction:
                     for m in Mode:
                         rows.append(evaluate(book_a=p.arcus.book, book_b=p.hl.book, spec_a=p.spec_a, spec_b=p.spec_b,
-                                             q_usd=q, direction=d, mode=m, now_ms=ts, stale_ms=self.stale_ms,
-                                             buffer_bps=self.buffer_bps))
+                                             q_usd=q, direction=d, mode=m, now_ms=ts,
+                                             max_latency_ms=self.max_latency_ms, conn_timeout_ms=self.conn_timeout_ms,
+                                             buffer_bps=self.buffer_bps, basis_median_bps=med))
+            fresh = any(r.symbol == p.spec_a.symbol and r.status not in ("not_ready", "stale") for r in rows[-1:])
+            basis = mid_basis_bps(p.arcus.book, p.hl.book)
+            if basis is not None and fresh:
+                rm.push(ts, basis)
             for venue, b in (("arcus", p.arcus.book), ("hyperliquid", p.hl.book)):
-                lag = None if b.exchange_ts_ms is None or b.confirmed_ms is None else b.confirmed_ms - b.exchange_ts_ms
-                health.append((ts, p.symbol, venue, int(b.valid), b.age_ms(ts), lag, s(b.best_bid()),
-                               s(b.best_ask()), len(b.bids), len(b.asks), b.last_seq))
+                health.append((ts, p.symbol, venue, int(b.ready), int(b.valid), b.latency_ms, b.idle_ms(ts),
+                               b.silence_ms(ts), b.age_ms(ts), s(b.best_bid()), s(b.best_ask()), len(b.bids),
+                               len(b.asks), b.last_seq))
         self.store.opportunities(ts, rows)
         self.store.book_health(health)
         if self.ticks % 5 == 0:

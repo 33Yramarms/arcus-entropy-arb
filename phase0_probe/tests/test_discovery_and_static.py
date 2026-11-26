@@ -74,10 +74,10 @@ def test_parse_and_overlap() -> None:
     assert rows[0]["rt_dual_taker_fee_bps"] == D(18)
 
 
-def _book(v: str, bid: str, ask: str, now: int) -> OrderBook:
+def _book(v: str, bid: str, ask: str, now: int, latency: int = 50) -> OrderBook:
     b = OrderBook(v, "BTC")
     b.replace([(D(bid), D(5))], [(D(ask), D(5))])
-    b.valid, b.confirmed_ms = True, now
+    b.valid, b.confirmed_ms, b.last_msg_ms, b.last_change_ms, b.latency_ms = True, now, now, now - 30_000, latency
     return b
 
 
@@ -86,22 +86,28 @@ def test_store_and_analysis_runs(tmp_path: pathlib.Path) -> None:
     sa = VenueSpec("arcus", "BTC", D("0.00000001"), D(5), D("0.00015"), D("0.00045"))
     sb = VenueSpec("hyperliquid", "BTC", D("0.00001"), D(10), D("0.00015"), D("0.00045"))
     t0 = 1_800_000_000_000
-    hl_mid = ["60300", "60300", "60300", "60000", "60300", "60000"]          # runs of 3 s and 1 s
+    hl_mid = ["60300", "60300", "60300", "60000", "60300", "60300", "60300"]  # runs of 3 s and 1 s
     for i, m in enumerate(hl_mid):
         ts = t0 + i * 1000
         a = _book("arcus", "59999", "60001", ts)
+        a.provisional = i == 6                                                # resyncing -> NOT_READY
         hb = D(m)
-        b = _book("hyperliquid", str(hb - 1), str(hb + 1), ts - (600 if i == 5 else 0))
+        b = _book("hyperliquid", str(hb - 1), str(hb + 1), ts, latency=600 if i == 5 else 50)   # i=5: slow link
         rows = [evaluate(book_a=a, book_b=b, spec_a=sa, spec_b=sb, q_usd=D(100), direction=d, mode=Mode.DUAL_TAKER,
-                         now_ms=ts) for d in Direction]
+                         now_ms=ts, basis_median_bps=D(0)) for d in Direction]
         st.opportunities(ts, rows)
+        st.book_health([(ts, "BTC", "hyperliquid", int(b.ready), int(b.valid), b.latency_ms, b.idle_ms(ts),
+                         b.silence_ms(ts), b.age_ms(ts), None, None, 1, 1, None)])
         st.funding([(ts, "BTC", "arcus", "0.0000125", "0.00001"), (ts, "BTC", "hyperliquid", "0.00002", None)])
     st.commit()
     res = summarize(st.db, window_ms=None)
     r = next(x for x in res["rows"] if x["symbol"] == "BTC" and x["q_usd"] == "100" and x["mode"] == "DUAL_TAKER")
-    assert r["seconds"] == 6 and r["opp_seconds"] == 4 and r["stale_seconds"] == 1
+    assert r["seconds"] == 7 and r["opp_seconds"] == 4 and r["stale_seconds"] == 1 and r["not_ready_seconds"] == 1
     assert r["avg_duration_s"] == D("2") and r["max_run_s"] == 3
-    assert r["pct_net_pos"] == D(4) / D(6) * 100
+    assert r["pct_net_pos"] == D(4) / D(7) * 100
+    h = res["health"]["BTC/hyperliquid"]
+    assert h["latency_ms_max"] == 600 and h["book_idle_ms_p50"] == 30_000      # idle 30 s but never gated
+    assert h["pct_latency_over_threshold"] == D(1) / D(7) * 100
     f = res["funding"]["BTC"]
     assert f["diff_annual_hl_minus_arcus"] == (D("0.00002") - D("0.00001")) * 8760
     st.close()

@@ -1,4 +1,5 @@
-"""VWAP + net-profit model (Decimal only), incl. insufficient depth and stale (> 500 ms) edge cases."""
+"""VWAP + net-profit model (Decimal only), incl. insufficient depth, network-latency staleness (> 500 ms),
+NOT_READY gating, book idleness (never gates) and the rolling-median residual spread (PR #1.5)."""
 from __future__ import annotations
 
 from decimal import Decimal
@@ -6,7 +7,8 @@ from decimal import Decimal
 import pytest
 
 from phase0_probe.book import OrderBook
-from phase0_probe.model import Direction, Mode, VenueSpec, annualized_funding_diff, evaluate, vwap
+from phase0_probe.model import (Direction, Mode, RollingMedian, VenueSpec, annualized_funding_diff, evaluate,
+                                 mid_basis_bps, vwap)
 
 D = Decimal
 NOW = 1_800_000_000_000
@@ -14,10 +16,12 @@ SPEC_A = VenueSpec("arcus", "BTC", D("0.00000001"), D(5), D("0.00015"), D("0.000
 SPEC_B = VenueSpec("hyperliquid", "BTC", D("0.00001"), D(10), D("0.00015"), D("0.00045"))
 
 
-def book(venue: str, bids: list[tuple[str, str]], asks: list[tuple[str, str]], age_ms: int = 100) -> OrderBook:
+def book(venue: str, bids: list[tuple[str, str]], asks: list[tuple[str, str]], latency_ms: int | None = 100,
+         idle_ms: int = 100, silence_ms: int = 100) -> OrderBook:
     b = OrderBook(venue, "BTC")
     b.replace([(D(p), D(s)) for p, s in bids], [(D(p), D(s)) for p, s in asks])
-    b.valid, b.confirmed_ms = True, NOW - age_ms
+    b.valid, b.confirmed_ms, b.latency_ms = True, NOW - idle_ms, latency_ms
+    b.last_change_ms, b.last_msg_ms = NOW - idle_ms, NOW - silence_ms
     return b
 
 
@@ -65,7 +69,7 @@ def _ab(spread_b: str = "60030") -> tuple[OrderBook, OrderBook]:
 
 def _eval(a: OrderBook, b: OrderBook, **kw: object) -> object:
     args = dict(book_a=a, book_b=b, spec_a=SPEC_A, spec_b=SPEC_B, q_usd=D(500), direction=Direction.BUY_A_SELL_B,
-                mode=Mode.DUAL_TAKER, now_ms=NOW)
+                mode=Mode.DUAL_TAKER, now_ms=NOW, basis_median_bps=D(0))
     args.update(kw)
     return evaluate(**args)  # type: ignore[arg-type]
 
@@ -145,23 +149,94 @@ def test_insufficient_depth_on_close_leg_counts_too() -> None:
     assert _eval(a, b, q_usd=D(500)).status == "insufficient_depth"
 
 
-@pytest.mark.parametrize("age_a,age_b,status", [(500, 0, "ok"), (501, 0, "stale"), (0, 501, "stale"),
-                                                 (0, 500, "ok"), (10_000, 10_000, "stale")])
-def test_stale_boundary_500ms(age_a: int, age_b: int, status: str) -> None:
-    a = book("arcus", [("59999", "5")], [("60001", "5")], age_ms=age_a)
-    b = book("hyperliquid", [("60299", "5")], [("60301", "5")], age_ms=age_b)
+@pytest.mark.parametrize("lat_a,lat_b,status", [(500, 0, "ok"), (501, 0, "stale"), (0, 501, "stale"),
+                                                 (0, 500, "ok"), (10_000, 10_000, "stale"), (None, 0, "stale")])
+def test_network_latency_boundary_500ms(lat_a: int | None, lat_b: int, status: str) -> None:
+    a = book("arcus", [("59999", "5")], [("60001", "5")], latency_ms=lat_a)
+    b = book("hyperliquid", [("60299", "5")], [("60301", "5")], latency_ms=lat_b)
     o = _eval(a, b)
     assert o.status == status and (o.is_opportunity is (status == "ok"))
-    assert o.age_a_ms == age_a and o.age_b_ms == age_b
+    assert o.lat_a_ms == lat_a and o.lat_b_ms == lat_b
+    if status == "stale":
+        assert o.net_bps is None and o.net_resid_bps is None
 
 
-def test_invalid_or_never_confirmed_book_is_stale() -> None:
+def test_idle_book_on_healthy_connection_is_not_stale() -> None:
+    """A book that has not changed for 60 s is current if the link is healthy (latency OK, frames arriving)."""
+    a = book("arcus", [("59999", "5")], [("60001", "5")], idle_ms=60_000, silence_ms=200)
+    b = book("hyperliquid", [("60299", "5")], [("60301", "5")], idle_ms=45_000, silence_ms=900)
+    o = _eval(a, b)
+    assert o.status == "ok" and o.is_opportunity
+    assert o.idle_a_ms == 60_000 and o.idle_b_ms == 45_000             # recorded as a diagnostic only
+
+
+@pytest.mark.parametrize("sil_a,sil_b,status", [(5000, 0, "ok"), (5001, 0, "stale"), (0, 5001, "stale")])
+def test_silent_connection_is_stale(sil_a: int, sil_b: int, status: str) -> None:
+    a = book("arcus", [("59999", "5")], [("60001", "5")], silence_ms=sil_a)
+    b = book("hyperliquid", [("60299", "5")], [("60301", "5")], silence_ms=sil_b)
+    assert _eval(a, b, conn_timeout_ms=5000).status == status
+
+
+def test_not_ready_books_skip_the_arbitrage_calculation() -> None:
+    for mutate in (lambda x: setattr(x, "valid", False), lambda x: setattr(x, "provisional", True)):
+        a, b = _ab("60300")
+        mutate(a)
+        o = _eval(a, b)
+        assert o.status == "not_ready" and not o.is_opportunity
+        assert o.base_qty is None and o.mid_a is None and o.net_bps is None and o.net_resid_bps is None
+        assert mid_basis_bps(a, b) is None
     a, b = _ab("60300")
     b.valid = False
-    assert _eval(a, b).status == "stale"
-    a2, b2 = _ab("60300")
-    a2.confirmed_ms = None
-    assert _eval(a2, b2).status == "stale"
+    assert _eval(a, b).status == "not_ready"
+
+
+def test_not_ready_wins_over_stale() -> None:
+    a, b = _ab("60300")
+    a.provisional, b.latency_ms = True, 99_999
+    assert _eval(a, b).status == "not_ready"
+
+
+# ----------------------------------------------------------------------------------------------- residual spread
+def test_residual_net_subtracts_rolling_median_by_direction() -> None:
+    a, b = _ab("60300")
+    m = D(40)
+    o = _eval(a, b, basis_median_bps=m)
+    r = _eval(a, b, basis_median_bps=m, direction=Direction.BUY_B_SELL_A)
+    assert o.net_resid_bps == o.net_bps - m and r.net_resid_bps == r.net_bps + m
+    assert o.residual_bps == o.basis_bps - m == r.residual_bps
+
+
+def test_persistent_basis_is_not_an_opportunity_any_more() -> None:
+    """Phase 0 flagged a stable 50 bps basis as profit; with exit at the rolling median (= the same 50 bps) it is not."""
+    a, b = _ab("60300")
+    zero_conv = _eval(a, b)
+    o = _eval(a, b, basis_median_bps=zero_conv.basis_bps)
+    assert zero_conv.is_zero_convergence_opportunity
+    assert o.is_zero_convergence_opportunity and not o.is_opportunity and o.net_resid_bps < 0
+    assert o.residual_bps == 0
+
+
+def test_warmup_without_median_is_never_an_opportunity() -> None:
+    a, b = _ab("60300")
+    o = _eval(a, b, basis_median_bps=None)
+    assert o.status == "ok" and o.net_resid_bps is None and o.residual_bps is None and not o.is_opportunity
+
+
+def test_rolling_median_window_min_samples_and_no_lookahead() -> None:
+    rm = RollingMedian(window_ms=5_000, min_samples=3)
+    rm.push(1_000, D(1))
+    rm.push(2_000, D(5))
+    assert rm.median(3_000) is None                                     # 2 < min_samples
+    rm.push(3_000, D(3))
+    assert rm.median(3_000) is None                                     # the current second is excluded
+    assert rm.median(3_001) == D(3)
+    rm.push(4_000, D(4))
+    assert rm.median(4_001) == (D(3) + D(4)) / 2
+    assert rm.median(7_500) is None                                     # 1 s, 2 s fell out: 2 samples < 3
+    rm2 = RollingMedian(window_ms=2_000, min_samples=1)
+    rm2.push(0, D(100))
+    rm2.push(1_000, D(7))
+    assert rm2.median(2_500) == D(7)
 
 
 def test_crossed_or_empty_book_has_no_mid() -> None:

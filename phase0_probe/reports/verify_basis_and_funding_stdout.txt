@@ -1,0 +1,584 @@
+=== RAW (first sample) ===
+--- BTC ---
+{
+  "arcus_market": {
+    "marketDisplayName": "BTC-USD",
+    "oraclePrice": "60551.6",
+    "markPrice": "60554.4",
+    "fundingRate": "0.0000125",
+    "nextFundingRate": "0.0000125",
+    "nextFundingAt": 1795719600,
+    "category": "CRYPTO",
+    "isOutsideRth": false,
+    "regularTradingHours": null,
+    "currentSettlementPrice": null
+  },
+  "arcus_l2_top": {
+    "bids": [
+      [
+        "60559.1",
+        "0.00297243"
+      ]
+    ],
+    "asks": [
+      [
+        "60559.2",
+        "4.06126465"
+      ]
+    ],
+    "timestamp_us": 1795718110718770,
+    "lastSequenceId": 983195221
+  },
+  "hl_universe": {
+    "szDecimals": 5,
+    "name": "BTC",
+    "maxLeverage": 40,
+    "marginTableId": 56
+  },
+  "hl_ctx": {
+    "funding": "0.0000020404",
+    "openInterest": "35466.5239",
+    "prevDayPx": "59652.0",
+    "dayNtlVlm": "2358859285.6570210457",
+    "premium": "-0.0004453388",
+    "oraclePx": "60628.0",
+    "markPx": "60601.0",
+    "midPx": "60600.5",
+    "impactPxs": [
+      "60598.7",
+      "60601.0"
+    ],
+    "dayBaseVlm": "38963.21034"
+  },
+  "hl_l2_top": {
+    "bid": {
+      "px": "60600.0",
+      "sz": "0.18962",
+      "n": 4
+    },
+    "ask": {
+      "px": "60601.0",
+      "sz": "18.85652",
+      "n": 64
+    },
+    "time": 1795718110080
+  }
+}
+--- ETH ---
+{
+  "arcus_market": {
+    "marketDisplayName": "ETH-USD",
+    "oraclePrice": "1697.65",
+    "markPrice": "1697.25",
+    "fundingRate": "0.0000125",
+    "nextFundingRate": "0.0000125",
+    "nextFundingAt": 1795719600,
+    "category": "CRYPTO",
+    "isOutsideRth": false,
+    "regularTradingHours": null,
+    "currentSettlementPrice": null
+  },
+  "arcus_l2_top": {
+    "bids": [
+      [
+        "1697.34",
+        "1"
+      ]
+    ],
+    "asks": [
+      [
+        "1697.35",
+        "125.5818121"
+      ]
+    ],
+    "timestamp_us": 1795718110718770,
+    "lastSequenceId": 855960092
+  },
+  "hl_universe": {
+    "szDecimals": 4,
+    "name": "ETH",
+    "maxLeverage": 25,
+    "marginTableId": 55
+  },
+  "hl_ctx": {
+    "funding": "-0.0000036169",
+    "openInterest": "664502.3288",
+    "prevDayPx": "1680.9",
+    "dayNtlVlm": "495734547.1503798962",
+    "premium": "-0.000511834",
+    "oraclePx": "1699.77",
+    "markPx": "1698.9",
+    "midPx": "1698.85",
+    "impactPxs": [
+      "1698.8",
+      "1698.9"
+    ],
+    "dayBaseVlm": "292592.1801000002"
+  },
+  "hl_l2_top": {
+    "bid": {
+      "px": "1698.8",
+      "sz": "49.0182",
+      "n": 8
+    },
+    "ask": {
+      "px": "1698.9",
+      "sz": "385.009",
+      "n": 56
+    },
+    "time": 1795718110080
+  }
+}
+--- SOL ---
+{
+  "arcus_market": {
+    "marketDisplayName": "SOL-USD",
+    "oraclePrice": "71.205",
+    "markPrice": "71.174",
+    "fundingRate": "0.000011168021060276",
+    "nextFundingRate": "0.00000984965944949995",
+    "nextFundingAt": 1795719600,
+    "category": "CRYPTO",
+    "isOutsideRth": false,
+    "regularTradingHours": null,
+    "currentSettlementPrice": null
+  },
+  "arcus_l2_top": {
+    "bids": [
+      [
+        "71.173",
+        "272.502334"
+      ]
+    ],
+    "asks": [
+      [
+        "71.174",
+        "8.496362"
+      ]
+    ],
+    "timestamp_us": 1795718110718770,
+    "lastSequenceId": 737931632
+  },
+  "hl_universe": {
+    "szDecimals": 2,
+    "name": "SOL",
+    "maxLeverage": 20,
+    "marginTableId": 54
+  },
+  "hl_ctx": {
+    "funding": "-0.0000001081",
+    "openInterest": "4095015.1200000001",
+    "prevDayPx": "69.626",
+    "dayNtlVlm": "128915063.7018400431",
+    "premium": "-0.0004908836",
+    "oraclePx": "71.3",
+    "markPx": "71.265",
+    "midPx": "71.2645",
+    "impactPxs": [
+      "71.2555",
+      "71.265"
+    ],
+    "dayBaseVlm": "1821582.8199999998"
+  },
+  "hl_l2_top": {
+    "bid": {
+      "px": "71.264",
+      "sz": "0.64",
+      "n": 1
+    },
+    "ask": {
+      "px": "71.265",
+      "sz": "631.53",
+      "n": 12
+    },
+    "time": 1795718110080
+  }
+}
+=== RAW predictedFundings (HL) ===
+[
+  [
+    "BTC",
+    [
+      [
+        "BinPerp",
+        {
+          "fundingRate": "0.0001",
+          "nextFundingTime": 1795737600000,
+          "fundingIntervalHours": 8
+        }
+      ],
+      [
+        "HlPerp",
+        {
+          "fundingRate": "0.0000020749",
+          "nextFundingTime": 1795716000000,
+          "fundingIntervalHours": 1
+        }
+      ],
+      [
+        "BybitPerp",
+        {
+          "fundingRate": "0.00008897",
+          "nextFundingTime": 1795737600000,
+          "fundingIntervalHours": 8
+        }
+      ]
+    ]
+  ],
+  [
+    "ETH",
+    [
+      [
+        "BinPerp",
+        {
+          "fundingRate": "0.00004153",
+          "nextFundingTime": 1795737600000,
+          "fundingIntervalHours": 8
+        }
+      ],
+      [
+        "HlPerp",
+        {
+          "fundingRate": "-0.0000035747",
+          "nextFundingTime": 1795716000000,
+          "fundingIntervalHours": 1
+        }
+      ],
+      [
+        "BybitPerp",
+        {
+          "fundingRate": "0.00007248",
+          "nextFundingTime": 1795737600000,
+          "fundingIntervalHours": 8
+        }
+      ]
+    ]
+  ],
+  [
+    "SOL",
+    [
+      [
+        "BinPerp",
+        {
+          "fundingRate": "0.0001",
+          "nextFundingTime": 1795737600000,
+          "fundingIntervalHours": 8
+        }
+      ],
+      [
+        "HlPerp",
+        {
+          "fundingRate": "-0.0000000932",
+          "nextFundingTime": 1795716000000,
+          "fundingIntervalHours": 1
+        }
+      ],
+      [
+        "BybitPerp",
+        {
+          "fundingRate": "0.0001",
+          "nextFundingTime": 1795737600000,
+          "fundingIntervalHours": 8
+        }
+      ]
+    ]
+  ]
+]
+=== RAW funding history BTC (HL fundingHistory last 6 h, Arcus /v1/fundingRates limit 6) ===
+{
+  "hl_fundingHistory_raw": [
+    {
+      "coin": "BTC",
+      "fundingRate": "-0.0000051008",
+      "premium": "-0.000540806",
+      "time": 1795698000109
+    },
+    {
+      "coin": "BTC",
+      "fundingRate": "-0.0000065318",
+      "premium": "-0.0005522544",
+      "time": 1795701600000
+    },
+    {
+      "coin": "BTC",
+      "fundingRate": "-0.0000099432",
+      "premium": "-0.0005795452",
+      "time": 1795705200000
+    },
+    {
+      "coin": "BTC",
+      "fundingRate": "-0.0000064371",
+      "premium": "-0.0005514966",
+      "time": 1795708800065
+    },
+    {
+      "coin": "BTC",
+      "fundingRate": "-0.0000059103",
+      "premium": "-0.0005472825",
+      "time": 1795712400027
+    },
+    {
+      "coin": "BTC",
+      "fundingRate": "-0.000001166",
+      "premium": "-0.0005093278",
+      "time": 1795716000039
+    }
+  ],
+  "arcus_fundingRates_raw": {
+    "fundingRates": [
+      {
+        "marketId": 1,
+        "marketDisplayName": "BTC-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795716000000000
+      },
+      {
+        "marketId": 1,
+        "marketDisplayName": "BTC-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795712400000000
+      },
+      {
+        "marketId": 1,
+        "marketDisplayName": "BTC-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795708800000000
+      },
+      {
+        "marketId": 1,
+        "marketDisplayName": "BTC-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795705200000000
+      },
+      {
+        "marketId": 1,
+        "marketDisplayName": "BTC-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795701600000000
+      },
+      {
+        "marketId": 1,
+        "marketDisplayName": "BTC-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795698000000000
+      }
+    ],
+    "total": 6
+  }
+}
+=== RAW funding history ETH (HL fundingHistory last 6 h, Arcus /v1/fundingRates limit 6) ===
+{
+  "hl_fundingHistory_raw": [
+    {
+      "coin": "ETH",
+      "fundingRate": "0.0000119457",
+      "premium": "-0.0004044341",
+      "time": 1795698000109
+    },
+    {
+      "coin": "ETH",
+      "fundingRate": "0.0000125",
+      "premium": "-0.0003892103",
+      "time": 1795701600000
+    },
+    {
+      "coin": "ETH",
+      "fundingRate": "0.0000081523",
+      "premium": "-0.0004347819",
+      "time": 1795705200000
+    },
+    {
+      "coin": "ETH",
+      "fundingRate": "-0.0000030843",
+      "premium": "-0.0005246745",
+      "time": 1795708800065
+    },
+    {
+      "coin": "ETH",
+      "fundingRate": "-0.0000064203",
+      "premium": "-0.0005513625",
+      "time": 1795712400027
+    },
+    {
+      "coin": "ETH",
+      "fundingRate": "-0.0000016904",
+      "premium": "-0.0005135232",
+      "time": 1795716000039
+    }
+  ],
+  "arcus_fundingRates_raw": {
+    "fundingRates": [
+      {
+        "marketId": 2,
+        "marketDisplayName": "ETH-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795716000000000
+      },
+      {
+        "marketId": 2,
+        "marketDisplayName": "ETH-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795712400000000
+      },
+      {
+        "marketId": 2,
+        "marketDisplayName": "ETH-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795708800000000
+      },
+      {
+        "marketId": 2,
+        "marketDisplayName": "ETH-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795705200000000
+      },
+      {
+        "marketId": 2,
+        "marketDisplayName": "ETH-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795701600000000
+      },
+      {
+        "marketId": 2,
+        "marketDisplayName": "ETH-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795698000000000
+      }
+    ],
+    "total": 6
+  }
+}
+=== RAW funding history SOL (HL fundingHistory last 6 h, Arcus /v1/fundingRates limit 6) ===
+{
+  "hl_fundingHistory_raw": [
+    {
+      "coin": "SOL",
+      "fundingRate": "0.0000125",
+      "premium": "-0.0003863381",
+      "time": 1795698000109
+    },
+    {
+      "coin": "SOL",
+      "fundingRate": "0.0000112786",
+      "premium": "-0.0004097712",
+      "time": 1795701600000
+    },
+    {
+      "coin": "SOL",
+      "fundingRate": "0.0000058165",
+      "premium": "-0.0004534684",
+      "time": 1795705200000
+    },
+    {
+      "coin": "SOL",
+      "fundingRate": "0.0000034617",
+      "premium": "-0.0004723063",
+      "time": 1795708800065
+    },
+    {
+      "coin": "SOL",
+      "fundingRate": "0.0000063607",
+      "premium": "-0.0004491142",
+      "time": 1795712400027
+    },
+    {
+      "coin": "SOL",
+      "fundingRate": "-0.0000000077",
+      "premium": "-0.0005000617",
+      "time": 1795716000039
+    }
+  ],
+  "arcus_fundingRates_raw": {
+    "fundingRates": [
+      {
+        "marketId": 3,
+        "marketDisplayName": "SOL-USD",
+        "fundingRate": "0.000011168021060276",
+        "time": 1795716000000000
+      },
+      {
+        "marketId": 3,
+        "marketDisplayName": "SOL-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795712400000000
+      },
+      {
+        "marketId": 3,
+        "marketDisplayName": "SOL-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795708800000000
+      },
+      {
+        "marketId": 3,
+        "marketDisplayName": "SOL-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795705200000000
+      },
+      {
+        "marketId": 3,
+        "marketDisplayName": "SOL-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795701600000000
+      },
+      {
+        "marketId": 3,
+        "marketDisplayName": "SOL-USD",
+        "fundingRate": "0.0000125",
+        "time": 1795698000000000
+      }
+    ],
+    "total": 6
+  }
+}
+# Basis & funding verification (PR #1.5, read-only)
+
+Samples: 5, local epoch ms 1795718110636 → 1795718124867. All bps are relative to the Arcus oracle.
+
+## a) Where does the HL − Arcus mid premium come from?
+
+| Symbol | Arcus oracle | Arcus mid | HL oracle | HL mid | oracle diff bps (median) | book-premium diff bps (median) | mid diff bps (median) | HL mid−oracle bps | Arcus mid−oracle bps |
+|---|---|---|---|---|---|---|---|---|---|
+| BTC | 60546.1 | 60551.95 | 60620.0 | 60588.50 | 12.617 | -6.103 | 6.037 | -5.196 | 0.900 |
+| ETH | 1697.52 | 1697.12 | 1699.6 | 1698.65 | 12.429 | -3.623 | 8.865 | -5.590 | -2.268 |
+| SOL | 71.214 | 71.19 | 71.305 | 71.27 | 12.778 | -1.404 | 11.374 | -4.979 | -4.002 |
+
+USDT/USD cross-check (Kraken public ticker, third-party): mid 0.99872500 → a USDT-quoted price sits **12.766 bps** above a USD-quoted one. HL oracles are USDT-denominated (contract-specifications.md); Arcus oracles are Pyth USD (prices.md).
+
+## b) Funding conversion (step by step)
+
+### BTC
+
+* Arcus raw `nextFundingRate` = `0.0000125` (`fundingRate` last applied = `0.0000125`), decimal fraction per hour (schema: 'Hourly funding rate (decimal string)'); 1 h (charged once an hour) → 0.001250 %/h → ×8760 = **10.950 %/yr**. Sign: positive => longs pay shorts.
+* HL raw ctx `funding` = `0.0000020404`, predictedFundings HlPerp = `{'fundingRate': '0.0000020749', 'nextFundingTime': 1795716000000, 'fundingIntervalHours': 1}` → hourly 0.0000020749; decimal fraction per hour; 1 h (8 h formula / 8) → 0.000207 %/h → ×8760 = **1.818 %/yr**. Sign: positive => longs pay shorts.
+* HL − Arcus (forecast) = **-9.132 %/yr** ⇒ short Arcus + long HL carry = **9.132 %/yr**.
+* HL formula check (fundingHistory, last hours): P=-0.0005514966 → -0.000006437075 vs -0.0000064371 (err 0.000000000025), P=-0.0005472825 → -0.0000059103125 vs -0.0000059103 (err 0.0000000000125), P=-0.0005093278 → -0.000001165975 vs -0.000001166 (err 0.000000000025)
+* Realized (both venues, same hour): 1795716000000: A 0.0000125 / HL -0.000001166 → Δann -11.97 %, 1795712400000: A 0.0000125 / HL -0.0000059103 → Δann -16.13 %, 1795708800000: A 0.0000125 / HL -0.0000064371 → Δann -16.59 %, 1795705200000: A 0.0000125 / HL -0.0000099432 → Δann -19.66 %
+
+### ETH
+
+* Arcus raw `nextFundingRate` = `0.0000125` (`fundingRate` last applied = `0.0000125`), decimal fraction per hour (schema: 'Hourly funding rate (decimal string)'); 1 h (charged once an hour) → 0.001250 %/h → ×8760 = **10.950 %/yr**. Sign: positive => longs pay shorts.
+* HL raw ctx `funding` = `-0.0000036169`, predictedFundings HlPerp = `{'fundingRate': '-0.0000035747', 'nextFundingTime': 1795716000000, 'fundingIntervalHours': 1}` → hourly -0.0000035747; decimal fraction per hour; 1 h (8 h formula / 8) → -0.000357 %/h → ×8760 = **-3.131 %/yr**. Sign: positive => longs pay shorts.
+* HL − Arcus (forecast) = **-14.081 %/yr** ⇒ short Arcus + long HL carry = **14.081 %/yr**.
+* HL formula check (fundingHistory, last hours): P=-0.0005246745 → -0.0000030843125 vs -0.0000030843 (err 0.0000000000125), P=-0.0005513625 → -0.0000064203125 vs -0.0000064203 (err 0.0000000000125), P=-0.0005135232 → -0.0000016904 vs -0.0000016904 (err 0.0000000000)
+* Realized (both venues, same hour): 1795716000000: A 0.0000125 / HL -0.0000016904 → Δann -12.43 %, 1795712400000: A 0.0000125 / HL -0.0000064203 → Δann -16.57 %, 1795708800000: A 0.0000125 / HL -0.0000030843 → Δann -13.65 %, 1795705200000: A 0.0000125 / HL 0.0000081523 → Δann -3.81 %
+
+### SOL
+
+* Arcus raw `nextFundingRate` = `0.00000984965944949995` (`fundingRate` last applied = `0.000011168021060276`), decimal fraction per hour (schema: 'Hourly funding rate (decimal string)'); 1 h (charged once an hour) → 0.000985 %/h → ×8760 = **8.628 %/yr**. Sign: positive => longs pay shorts.
+* HL raw ctx `funding` = `-0.0000001081`, predictedFundings HlPerp = `{'fundingRate': '-0.0000000932', 'nextFundingTime': 1795716000000, 'fundingIntervalHours': 1}` → hourly -0.0000000932; decimal fraction per hour; 1 h (8 h formula / 8) → -0.000009 %/h → ×8760 = **-0.082 %/yr**. Sign: positive => longs pay shorts.
+* HL − Arcus (forecast) = **-8.710 %/yr** ⇒ short Arcus + long HL carry = **8.710 %/yr**.
+* HL formula check (fundingHistory, last hours): P=-0.0004723063 → 0.0000034617125 vs 0.0000034617 (err 0.0000000000125), P=-0.0004491142 → 0.000006360725 vs 0.0000063607 (err 0.000000000025), P=-0.0005000617 → -0.0000000077125 vs -0.0000000077 (err 0.0000000000125)
+* Realized (both venues, same hour): 1795716000000: A 0.000011168021060276 / HL -0.0000000077 → Δann -9.79 %, 1795712400000: A 0.0000125 / HL 0.0000063607 → Δann -5.38 %, 1795708800000: A 0.0000125 / HL 0.0000034617 → Δann -7.92 %, 1795705200000: A 0.0000125 / HL 0.0000058165 → Δann -5.85 %
+
+## Docs
+
+* arcus_markets: https://docs.arcus.xyz/api-reference/public/get-markets.md
+* arcus_funding_rates: https://docs.arcus.xyz/api-reference/public/get-market-funding-rates.md
+* arcus_funding_concept: https://docs.arcus.xyz/concepts/perpetuals/funding.md
+* arcus_prices: https://docs.arcus.xyz/concepts/perpetuals/prices.md
+* hl_funding: https://hyperliquid.gitbook.io/hyperliquid-docs/trading/funding.md
+* hl_perp_info: https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals.md
+* hl_contract_specs: https://hyperliquid.gitbook.io/hyperliquid-docs/trading/contract-specifications.md
+* hl_oracle: https://hyperliquid.gitbook.io/hyperliquid-docs/hypercore/oracle.md
+* usdt_usd_cross_check (third-party, NOT a venue doc): https://api.kraken.com/0/public/Ticker?pair=USDTZUSD
+

@@ -110,13 +110,17 @@ def parse_hl(meta_ctxs: list[Any], *, dex: str, predicted: dict[str, Decimal] | 
 
 
 def parse_predicted(body: list[Any]) -> dict[str, Decimal]:
-    """``predictedFundings`` -> {coin: HlPerp hourly rate}. Each venue's rate is per its own interval
-    (TODO: VERIFY_FROM_DOCS: the docs example shows HlPerp next time 1 h ahead vs 8 h for BinPerp/BybitPerp)."""
+    """``predictedFundings`` -> {coin: HlPerp HOURLY rate}. Each venue's ``fundingRate`` is per its own
+    ``fundingIntervalHours`` (live: HlPerp 1, BinPerp/BybitPerp 8), so the rate is divided by that interval.
+    PR #1.5 hardening: Phase 0 took the raw value, which is only correct while HlPerp's interval is 1 h (it was in
+    every observed response, so Phase 0 numbers are unaffected)."""
     out: dict[str, Decimal] = {}
     for coin, venues in body or []:
         for name, info in venues or []:
             if name == "HlPerp" and info and info.get("fundingRate") is not None:
-                out[coin] = D(str(info["fundingRate"]))
+                hours = info.get("fundingIntervalHours")
+                rate = D(str(info["fundingRate"]))
+                out[coin] = rate / D(hours) if isinstance(hours, int) and hours > 0 else rate
     return out
 
 

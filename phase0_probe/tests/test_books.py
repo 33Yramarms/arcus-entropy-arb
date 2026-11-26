@@ -16,10 +16,11 @@ from phase0_probe.feeds import ArcusBookFeed, HlBookFeed, hl_decode
 D = Decimal
 
 
-def snap(seq: int, bids: list[list[str]] | None = None, asks: list[list[str]] | None = None) -> dict:
+def snap(seq: int, bids: list[list[str]] | None = None, asks: list[list[str]] | None = None,
+         ts_us: int = 1_000_000) -> dict:
     return {"bids": bids if bids is not None else [["100", "1"], ["99", "2"]],
             "asks": asks if asks is not None else [["101", "1"], ["102", "2"]], "lastSequenceId": seq,
-            "timestamp": 1_000_000}
+            "timestamp": ts_us}
 
 
 def delta(seq: int, bids: list[list[str]] | None = None, asks: list[list[str]] | None = None) -> dict:
@@ -62,11 +63,45 @@ def test_arcus_resync_drops_old_and_applies_newer_buffered_deltas() -> None:
 def test_arcus_first_delta_gap_after_subscribe_triggers_resync_not_bad_book() -> None:
     b = OrderBook("arcus", "BTC-USD")
     sync = ArcusSync(b, 100)
-    assert sync.on_snapshot(snap(10), 1) and sync.provisional
+    assert sync.on_snapshot(snap(10), 1) and b.provisional and not b.ready     # baseline unproven: NOT_READY
     sync.on_delta(delta(13), 2)                                             # observed live: ids skipped
-    assert not b.valid and sync.baseline_gaps == 1
+    assert not b.valid and not b.ready and sync.baseline_gaps == 1          # resync in progress: NOT_READY
     sync.on_delta(delta(14), 3)
-    assert sync.on_snapshot(snap(12), 4) and b.last_seq == 14
+    assert not b.ready
+    assert sync.on_snapshot(snap(12), 4) and b.last_seq == 14 and b.ready   # rebuilt from snapshot + buffer
+
+
+def test_arcus_ready_only_after_first_contiguous_delta() -> None:
+    b = OrderBook("arcus", "BTC-USD")
+    sync = ArcusSync(b, 100)
+    sync.on_snapshot(snap(10), 1)
+    assert not b.ready
+    sync.on_delta(delta(11), 2)
+    assert b.ready and not b.provisional
+
+
+def test_matching_heartbeat_does_not_end_the_provisional_state() -> None:
+    """Live: the first delta skipped ids even after an l2Orderbook frame matched the baseline -> keep NOT_READY and
+    resync (not reconnect) when that first delta gaps."""
+    b = OrderBook("arcus", "BTC-USD")
+    sync = ArcusSync(b, 100)
+    sync.on_snapshot(snap(10), 1)
+    assert arcus_heartbeat(b, snap(10), 2, 20) == "confirmed" and not b.ready and b.provisional
+    sync.on_delta(delta(12), 3)                                             # skip after the heartbeat: resync
+    assert sync.baseline_gaps == 1 and not b.ready
+
+
+def test_latency_idle_and_silence_are_separate() -> None:
+    b = OrderBook("arcus", "BTC-USD")
+    b.clock_offset_ms = 7
+    arcus_apply_snapshot(b, snap(10, ts_us=1_000_000_000), 1_000_100)       # exchange ts 1_000_000 ms
+    assert b.latency_ms == 1_000_100 + 7 - 1_000_000 and b.last_change_ms == 1_000_100
+    b.last_msg_ms = 1_000_100
+    assert arcus_heartbeat(b, snap(10, ts_us=1_005_000_000), 1_005_040, 20) == "confirmed"
+    b.last_msg_ms = 1_005_040
+    assert b.latency_ms == 47                                               # heartbeat measures latency
+    assert b.idle_ms(1_009_100) == 9_000                                    # ... but did not change the book
+    assert b.silence_ms(1_009_100) == 4_060
 
 
 def test_arcus_midstream_gap_after_baseline_raises() -> None:

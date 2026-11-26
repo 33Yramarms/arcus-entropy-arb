@@ -12,12 +12,21 @@ Per (symbol, Q, direction, mode) and per second:
   relative to each venue's mid (``close_slip_bps``).
 * ``fees_bps`` = open + close fee on both legs (taker or maker rate per leg; negative maker fee = rebate).
 * ``net_bps`` = open_spread_bps − close_slip_bps − fees_bps − buffer_bps (default 2 bps execution-risk buffer).
-* Status: ``stale`` if either book's age > stale_ms (default 500 ms) or the book is not valid; ``insufficient_depth``
-  if a taker leg cannot be filled from the visible levels; ``below_min_notional`` if a leg is under a venue minimum.
-  Only ``ok`` rows can be opportunities. The last trade price is never used anywhere.
+* PR #1.5 — residual spread: the exit no longer assumes the absolute basis closes to zero. With
+  ``m`` = rolling median of the mid basis (HL − Arcus, bps) over the previous window, the expected exit happens at
+  basis ``m``: ``net_resid_bps = net_bps − m`` for BUY_ARCUS_SELL_HL and ``net_bps + m`` for BUY_HL_SELL_ARCUS
+  (``residual_bps`` = basis − m). Opportunities are judged on ``net_resid_bps``; ``net_bps`` (zero-convergence) is kept
+  only for comparison with Phase 0.
+* Status (PR #1.5): ``not_ready`` if either book is not ready (no snapshot / gap / Arcus resync or unproven baseline)
+  → evaluation skipped; ``stale`` if either venue's ``network_latency_ms`` (local recv − exchange timestamp of the
+  latest timestamped frame) > max_latency_ms (default 500) or its connection has been silent > conn_timeout_ms.
+  ``book_idle_ms`` (no book change) is recorded but does NOT gate: a quiet book on a healthy connection is current.
+  ``insufficient_depth`` if a taker leg cannot be filled from the visible levels; ``below_min_notional`` if a leg is
+  under a venue minimum. Only ``ok`` rows can be opportunities. The last trade price is never used anywhere.
 """
 from __future__ import annotations
 
+from collections import deque
 from dataclasses import dataclass
 from decimal import Decimal
 from enum import StrEnum
@@ -78,7 +87,7 @@ class Opportunity:
     q_usd: Decimal
     direction: Direction
     mode: Mode
-    status: str                   # ok | stale | insufficient_depth | below_min_notional | no_mid
+    status: str                   # ok | not_ready | stale | insufficient_depth | below_min_notional | no_mid
     base_qty: Decimal | None = None
     mid_a: Decimal | None = None
     mid_b: Decimal | None = None
@@ -93,12 +102,58 @@ class Opportunity:
     buffer_bps: Decimal | None = None
     net_bps: Decimal | None = None
     net_usd: Decimal | None = None
-    age_a_ms: int | None = None
-    age_b_ms: int | None = None
+    basis_median_bps: Decimal | None = None   # rolling median of basis over the previous window (None = warm-up)
+    residual_bps: Decimal | None = None       # basis − rolling median
+    net_resid_bps: Decimal | None = None      # net assuming exit at the rolling-median basis (primary metric)
+    lat_a_ms: int | None = None               # network_latency_ms per venue
+    lat_b_ms: int | None = None
+    idle_a_ms: int | None = None              # book_idle_ms per venue (diagnostic only)
+    idle_b_ms: int | None = None
+    silence_a_ms: int | None = None           # connection silence per venue
+    silence_b_ms: int | None = None
 
     @property
     def is_opportunity(self) -> bool:
+        return self.status == "ok" and self.net_resid_bps is not None and self.net_resid_bps > ZERO
+
+    @property
+    def is_zero_convergence_opportunity(self) -> bool:
+        """Phase 0 definition (assumes the basis closes to 0) — kept for comparison only."""
         return self.status == "ok" and self.net_bps is not None and self.net_bps > ZERO
+
+
+class RollingMedian:
+    """Median of the values seen in the last ``window_ms`` (strictly before the query time). Decimal only."""
+
+    def __init__(self, window_ms: int, min_samples: int = 30) -> None:
+        self.window_ms, self.min_samples = window_ms, min_samples
+        self.items: deque[tuple[int, Decimal]] = deque()
+
+    def _trim(self, now_ms: int) -> None:
+        while self.items and self.items[0][0] <= now_ms - self.window_ms:
+            self.items.popleft()
+
+    def median(self, now_ms: int) -> Decimal | None:
+        self._trim(now_ms)
+        vals = sorted(v for t, v in self.items if t < now_ms)
+        if len(vals) < self.min_samples:
+            return None
+        n = len(vals)
+        return vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / TWO
+
+    def push(self, ts_ms: int, value: Decimal) -> None:
+        self.items.append((ts_ms, value))
+        self._trim(ts_ms)
+
+
+def mid_basis_bps(book_a: OrderBook, book_b: OrderBook) -> Decimal | None:
+    """(mid_HL − mid_Arcus) / ref_mid in bps, or None if a book is not ready / has no mid."""
+    if not book_a.ready or not book_b.ready:
+        return None
+    ma, mb = book_a.mid(), book_b.mid()
+    if ma is None or mb is None:
+        return None
+    return (mb - ma) / ((ma + mb) / TWO) * BPS
 
 
 def _leg_price(book: OrderBook, buy: bool, maker: bool, base: Decimal) -> Decimal | None:
@@ -109,15 +164,20 @@ def _leg_price(book: OrderBook, buy: bool, maker: bool, base: Decimal) -> Decima
 
 
 def evaluate(*, book_a: OrderBook, book_b: OrderBook, spec_a: VenueSpec, spec_b: VenueSpec, q_usd: Decimal,
-             direction: Direction, mode: Mode, now_ms: int, stale_ms: int = 500,
-             buffer_bps: Decimal = Decimal(2)) -> Opportunity:
+             direction: Direction, mode: Mode, now_ms: int, max_latency_ms: int = 500, conn_timeout_ms: int = 5000,
+             buffer_bps: Decimal = Decimal(2), basis_median_bps: Decimal | None = None) -> Opportunity:
     """A = Arcus, B = Hyperliquid. Pure function: same inputs, same output."""
     sym = spec_a.symbol
-    age_a, age_b = book_a.age_ms(now_ms), book_b.age_ms(now_ms)
-    base_kw = dict(symbol=sym, q_usd=q_usd, direction=direction, mode=mode, age_a_ms=age_a, age_b_ms=age_b,
-                   buffer_bps=buffer_bps)
-    if not book_a.valid or not book_b.valid or age_a is None or age_b is None \
-            or age_a > stale_ms or age_b > stale_ms:
+    sil_a, sil_b = book_a.silence_ms(now_ms), book_b.silence_ms(now_ms)
+    base_kw = dict(symbol=sym, q_usd=q_usd, direction=direction, mode=mode, buffer_bps=buffer_bps,
+                   lat_a_ms=book_a.latency_ms, lat_b_ms=book_b.latency_ms, idle_a_ms=book_a.idle_ms(now_ms),
+                   idle_b_ms=book_b.idle_ms(now_ms), silence_a_ms=sil_a, silence_b_ms=sil_b,
+                   basis_median_bps=basis_median_bps)
+    if not book_a.ready or not book_b.ready:
+        return Opportunity(status="not_ready", **base_kw)            # skip: no arbitrage maths on an unproven book
+    lat_bad = any(x is None or x > max_latency_ms for x in (book_a.latency_ms, book_b.latency_ms))
+    conn_bad = any(x is None or x > conn_timeout_ms for x in (sil_a, sil_b))
+    if lat_bad or conn_bad:
         return Opportunity(status="stale", **base_kw)
     mid_a, mid_b = book_a.mid(), book_b.mid()
     if mid_a is None or mid_b is None:
@@ -155,9 +215,13 @@ def evaluate(*, book_a: OrderBook, book_b: OrderBook, spec_a: VenueSpec, spec_b:
     fees = TWO * (fee_buy + fee_sell) * BPS                          # open + close, both legs
     net = open_spread - close_slip - fees - buffer_bps
     notional = base * ref
+    resid = net_resid = None
+    if basis_median_bps is not None:
+        resid = basis - basis_median_bps
+        net_resid = net - basis_median_bps if buy_is_a else net + basis_median_bps
     return Opportunity(status="ok", open_buy_px=open_buy, open_sell_px=open_sell, open_spread_bps=open_spread,
                        open_slip_bps=open_slip, close_slip_bps=close_slip, fees_bps=fees, net_bps=net,
-                       net_usd=net / BPS * notional, **common)
+                       net_usd=net / BPS * notional, residual_bps=resid, net_resid_bps=net_resid, **common)
 
 
 def annualized_funding_diff(rate_hl_hourly: Decimal | None, rate_arcus_hourly: Decimal | None) -> Decimal | None:

@@ -1,0 +1,22 @@
+2026-11-26 18:42:03,636 INFO root arcus clock offset -3 ms (rtt 188 ms)
+2026-11-26 18:42:03,842 INFO phase0.recorder hyperliquid NVDA connected wss://api.hyperliquid.xyz/ws
+2026-11-26 18:42:03,980 INFO phase0.recorder hyperliquid MU connected wss://api.hyperliquid.xyz/ws
+2026-11-26 18:42:03,981 INFO phase0.recorder hyperliquid NBIS connected wss://api.hyperliquid.xyz/ws
+2026-11-26 18:42:03,981 INFO phase0.recorder hyperliquid SNDK connected wss://api.hyperliquid.xyz/ws
+2026-11-26 18:42:03,982 INFO phase0.recorder hyperliquid DRAM connected wss://api.hyperliquid.xyz/ws
+2026-11-26 18:42:04,009 INFO phase0.recorder hyperliquid NVDA snapshot time=1795718523536
+2026-11-26 18:42:04,141 INFO phase0.recorder hyperliquid SNDK snapshot time=1795718523536
+2026-11-26 18:42:04,150 INFO phase0.recorder hyperliquid NBIS snapshot time=1795718523536
+2026-11-26 18:42:04,158 INFO phase0.recorder hyperliquid DRAM snapshot time=1795718523536
+2026-11-26 18:42:04,170 INFO phase0.recorder hyperliquid MU snapshot time=1795718523536
+2026-11-26 18:42:04,209 INFO phase0.recorder arcus DRAM-USD connected wss://api.arcus.xyz/v1/ws
+2026-11-26 18:42:04,265 INFO phase0.recorder arcus NVDA-USD connected wss://api.arcus.xyz/v1/ws
+2026-11-26 18:42:04,280 INFO phase0.recorder arcus SNDK-USD connected wss://api.arcus.xyz/v1/ws
+2026-11-26 18:42:04,304 INFO phase0.recorder arcus NBIS-USD connected wss://api.arcus.xyz/v1/ws
+2026-11-26 18:42:04,308 INFO phase0.recorder arcus MU-USD connected wss://api.arcus.xyz/v1/ws
+2026-11-26 18:42:04,382 INFO phase0.recorder arcus DRAM-USD baseline updates-snapshot seq=220658417
+2026-11-26 18:42:04,444 INFO phase0.recorder arcus NVDA-USD baseline updates-snapshot seq=487220076
+2026-11-26 18:42:04,462 INFO phase0.recorder arcus SNDK-USD baseline updates-snapshot seq=1156471857
+2026-11-26 18:42:04,491 INFO phase0.recorder arcus MU-USD baseline updates-snapshot seq=883919233
+2026-11-26 18:42:04,493 INFO phase0.recorder arcus NBIS-USD baseline updates-snapshot seq=322419997
+2026-11-26 18:52:04,744 INFO root done: 600 ticks -> reports/rwa_connectivity_10m.sqlite

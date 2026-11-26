@@ -1,0 +1,13 @@
+2026-11-26 17:59:42,336 INFO phase0.recorder hyperliquid SOL connected wss://api.hyperliquid.xyz/ws
+2026-11-26 17:59:42,478 INFO phase0.recorder hyperliquid BTC connected wss://api.hyperliquid.xyz/ws
+2026-11-26 17:59:42,483 INFO phase0.recorder hyperliquid ETH connected wss://api.hyperliquid.xyz/ws
+2026-11-26 17:59:42,566 INFO phase0.recorder hyperliquid SOL snapshot time=1795715982143
+2026-11-26 17:59:42,643 INFO phase0.recorder hyperliquid BTC snapshot time=1795715982143
+2026-11-26 17:59:42,649 INFO phase0.recorder hyperliquid ETH snapshot time=1795715982143
+2026-11-26 17:59:42,678 INFO phase0.recorder arcus ETH-USD connected wss://api.arcus.xyz/v1/ws
+2026-11-26 17:59:42,757 INFO phase0.recorder arcus BTC-USD connected wss://api.arcus.xyz/v1/ws
+2026-11-26 17:59:42,804 INFO phase0.recorder arcus SOL-USD connected wss://api.arcus.xyz/v1/ws
+2026-11-26 17:59:42,844 INFO phase0.recorder arcus ETH-USD baseline updates-snapshot seq=855764648
+2026-11-26 17:59:42,942 INFO phase0.recorder arcus BTC-USD baseline updates-snapshot seq=983068094
+2026-11-26 17:59:43,000 INFO phase0.recorder arcus SOL-USD baseline updates-snapshot seq=737738734
+2026-11-26 18:09:52,146 INFO root done: 600 ticks -> reports/spreads.sqlite

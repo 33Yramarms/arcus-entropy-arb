@@ -1,0 +1,3658 @@
+{
+  "feeSchedules": [
+    {
+      "marketId": 1,
+      "marketDisplayName": "BTC-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 2,
+      "marketDisplayName": "ETH-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 3,
+      "marketDisplayName": "SOL-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 4,
+      "marketDisplayName": "DOGE-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 6,
+      "marketDisplayName": "HYPE-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 7,
+      "marketDisplayName": "DYDX-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 8,
+      "marketDisplayName": "ZEC-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 9,
+      "marketDisplayName": "AMD-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 10,
+      "marketDisplayName": "INTC-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 11,
+      "marketDisplayName": "F-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 12,
+      "marketDisplayName": "BAC-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 13,
+      "marketDisplayName": "CCL-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 14,
+      "marketDisplayName": "GOOGL-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 15,
+      "marketDisplayName": "META-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 16,
+      "marketDisplayName": "MU-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 17,
+      "marketDisplayName": "BABA-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 18,
+      "marketDisplayName": "HOOD-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 19,
+      "marketDisplayName": "CRCL-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 20,
+      "marketDisplayName": "GLD-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 21,
+      "marketDisplayName": "SLV-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 22,
+      "marketDisplayName": "USO-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 23,
+      "marketDisplayName": "SPY-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 24,
+      "marketDisplayName": "QQQ-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 25,
+      "marketDisplayName": "VT-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 26,
+      "marketDisplayName": "SGOV-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 27,
+      "marketDisplayName": "RVI-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 28,
+      "marketDisplayName": "NVDA-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 29,
+      "marketDisplayName": "TSLA-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 30,
+      "marketDisplayName": "AAPL-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 31,
+      "marketDisplayName": "AMZN-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 32,
+      "marketDisplayName": "MSFT-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 33,
+      "marketDisplayName": "SNDK-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 34,
+      "marketDisplayName": "DRAM-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 35,
+      "marketDisplayName": "PLTR-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 36,
+      "marketDisplayName": "CRWV-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 37,
+      "marketDisplayName": "ORCL-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 38,
+      "marketDisplayName": "SPCX-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 39,
+      "marketDisplayName": "BE-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 40,
+      "marketDisplayName": "USAR-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 41,
+      "marketDisplayName": "LIT-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 42,
+      "marketDisplayName": "XRP-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 43,
+      "marketDisplayName": "COIN-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 44,
+      "marketDisplayName": "SKHY-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 45,
+      "marketDisplayName": "CASHCAT-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 46,
+      "marketDisplayName": "NBIS-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 47,
+      "marketDisplayName": "MSTR-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 48,
+      "marketDisplayName": "MRVL-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 49,
+      "marketDisplayName": "BOT-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 50,
+      "marketDisplayName": "CPER-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 51,
+      "marketDisplayName": "GME-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 52,
+      "marketDisplayName": "QNT-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 53,
+      "marketDisplayName": "MRNA-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 54,
+      "marketDisplayName": "ENA-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 55,
+      "marketDisplayName": "PUMP-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 56,
+      "marketDisplayName": "NEAR-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 57,
+      "marketDisplayName": "PENGU-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 58,
+      "marketDisplayName": "FARTCOIN-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 59,
+      "marketDisplayName": "SUI-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 60,
+      "marketDisplayName": "WLFI-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 61,
+      "marketDisplayName": "LINK-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 62,
+      "marketDisplayName": "BNB-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 63,
+      "marketDisplayName": "TAO-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 64,
+      "marketDisplayName": "AAVE-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 65,
+      "marketDisplayName": "UNI-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 66,
+      "marketDisplayName": "USELESS-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 67,
+      "marketDisplayName": "KBONK-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 68,
+      "marketDisplayName": "PONS-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 69,
+      "marketDisplayName": "W-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 70,
+      "marketDisplayName": "ONDO-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 71,
+      "marketDisplayName": "STRK-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 72,
+      "marketDisplayName": "PEPE-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 73,
+      "marketDisplayName": "WLD-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 74,
+      "marketDisplayName": "ADA-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 75,
+      "marketDisplayName": "CRWD-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 76,
+      "marketDisplayName": "RKLB-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 77,
+      "marketDisplayName": "KPEPE-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 78,
+      "marketDisplayName": "AVAX-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 79,
+      "marketDisplayName": "ZRO-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 80,
+      "marketDisplayName": "LLY-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 81,
+      "marketDisplayName": "NET-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 82,
+      "marketDisplayName": "HIMS-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 83,
+      "marketDisplayName": "XPL-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 84,
+      "marketDisplayName": "ARB-USD",
+      "hasCustomSchedule": false,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 150,
+          "takerFeePpm": 450
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 120,
+          "takerFeePpm": 380
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 80,
+          "takerFeePpm": 320
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 40,
+          "takerFeePpm": 270
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 230
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 200
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 190
+        }
+      ]
+    },
+    {
+      "marketId": 85,
+      "marketDisplayName": "CBRS-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 86,
+      "marketDisplayName": "WDC-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 87,
+      "marketDisplayName": "NFLX-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 225
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 190
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 160
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 135
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 115
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 100
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 95
+        }
+      ]
+    },
+    {
+      "marketId": 88,
+      "marketDisplayName": "ANT-USD",
+      "hasCustomSchedule": true,
+      "tiers": [
+        {
+          "level": 0,
+          "makerFeePpm": 0,
+          "takerFeePpm": 112
+        },
+        {
+          "level": 1,
+          "makerFeePpm": 0,
+          "takerFeePpm": 95
+        },
+        {
+          "level": 2,
+          "makerFeePpm": 0,
+          "takerFeePpm": 80
+        },
+        {
+          "level": 3,
+          "makerFeePpm": 0,
+          "takerFeePpm": 67
+        },
+        {
+          "level": 4,
+          "makerFeePpm": 0,
+          "takerFeePpm": 57
+        },
+        {
+          "level": 5,
+          "makerFeePpm": -20,
+          "takerFeePpm": 50
+        },
+        {
+          "level": 6,
+          "makerFeePpm": -30,
+          "takerFeePpm": 47
+        }
+      ]
+    }
+  ]
+}

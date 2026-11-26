@@ -1,0 +1,17 @@
+2026-11-26 19:11:32,607 INFO root arcus clock offset 4 ms (rtt 182 ms)
+2026-11-26 19:11:32,828 INFO phase0.recorder hyperliquid BTC connected wss://api.hyperliquid.xyz/ws
+2026-11-26 19:11:32,956 INFO phase0.recorder hyperliquid NVDA connected wss://api.hyperliquid.xyz/ws
+2026-11-26 19:11:32,957 INFO phase0.recorder hyperliquid MU connected wss://api.hyperliquid.xyz/ws
+2026-11-26 19:11:32,997 INFO phase0.recorder hyperliquid BTC snapshot time=1795720292256
+2026-11-26 19:11:33,116 INFO phase0.recorder hyperliquid NVDA snapshot time=1795720292256
+2026-11-26 19:11:33,118 INFO phase0.recorder hyperliquid MU snapshot time=1795720292256
+2026-11-26 19:11:33,266 INFO phase0.recorder arcus MU-USD connected wss://api.arcus.xyz/v1/ws
+2026-11-26 19:11:33,286 INFO phase0.recorder arcus NVDA-USD connected wss://api.arcus.xyz/v1/ws
+2026-11-26 19:11:33,299 INFO phase0.recorder arcus BTC-USD connected wss://api.arcus.xyz/v1/ws
+2026-11-26 19:11:33,457 INFO phase0.recorder arcus MU-USD baseline updates-snapshot seq=883994638
+2026-11-26 19:11:33,482 INFO phase0.recorder arcus NVDA-USD baseline l2Orderbook seq=487289536
+2026-11-26 19:11:33,482 INFO phase0.recorder arcus NVDA-USD baseline updates-snapshot seq=487289536
+2026-11-26 19:11:33,496 INFO phase0.recorder arcus BTC-USD baseline updates-snapshot seq=983335306
+2026-11-26 19:11:33,533 WARNING phase0.recorder arcus BTC-USD baseline_gap_resync first delta 983335309 after snapshot skipped ids; rebuilding
+2026-11-26 19:11:33,757 INFO phase0.recorder arcus BTC-USD baseline l2Orderbook seq=983335311
+2026-11-26 19:13:33,729 INFO root done: 120 ticks -> reports/trades_live_check.sqlite

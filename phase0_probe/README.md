@@ -16,29 +16,52 @@ uv run python scripts/verify_basis_and_funding.py         # -> reports/basis_fun
 uv run python scripts/analyze_funding_history.py --days 30 # -> reports/funding_history.{json,md} (--days 14 also)
 uv run python scripts/probe_rwa_overlap.py --top 5        # -> reports/rwa_overlap_probe.{json,md} + --pair list
 uv run python scripts/probe_hl_ws_cadence.py --secs 30    # HL l2Book / l2 / bbo push cadence + latency
+# PR #1.6 RWA prep
+uv run python scripts/analyze_rwa_funding_and_basis.py    # -> reports/rwa_funding_basis.{json,md} (10 equities)
+uv run python scripts/analyze_rwa_funding_and_basis.py --skip-history --samples 24 --every-s 300  # oracle only (RTH)
+uv run python scripts/record_spreads.py --record-trades ... # + both venues' public trades -> `trades` table
+uv run python scripts/analyze_opportunity.py --db X.sqlite --fill-window-s 5 [--fill-through]  # + Maker realism
 uv run pytest -q
 ```
 
-### US-equity RTH recording (Arcus ∩ Entropy io top 5)
+### Tonight: RTH recording Fri 2026-11-27, 22:30 → 00:30 MYT (NYSE half day) — run it yourself (VPS / laptop)
 
-NYSE session Fri 2026-11-27 is a half day (09:30–13:00 ET = 22:30 Fri – 02:00 Sat MYT); regular days are
-09:30–16:00 ET = 22:30–05:00 MYT (standard time). Refresh the top 5 first (`probe_rwa_overlap.py`), then:
+NYSE Fri 2026-11-27 is an early-close day: 09:30–13:00 ET = **22:30 Fri – 02:00 Sat MYT** (regular days 09:30–16:00 ET
+= 22:30–05:00 MYT in US standard time). The window below (09:30–11:30 ET) is fully inside RTH. Nothing is scheduled
+in the cloud: paste this once on your own machine (GNU `date`; on macOS use `gdate` from coreutils). It waits until
+22:30 MYT if started early, records until 00:30 MYT (5 pairs → 5 Arcus + 1 Arcus `markets` + 5 HL sockets; trades ride
+on the same sockets, so HL stays at 5 of its 10 connections per IP), samples the oracle / mark / mid of all 10
+overlaps every 5 min in parallel, then runs the analysis (touch and strictly-through variants):
 
 ```bash
-cd /workspace/phase0_probe && nohup bash -c 'sleep $(( $(date -d "2026-11-27 22:30:00 +0800" +%s) - $(date +%s) )) \
-  && uv run python scripts/record_spreads.py --duration-s 7200 \
-       --pair NVDA=io:NVDA --pair SNDK=io:SNDK --pair DRAM=io:DRAM --pair MU=io:MU --pair NBIS=io:NBIS \
-       --db reports/rwa_rth_20261127.sqlite --log reports/rwa_rth_20261127.log \
-  && uv run python scripts/analyze_opportunity.py --db reports/rwa_rth_20261127.sqlite \
-       --name rwa_rth_20261127_summary --title "RTH Fri 2026-11-27 22:30-00:30 MYT (NYSE half day)"' \
-  > reports/rwa_rth_20261127.nohup 2>&1 &
+cd arcus-entropy-arb/phase0_probe && git fetch && git checkout phase0-6-rwa-prep && uv sync && \
+OUT=reports/rth_20261127 && mkdir -p $OUT && \
+START=$(date -d "2026-11-27 22:30:00 +0800" +%s) && END=$(date -d "2026-11-28 00:30:00 +0800" +%s) && \
+sleep $(( START > $(date +%s) ? START - $(date +%s) : 0 )) && \
+DUR=$((END - $(date +%s))) && [ "$DUR" -gt 0 ] && echo "recording ${DUR}s -> $OUT" && \
+( uv run python scripts/analyze_rwa_funding_and_basis.py --skip-history --samples 24 --every-s 300 \
+    --out $OUT --name rwa_oracle_rth > $OUT/rwa_oracle_rth_stdout.txt 2>&1 & ) && \
+uv run python scripts/record_spreads.py --duration-s $DUR --record-trades \
+    --pair NVDA=io:NVDA --pair SNDK=io:SNDK --pair DRAM=io:DRAM --pair MU=io:MU --pair NBIS=io:NBIS \
+    --db $OUT/rwa_rth_20261127.sqlite --log $OUT/rwa_rth_20261127.log && \
+uv run python scripts/analyze_opportunity.py --db $OUT/rwa_rth_20261127.sqlite --out $OUT \
+    --name rwa_rth_20261127_summary --fill-window-s 5 \
+    --title "RTH Fri 2026-11-27 22:30-00:30 MYT (NYSE half day), touch" && \
+uv run python scripts/analyze_opportunity.py --db $OUT/rwa_rth_20261127.sqlite --out $OUT \
+    --name rwa_rth_20261127_summary_through --fill-window-s 5 --fill-through \
+    --title "RTH Fri 2026-11-27 22:30-00:30 MYT (NYSE half day), strictly through"
 ```
 
+Outputs in `reports/rth_20261127/`: `rwa_rth_20261127.sqlite` (opportunities, book_health, funding, events, **trades**),
+`.log`, `rwa_rth_20261127_summary{,_through}.{md,json}` (incl. Maker realism + adverse selection + trade side check),
+`rwa_oracle_rth.{md,json}` (Pyth-vs-HL oracle gap in RTH). To survive an SSH drop, wrap the whole line in
+`nohup bash -c '…' > reports/rth_20261127.nohup 2>&1 &` or run it inside `tmux`.
+
 Hyperliquid allows at most 10 WebSocket connections per IP (rate-limits-and-user-limits.md); the recorder opens one
-HL connection per pair, so do not run more than ~9 pairs at once (multiplexing is a PR #2 item).
+HL connection per pair (`--record-trades` adds none), so do not run more than ~9 pairs at once.
 
 `record_spreads.py` options: `--pair SYM=HLCOIN` (default `BTC=BTC ETH=ETH SOL=SOL`; e.g. `--pair NVDA=io:NVDA` for
-the Entropy dex), `--q 100 --q 500 --q 2000`, `--stale-ms 500`, `--buffer-bps 2`, `--db`, `--log`.
+the Entropy dex), `--q 100 --q 500 --q 2000`, `--stale-ms 500`, `--buffer-bps 2`, `--db`, `--log`, `--record-trades`.
 
 ## Layout
 
@@ -50,7 +73,9 @@ the Entropy dex), `--q 100 --q 500 --q 2000`, `--stale-ms 500`, `--buffer-bps 2`
 | `src/phase0_probe/feeds.py` | Read-only WS feeds (Arcus books + `markets` funding; HL `l2`/`l2Book`/`activeAssetCtx`) |
 | `src/phase0_probe/discovery.py`, `venues.py` | REST discovery, fee math, endpoints / doc constants |
 | `src/phase0_probe/recorder.py`, `store.py`, `analysis.py` | 1 Hz sampler, SQLite, statistics |
-| `scripts/*.py` | the three entry points |
+| `src/phase0_probe/sessions.py` | PR #1.6 NYSE calendar (holidays, early closes, DST) + Arcus 04–20 ET window |
+| `src/phase0_probe/trades.py`, `realism.py` | PR #1.6 trade-tape parsing; Maker fill-through filter, adverse selection |
+| `scripts/*.py` | entry points |
 | `docs_snapshot/` | the documentation pages these facts were taken from (fetched 2026-11-27 MYT) |
 | `reports/` | outputs of the live run |
 
@@ -147,6 +172,31 @@ Hyperliquid (hyperliquid.gitbook.io/hyperliquid-docs):
 * **Hardening:** `parse_predicted` divides by `fundingIntervalHours` (HlPerp was 1 h in every observed response, so
   Phase 0 numbers are unaffected).
 
+## PR #1.6 — RWA prep (US equities, Arcus ∩ io)
+
+* **`analyze_rwa_funding_and_basis.py`** (all 10 non-delisted overlaps): live oracle / mark / book-mid on both venues
+  (median of samples, bps of the Arcus oracle), real fees (Arcus `feeSchedules` tier 0: maker 0 / taker 2.25 bps on
+  every equity; io growth mode 0.30 / 0.90 bps), Arcus RTH vs off-hours margin (`initialMarginFraction` →
+  `offHoursInitialMarginFraction`, ×1.5 on every equity; maintenance not uplifted), and a 14 / 30-day hourly funding
+  back-test split RTH / OFF_HOURS (and RTH / EXT / CLOSED) with both directions, flips, longest runs, break-even and
+  net after each market's real round-trip fees (DUAL_TAKER 6.30, MAKER_ARCUS_TAKER_HL 1.80, MAKER_HL_TAKER_ARCUS
+  5.10 bps), holding through vs paying a round trip per session block.
+* **Sessions.** Payment at H is labelled by its accrual midpoint H − 30 min: 7 RTH payments on a full day (10:00…16:00
+  ET), 4 on an early-close day; Thanksgiving none. Arcus' own window is 04:00–20:00 ET (`regularTradingHours`
+  14400→72000): live data show Arcus funding is book-driven in RTH **and** EXT and pinned (SOFR + 0.5 %/yr, a handful
+  of changes in 30 days) only in CLOSED hours. Off-hours (outside that window) the Arcus *oracle* is its own mark
+  (prices.md) — an oracle gap measured then is not oracle-vs-oracle.
+* **`--record-trades`.** Arcus `trades` (channels.md) and HL `trades` (subscriptions.md item 8) on the existing per-pair
+  sockets; rows (venue, symbol, exchange µs, recv ms, price, size, side, raw side, id) as Decimal TEXT, de-duplicated
+  (HL replays the last 30 trades on subscribe — observed live). Side semantics are undocumented on both venues; the
+  live check shows both are the aggressor side (Arcus BUY ≥ mid 96.7 %, SELL 0 %; HL "B" 98.0 %, "A" 5.4 %).
+* **Maker realism** (`analyze_opportunity.py`): (a) fill-through filter — a Maker-Taker second counts only with a
+  maker-venue trade at/through the maker price or the opposite top of book reaching it within `--fill-window-s`;
+  (b) adverse selection of the hedge leg at +1/+3/+5 s. On the Thanksgiving MU sample (no trades recorded → book
+  criterion only) the 516-second MU MAKER_HL_TAKER_ARCUS "opportunity" is suppressed to 0 (5 s window; 1 s with 30 s).
+* Static guard: trades may only be touched by `trades.py`, `feeds.py`, `store.py`, `realism.py`, `record_spreads.py`,
+  `analyze_opportunity.py`; pricing modules (`model.py`, `book.py`, …) are scanned and never import them.
+
 ## TODO: VERIFY_FROM_DOCS
 
 * HL minimum order value ($10 used) — not on the fees / tick-and-lot-size / contract-spec pages.
@@ -160,3 +210,9 @@ Hyperliquid (hyperliquid.gitbook.io/hyperliquid-docs):
 * HL has no documented server-time endpoint → HL latency includes the local-vs-exchange clock offset.
 * Arcus `l2OrderbookUpdates`: why the first delta after a snapshot skips sequence ids (contradicts websocket.md).
 * HL `fundingHistory` parameters for 2023 (constant 0.000025/h offset on large positive premiums).
+* PR #1.6: Arcus `trades.side` and HL `WsTrade.side` meaning (aggressor assumed; live check consistent, undocumented).
+* PR #1.6: HL replays the most recent 30 trades on `trades` subscribe (observed, undocumented).
+* PR #1.6: whether Arcus shortens its 20:00 ET window on NYSE early-close days ([待实测确认] tonight: watch
+  `isOutsideRth` after 13:00 ET).
+* PR #1.6: HIP-3 io has no session-dependent margin field in `metaAndAssetCtxs` ([待实测确认]).
+* PR #1.6: io MU listed ~2026-11-20 (148 aligned hours), GOOGL / META / INTC also shorter than 30 days on io.

@@ -6,6 +6,7 @@ from decimal import Decimal
 from typing import Any, Iterable
 
 from phase0_probe.model import Opportunity
+from phase0_probe.trades import Trade
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS opportunities (
@@ -25,6 +26,11 @@ CREATE TABLE IF NOT EXISTS funding (
 CREATE TABLE IF NOT EXISTS events (
   ts_ms INTEGER NOT NULL, venue TEXT NOT NULL, symbol TEXT, kind TEXT NOT NULL, detail TEXT);
 CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT);
+CREATE TABLE IF NOT EXISTS trades (
+  venue TEXT NOT NULL, symbol TEXT NOT NULL, exch_ts_us INTEGER NOT NULL, recv_ms INTEGER NOT NULL,
+  price TEXT NOT NULL, size TEXT NOT NULL, side TEXT NOT NULL, raw_side TEXT, trade_id TEXT NOT NULL,
+  UNIQUE (venue, symbol, exch_ts_us, trade_id, price, size));
+CREATE INDEX IF NOT EXISTS ix_trades ON trades(venue, symbol, exch_ts_us);
 """
 
 
@@ -55,6 +61,15 @@ class Store:
 
     def funding(self, rows: Iterable[tuple[Any, ...]]) -> None:
         self.db.executemany("INSERT INTO funding VALUES (?,?,?,?,?)", list(rows))
+
+    def trades(self, rows: Iterable[Trade]) -> int:
+        """PR #1.6: insert public trades (Decimal as exact TEXT); duplicates (e.g. a replay after reconnect) ignored.
+        Committed with the next 1 Hz sample. Returns the number of new rows."""
+        before = self.db.total_changes
+        self.db.executemany("INSERT OR IGNORE INTO trades VALUES (?,?,?,?,?,?,?,?,?)",
+                            [(t.venue, t.symbol, t.exch_ts_us, t.recv_ms, s(t.price), s(t.size), t.side, t.raw_side,
+                              t.trade_id) for t in rows])
+        return self.db.total_changes - before
 
     def event(self, ts_ms: int, venue: str, symbol: str | None, kind: str, detail: str) -> None:
         self.db.execute("INSERT INTO events VALUES (?,?,?,?,?)", (ts_ms, venue, symbol, kind, detail[:500]))

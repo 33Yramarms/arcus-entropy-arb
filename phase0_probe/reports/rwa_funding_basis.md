@@ -1,0 +1,656 @@
+# Arcus × Entropy io — US-equity oracle / fees / margin / funding (PR #1.6, read-only)
+
+Generated at epoch ms 1795720636944 (2026-11-26T14:17:16-05:00 ET, session label `CLOSED`). Markets: 10 non-delisted Arcus ∩ io overlaps (NVDA, SNDK, MU, DRAM, NBIS, AAPL, CRCL, GOOGL, META, INTC). io collateralToken index 0.
+
+## a) Live oracle / mark / mid (median of samples, bps of the Arcus oracle; HL − Arcus)
+
+Samples: 5 × 10 markets; session at sampling: CLOSED. **Sampled outside RTH.** Arcus outside its RTH window: the oracle is *derived from the exchange's own mark price* (order book, no Pyth, no oracle clamp; concepts/perpetuals/prices.md), so the HL − Arcus 'oracle' Δ below is HL's deployer oracle vs Arcus' own book — NOT an oracle-vs-oracle comparison. Re-run with `--skip-history` in RTH (tonight's command does) for the real Pyth-vs-HL gap.
+
+| Symbol | Arcus oracle | Arcus mark | Arcus mid | HL oracle | HL mark | HL mid | oracle Δ bps | (min…max) | mark Δ bps | mid Δ bps | book-premium Δ bps | HL mid−oracle bps | Arcus mid−oracle bps | Arcus outside RTH |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| NVDA | 150.49 | 150.51 | 150.535 | 150.71 | 150.68 | 150.745 | 14.62 | 14.62…14.62 | 11.96 | 13.95 | -0.66 | 2.32 | 2.99 | True |
+| SNDK | 75.35 | 75.35 | 75.375 | 75.48 | 75.41 | 75.455 | 17.25 | 17.25…17.25 | 9.29 | 10.62 | -6.64 | -7.29 | 1.99 | True |
+| MU | 608.85 | 608.71 | 608.705 | 609.8 | 609.51 | 609.590 | 15.44 | 15.27…15.60 | 12.81 | 14.54 | -1.07 | -4.76 | -3.04 | True |
+| DRAM | 35.2 | 35.2 | 35.215 | 35.23 | 35.202 | 35.239 | 8.52 | 8.24…8.52 | 0.28 | 6.53 | -1.99 | -3.41 | -1.42 | True |
+| NBIS | 87.71 | 87.7 | 87.725 | 87.818 | 87.79 | 87.830 | 12.20 | 12.20…12.31 | 10.26 | 11.00 | -1.20 | -0.63 | 0.57 | True |
+| AAPL | 356.25 | 356.19 | 356.195 | 356.04 | 356.09 | 356.090 | -5.89 | -6.18…-5.89 | -2.81 | -3.65 | 2.25 | 0.70 | -1.54 | True |
+| CRCL | 48.71 | 48.73 | 48.745 | 48.766 | 48.749 | 48.788 | 11.29 | 11.29…11.50 | 5.95 | 8.93 | -2.46 | 4.61 | 7.19 | True |
+| GOOGL | 275.37 | 275.34 | 275.365 | 275.62 | 275.65 | 275.610 | 9.08 | 8.72…9.08 | 11.62 | 8.90 | -0.18 | -1.45 | -0.18 | True |
+| META | 612.22 | 612.17 | 612.185 | 612.53 | 612.56 | 612.530 | 5.06 | 4.90…5.06 | 6.37 | 5.64 | 0.57 | 0.00 | -0.57 | True |
+| INTC | 54.99 | 54.98 | 54.995 | 55.042 | 55.05 | 55.055 | 9.46 | 9.46…9.46 | 12.73 | 12.73 | 3.27 | 2.36 | -0.91 | True |
+
+Cross-market oracle Δ: median **10.37 bps**, range -5.89 … 17.25 bps (spread 23.15 bps). USDT/USD (Kraken, third-party): 0.99872500 → implied USDT premium 12.77 bps. Crypto reference (PR #1.5): ~12.5 bps.
+
+Verdict: cross-market median 10.37 bps, range 23.15 bps → NOT one common offset (per-market dispersion > 3 bps: idiosyncratic oracle / session effects); matches the USDT/USD premium (±3 bps) → same quote-currency effect as crypto. INCONCLUSIVE for the static-oracle question: sampled while Arcus isOutsideRth=true (Arcus oracle = its own mark off-hours); decide from the RTH sample.
+
+## b) Fees (tier 0) and margin (Arcus RTH vs off-hours; io static)
+
+| Symbol | Arcus maker/taker bps (custom sched.) | base ppm m/t | io maker/taker bps (scale, growth) | RT DUAL_TAKER bps | RT MAKER_ARCUS bps | RT MAKER_HL bps | Arcus IMF RTH → off-hours (max lev) | Arcus MMF | Arcus RTH window ET | markTier | io max lev / margin mode |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| NVDA | 0.00 / 2.25 (True) | 150 / 450 | 0.30 / 0.90 (1.0, True) | 6.30 | 1.80 | 5.10 | 0.05 → 0.075 (20.0× → 13.3×) | 0.033334 | 04:00–20:00 America/New_York | FAST | 25× / cross |
+| SNDK | 0.00 / 2.25 (True) | 150 / 450 | 0.30 / 0.90 (1.0, True) | 6.30 | 1.80 | 5.10 | 0.1 → 0.15 (10.0× → 6.7×) | 0.066667 | 04:00–20:00 America/New_York | FAST | 15× / cross |
+| MU | 0.00 / 2.25 (True) | 150 / 450 | 0.30 / 0.90 (1.0, True) | 6.30 | 1.80 | 5.10 | 0.1 → 0.15 (10.0× → 6.7×) | 0.066667 | 04:00–20:00 America/New_York | FAST | 15× / noCross |
+| DRAM | 0.00 / 2.25 (True) | 150 / 450 | 0.30 / 0.90 (1.0, True) | 6.30 | 1.80 | 5.10 | 0.1 → 0.15 (10.0× → 6.7×) | 0.066667 | 04:00–20:00 America/New_York | STANDARD | 25× / cross |
+| NBIS | 0.00 / 2.25 (True) | 150 / 450 | 0.30 / 0.90 (1.0, True) | 6.30 | 1.80 | 5.10 | 0.2 → 0.3 (5.0× → 3.3×) | 0.133334 | 04:00–20:00 America/New_York | STANDARD | 15× / cross |
+| AAPL | 0.00 / 2.25 (True) | 150 / 450 | 0.30 / 0.90 (1.0, True) | 6.30 | 1.80 | 5.10 | 0.05 → 0.075 (20.0× → 13.3×) | 0.033334 | 04:00–20:00 America/New_York | FAST | 25× / noCross |
+| CRCL | 0.00 / 2.25 (True) | 150 / 450 | 0.30 / 0.90 (1.0, True) | 6.30 | 1.80 | 5.10 | 0.1 → 0.15 (10.0× → 6.7×) | 0.066667 | 04:00–20:00 America/New_York | FAST | 15× / noCross |
+| GOOGL | 0.00 / 2.25 (True) | 150 / 450 | 0.30 / 0.90 (1.0, True) | 6.30 | 1.80 | 5.10 | 0.05 → 0.075 (20.0× → 13.3×) | 0.033334 | 04:00–20:00 America/New_York | FAST | 25× / strictIsolated |
+| META | 0.00 / 2.25 (True) | 150 / 450 | 0.30 / 0.90 (1.0, True) | 6.30 | 1.80 | 5.10 | 0.05 → 0.075 (20.0× → 13.3×) | 0.033334 | 04:00–20:00 America/New_York | STANDARD | 25× / noCross |
+| INTC | 0.00 / 2.25 (True) | 150 / 450 | 0.30 / 0.90 (1.0, True) | 6.30 | 1.80 | 5.10 | 0.1 → 0.15 (10.0× → 6.7×) | 0.066667 | 04:00–20:00 America/New_York | FAST | 15× / noCross |
+
+RT = open + close, both legs. Arcus maintenance margin is not uplifted off-hours (get-markets.md). io: no session-dependent margin field exposed [待实测确认]; io min notional $10 TODO: VERIFY_FROM_DOCS.
+
+## c) Funding back-test — last 30 days (hourly, both venues, aligned by payment hour)
+
+Session of a payment at H = label of H − 30 min (the accrual hour's midpoint). RTH = NYSE 09:30–16:00 ET (13:00 on early-close days, holidays excluded); OFF_HOURS = pre/post (EXT) + overnight/weekend/holiday (CLOSED). Carry = funding received per hour. Runs / flips only inside contiguous blocks. `net hold` = bucket carry − one round trip; `per-block` = round trip paid every block (e.g. every RTH session). Funding only: no basis / price PnL, slippage or buffer.
+
+### Summary (better direction per bucket; cheapest real mode MAKER_ARCUS_TAKER_HL and DUAL_TAKER)
+
+| Symbol | bucket | h | Δ ann. HL−Arcus % | better direction | carry ann. % | % h > 0 | flips | longest + run h | total carry bps | BE h (fee/mean) maker-A / dual | net hold bps maker-A / dual | per-block net bps maker-A / dual |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| NVDA | RTH | 148 | 1.24 | LONG_ARCUS_SHORT_HL | 1.24 | 56.8 | 28 | 7 | 2.10 | 126.8 / 443.7 | 0.30 / -4.20 | -37.50 / -136.50 |
+| NVDA | OFF_HOURS | 572 | 7.61 | LONG_ARCUS_SHORT_HL | 7.61 | 58.6 | 87 | 24 | 49.67 | 20.7 / 72.6 | 47.87 / 43.37 | 10.07 / -88.93 |
+| NVDA | ALL | 720 | 6.30 | LONG_ARCUS_SHORT_HL | 6.30 | 58.2 | 122 | 56 | 51.77 | 25.0 / 87.6 | 49.97 / 45.47 | 49.97 / 45.47 |
+| SNDK | RTH | 148 | -0.45 | SHORT_ARCUS_LONG_HL | 0.45 | 42.6 | 27 | 7 | 0.76 | 349.9 / 1224.5 | -1.04 / -5.54 | -38.84 / -137.84 |
+| SNDK | OFF_HOURS | 564 | -2.00 | SHORT_ARCUS_LONG_HL | 2.00 | 50.0 | 84 | 45 | 12.88 | 78.8 / 275.9 | 11.08 / 6.58 | -28.52 / -132.02 |
+| SNDK | ALL | 712 | -1.68 | SHORT_ARCUS_LONG_HL | 1.68 | 48.5 | 128 | 53 | 13.64 | 94.0 / 328.9 | 11.84 / 7.34 | 10.04 / 1.04 |
+| MU | RTH | 27 | -6.88 | SHORT_ARCUS_LONG_HL | 6.88 | 40.7 | 1 | 6 | 2.12 | 22.9 / 80.2 | 0.32 / -4.18 | -5.08 / -23.08 |
+| MU | OFF_HOURS | 121 | -0.03 | SHORT_ARCUS_LONG_HL | 0.03 | 47.9 | 29 | 18 | 0.05 | 4676.4 / 16367.5 | -1.75 / -6.25 | -7.15 / -25.15 |
+| MU | ALL | 148 | -1.28 | SHORT_ARCUS_LONG_HL | 1.28 | 46.6 | 31 | 18 | 2.17 | 122.9 / 430.0 | 0.37 / -4.13 | 0.37 / -4.13 |
+| DRAM | RTH | 148 | -9.43 | SHORT_ARCUS_LONG_HL | 9.43 | 62.8 | 23 | 7 | 15.93 | 16.7 / 58.5 | 14.13 / 9.63 | -23.67 / -122.67 |
+| DRAM | OFF_HOURS | 572 | -1.56 | SHORT_ARCUS_LONG_HL | 1.56 | 53.0 | 104 | 34 | 10.18 | 101.1 / 353.9 | 8.38 / 3.88 | -29.42 / -128.42 |
+| DRAM | ALL | 720 | -3.18 | SHORT_ARCUS_LONG_HL | 3.18 | 55.0 | 144 | 34 | 26.12 | 49.6 / 173.7 | 24.32 / 19.82 | 24.32 / 19.82 |
+| NBIS | RTH | 148 | 9.91 | LONG_ARCUS_SHORT_HL | 9.91 | 73.0 | 24 | 7 | 16.74 | 15.9 / 55.7 | 14.94 / 10.44 | -22.86 / -121.86 |
+| NBIS | OFF_HOURS | 572 | 7.27 | LONG_ARCUS_SHORT_HL | 7.27 | 60.5 | 102 | 30 | 47.50 | 21.7 / 75.9 | 45.70 / 41.20 | 7.90 / -91.10 |
+| NBIS | ALL | 720 | 7.82 | LONG_ARCUS_SHORT_HL | 7.82 | 63.1 | 139 | 50 | 64.24 | 20.2 / 70.6 | 62.44 / 57.94 | 62.44 / 57.94 |
+| AAPL | RTH | 122 | 8.58 | LONG_ARCUS_SHORT_HL | 8.58 | 54.9 | 28 | 7 | 11.95 | 18.4 / 64.3 | 10.15 / 5.65 | -20.45 / -101.45 |
+| AAPL | OFF_HOURS | 455 | 4.53 | LONG_ARCUS_SHORT_HL | 4.53 | 40.4 | 84 | 14 | 23.51 | 34.8 / 121.9 | 21.71 / 17.21 | -8.89 / -89.89 |
+| AAPL | ALL | 577 | 5.38 | LONG_ARCUS_SHORT_HL | 5.38 | 43.5 | 123 | 15 | 35.46 | 29.3 / 102.5 | 33.66 / 29.16 | 33.66 / 29.16 |
+| CRCL | RTH | 117 | 5.74 | LONG_ARCUS_SHORT_HL | 5.74 | 59.0 | 17 | 7 | 7.67 | 27.5 / 96.1 | 5.87 / 1.37 | -22.93 / -99.43 |
+| CRCL | OFF_HOURS | 438 | -12.00 | SHORT_ARCUS_LONG_HL | 12.00 | 47.0 | 65 | 54 | 59.98 | 13.1 / 46.0 | 58.18 / 53.68 | 29.38 / -47.12 |
+| CRCL | ALL | 555 | -8.26 | SHORT_ARCUS_LONG_HL | 8.26 | 45.8 | 91 | 66 | 52.31 | 19.1 / 66.8 | 50.51 / 46.01 | 50.51 / 46.01 |
+| GOOGL | RTH | 13 | 16.13 | LONG_ARCUS_SHORT_HL | 16.13 | 61.5 | 4 | 6 | 2.39 | 9.8 / 34.2 | 0.59 / -3.91 | -1.21 / -10.21 |
+| GOOGL | OFF_HOURS | 39 | 9.17 | LONG_ARCUS_SHORT_HL | 9.17 | 94.9 | 4 | 17 | 4.08 | 17.2 / 60.2 | 2.28 / -2.22 | 0.48 / -8.52 |
+| GOOGL | ALL | 52 | 10.91 | LONG_ARCUS_SHORT_HL | 10.91 | 86.5 | 10 | 23 | 6.47 | 14.5 / 50.6 | 4.67 / 0.17 | 4.67 / 0.17 |
+| META | RTH | 41 | 9.87 | LONG_ARCUS_SHORT_HL | 9.87 | 80.5 | 11 | 7 | 4.62 | 16.0 / 55.9 | 2.82 / -1.68 | -6.18 / -33.18 |
+| META | OFF_HOURS | 155 | 7.90 | LONG_ARCUS_SHORT_HL | 7.90 | 66.5 | 29 | 17 | 13.99 | 19.9 / 69.8 | 12.19 / 7.69 | 3.19 / -23.81 |
+| META | ALL | 196 | 8.32 | LONG_ARCUS_SHORT_HL | 8.32 | 69.4 | 43 | 36 | 18.61 | 19.0 / 66.4 | 16.81 / 12.31 | 16.81 / 12.31 |
+| INTC | RTH | 48 | 15.16 | LONG_ARCUS_SHORT_HL | 15.16 | 95.8 | 4 | 7 | 8.31 | 10.4 / 36.4 | 6.51 / 2.01 | -4.29 / -35.79 |
+| INTC | OFF_HOURS | 172 | 10.26 | LONG_ARCUS_SHORT_HL | 10.26 | 76.2 | 21 | 17 | 20.15 | 15.4 / 53.8 | 18.35 / 13.85 | 7.55 / -23.95 |
+| INTC | ALL | 220 | 11.33 | LONG_ARCUS_SHORT_HL | 11.33 | 80.5 | 26 | 79 | 28.45 | 13.9 / 48.7 | 26.65 / 22.15 | 26.65 / 22.15 |
+
+### Detail (both directions)
+
+| Symbol | bucket | h | Arcus mean bps/h | HL mean bps/h | Δ ann. HL−Arcus % | Δ flips | Direction | carry ann. % | % h > 0 | longest + run h | total carry bps | blocks (mean len h) | mean block carry bps |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| NVDA | RTH | 148 | 0.2102 | 0.2244 | 1.24 | 28 | SHORT_ARCUS_LONG_HL | -1.24 | 43.2 | 7 | -2.10 | 22 (6.7) | -0.096 |
+| NVDA | RTH | 148 | 0.2102 | 0.2244 | 1.24 | 28 | LONG_ARCUS_SHORT_HL | 1.24 | 56.8 | 7 | 2.10 | 22 (6.7) | 0.096 |
+| NVDA | OFF_HOURS | 572 | 0.0968 | 0.1836 | 7.61 | 87 | SHORT_ARCUS_LONG_HL | -7.61 | 41.4 | 57 | -49.67 | 22 (26.0) | -2.258 |
+| NVDA | OFF_HOURS | 572 | 0.0968 | 0.1836 | 7.61 | 87 | LONG_ARCUS_SHORT_HL | 7.61 | 58.6 | 24 | 49.67 | 22 (26.0) | 2.258 |
+| NVDA | ALL | 720 | 0.1201 | 0.1920 | 6.30 | 122 | SHORT_ARCUS_LONG_HL | -6.30 | 41.8 | 57 | -51.77 | 1 (720.0) | -51.768 |
+| NVDA | ALL | 720 | 0.1201 | 0.1920 | 6.30 | 122 | LONG_ARCUS_SHORT_HL | 6.30 | 58.2 | 56 | 51.77 | 1 (720.0) | 51.768 |
+| SNDK | RTH | 148 | 0.2577 | 0.2525 | -0.45 | 27 | SHORT_ARCUS_LONG_HL | 0.45 | 42.6 | 7 | 0.76 | 22 (6.7) | 0.035 |
+| SNDK | RTH | 148 | 0.2577 | 0.2525 | -0.45 | 27 | LONG_ARCUS_SHORT_HL | -0.45 | 57.4 | 7 | -0.76 | 22 (6.7) | -0.035 |
+| SNDK | OFF_HOURS | 564 | 0.1388 | 0.1160 | -2.00 | 84 | SHORT_ARCUS_LONG_HL | 2.00 | 50.0 | 45 | 12.88 | 23 (24.5) | 0.560 |
+| SNDK | OFF_HOURS | 564 | 0.1388 | 0.1160 | -2.00 | 84 | LONG_ARCUS_SHORT_HL | -2.00 | 50.0 | 24 | -12.88 | 23 (24.5) | -0.560 |
+| SNDK | ALL | 712 | 0.1635 | 0.1444 | -1.68 | 128 | SHORT_ARCUS_LONG_HL | 1.68 | 48.5 | 53 | 13.64 | 2 (356.0) | 6.819 |
+| SNDK | ALL | 712 | 0.1635 | 0.1444 | -1.68 | 128 | LONG_ARCUS_SHORT_HL | -1.68 | 51.5 | 38 | -13.64 | 2 (356.0) | -6.819 |
+| MU | RTH | 27 | 0.2543 | 0.1757 | -6.88 | 1 | SHORT_ARCUS_LONG_HL | 6.88 | 40.7 | 6 | 2.12 | 4 (6.8) | 0.530 |
+| MU | RTH | 27 | 0.2543 | 0.1757 | -6.88 | 1 | LONG_ARCUS_SHORT_HL | -6.88 | 59.3 | 7 | -2.12 | 4 (6.8) | -0.530 |
+| MU | OFF_HOURS | 121 | 0.0996 | 0.0992 | -0.03 | 29 | SHORT_ARCUS_LONG_HL | 0.03 | 47.9 | 18 | 0.05 | 4 (30.2) | 0.012 |
+| MU | OFF_HOURS | 121 | 0.0996 | 0.0992 | -0.03 | 29 | LONG_ARCUS_SHORT_HL | -0.03 | 52.1 | 13 | -0.05 | 4 (30.2) | -0.012 |
+| MU | ALL | 148 | 0.1278 | 0.1132 | -1.28 | 31 | SHORT_ARCUS_LONG_HL | 1.28 | 46.6 | 18 | 2.17 | 1 (148.0) | 2.168 |
+| MU | ALL | 148 | 0.1278 | 0.1132 | -1.28 | 31 | LONG_ARCUS_SHORT_HL | -1.28 | 53.4 | 15 | -2.17 | 1 (148.0) | -2.168 |
+| DRAM | RTH | 148 | 0.3184 | 0.2107 | -9.43 | 23 | SHORT_ARCUS_LONG_HL | 9.43 | 62.8 | 7 | 15.93 | 22 (6.7) | 0.724 |
+| DRAM | RTH | 148 | 0.3184 | 0.2107 | -9.43 | 23 | LONG_ARCUS_SHORT_HL | -9.43 | 37.2 | 7 | -15.93 | 22 (6.7) | -0.724 |
+| DRAM | OFF_HOURS | 572 | 0.1322 | 0.1144 | -1.56 | 104 | SHORT_ARCUS_LONG_HL | 1.56 | 53.0 | 34 | 10.18 | 22 (26.0) | 0.463 |
+| DRAM | OFF_HOURS | 572 | 0.1322 | 0.1144 | -1.56 | 104 | LONG_ARCUS_SHORT_HL | -1.56 | 47.0 | 17 | -10.18 | 22 (26.0) | -0.463 |
+| DRAM | ALL | 720 | 0.1705 | 0.1342 | -3.18 | 144 | SHORT_ARCUS_LONG_HL | 3.18 | 55.0 | 34 | 26.12 | 1 (720.0) | 26.116 |
+| DRAM | ALL | 720 | 0.1705 | 0.1342 | -3.18 | 144 | LONG_ARCUS_SHORT_HL | -3.18 | 45.0 | 23 | -26.12 | 1 (720.0) | -26.116 |
+| NBIS | RTH | 148 | 0.2195 | 0.3326 | 9.91 | 24 | SHORT_ARCUS_LONG_HL | -9.91 | 27.0 | 6 | -16.74 | 22 (6.7) | -0.761 |
+| NBIS | RTH | 148 | 0.2195 | 0.3326 | 9.91 | 24 | LONG_ARCUS_SHORT_HL | 9.91 | 73.0 | 7 | 16.74 | 22 (6.7) | 0.761 |
+| NBIS | OFF_HOURS | 572 | 0.1048 | 0.1878 | 7.27 | 102 | SHORT_ARCUS_LONG_HL | -7.27 | 39.5 | 41 | -47.50 | 22 (26.0) | -2.159 |
+| NBIS | OFF_HOURS | 572 | 0.1048 | 0.1878 | 7.27 | 102 | LONG_ARCUS_SHORT_HL | 7.27 | 60.5 | 30 | 47.50 | 22 (26.0) | 2.159 |
+| NBIS | ALL | 720 | 0.1284 | 0.2176 | 7.82 | 139 | SHORT_ARCUS_LONG_HL | -7.82 | 36.9 | 41 | -64.24 | 1 (720.0) | -64.240 |
+| NBIS | ALL | 720 | 0.1284 | 0.2176 | 7.82 | 139 | LONG_ARCUS_SHORT_HL | 7.82 | 63.1 | 50 | 64.24 | 1 (720.0) | 64.240 |
+| AAPL | RTH | 122 | -0.1244 | -0.0265 | 8.58 | 28 | SHORT_ARCUS_LONG_HL | -8.58 | 45.1 | 7 | -11.95 | 18 (6.8) | -0.664 |
+| AAPL | RTH | 122 | -0.1244 | -0.0265 | 8.58 | 28 | LONG_ARCUS_SHORT_HL | 8.58 | 54.9 | 7 | 11.95 | 18 (6.8) | 0.664 |
+| AAPL | OFF_HOURS | 455 | 0.0278 | 0.0795 | 4.53 | 84 | SHORT_ARCUS_LONG_HL | -4.53 | 59.6 | 60 | -23.51 | 18 (25.3) | -1.306 |
+| AAPL | OFF_HOURS | 455 | 0.0278 | 0.0795 | 4.53 | 84 | LONG_ARCUS_SHORT_HL | 4.53 | 40.4 | 14 | 23.51 | 18 (25.3) | 1.306 |
+| AAPL | ALL | 577 | -0.0044 | 0.0571 | 5.38 | 123 | SHORT_ARCUS_LONG_HL | -5.38 | 56.5 | 61 | -35.46 | 1 (577.0) | -35.458 |
+| AAPL | ALL | 577 | -0.0044 | 0.0571 | 5.38 | 123 | LONG_ARCUS_SHORT_HL | 5.38 | 43.5 | 15 | 35.46 | 1 (577.0) | 35.458 |
+| CRCL | RTH | 117 | 0.1931 | 0.2586 | 5.74 | 17 | SHORT_ARCUS_LONG_HL | -5.74 | 41.0 | 7 | -7.67 | 17 (6.9) | -0.451 |
+| CRCL | RTH | 117 | 0.1931 | 0.2586 | 5.74 | 17 | LONG_ARCUS_SHORT_HL | 5.74 | 59.0 | 7 | 7.67 | 17 (6.9) | 0.451 |
+| CRCL | OFF_HOURS | 438 | 0.0915 | -0.0455 | -12.00 | 65 | SHORT_ARCUS_LONG_HL | 12.00 | 47.0 | 54 | 59.98 | 17 (25.8) | 3.528 |
+| CRCL | OFF_HOURS | 438 | 0.0915 | -0.0455 | -12.00 | 65 | LONG_ARCUS_SHORT_HL | -12.00 | 53.0 | 17 | -59.98 | 17 (25.8) | -3.528 |
+| CRCL | ALL | 555 | 0.1129 | 0.0186 | -8.26 | 91 | SHORT_ARCUS_LONG_HL | 8.26 | 45.8 | 66 | 52.31 | 1 (555.0) | 52.312 |
+| CRCL | ALL | 555 | 0.1129 | 0.0186 | -8.26 | 91 | LONG_ARCUS_SHORT_HL | -8.26 | 54.2 | 41 | -52.31 | 1 (555.0) | -52.312 |
+| GOOGL | RTH | 13 | -0.0124 | 0.1717 | 16.13 | 4 | SHORT_ARCUS_LONG_HL | -16.13 | 38.5 | 3 | -2.39 | 2 (6.5) | -1.197 |
+| GOOGL | RTH | 13 | -0.0124 | 0.1717 | 16.13 | 4 | LONG_ARCUS_SHORT_HL | 16.13 | 61.5 | 6 | 2.39 | 2 (6.5) | 1.197 |
+| GOOGL | OFF_HOURS | 39 | 0.0118 | 0.1165 | 9.17 | 4 | SHORT_ARCUS_LONG_HL | -9.17 | 5.1 | 1 | -4.08 | 2 (19.5) | -2.040 |
+| GOOGL | OFF_HOURS | 39 | 0.0118 | 0.1165 | 9.17 | 4 | LONG_ARCUS_SHORT_HL | 9.17 | 94.9 | 17 | 4.08 | 2 (19.5) | 2.040 |
+| GOOGL | ALL | 52 | 0.0058 | 0.1303 | 10.91 | 10 | SHORT_ARCUS_LONG_HL | -10.91 | 13.5 | 3 | -6.47 | 1 (52.0) | -6.474 |
+| GOOGL | ALL | 52 | 0.0058 | 0.1303 | 10.91 | 10 | LONG_ARCUS_SHORT_HL | 10.91 | 86.5 | 23 | 6.47 | 1 (52.0) | 6.474 |
+| META | RTH | 41 | -0.0602 | 0.0525 | 9.87 | 11 | SHORT_ARCUS_LONG_HL | -9.87 | 19.5 | 2 | -4.62 | 6 (6.8) | -0.770 |
+| META | RTH | 41 | -0.0602 | 0.0525 | 9.87 | 11 | LONG_ARCUS_SHORT_HL | 9.87 | 80.5 | 7 | 4.62 | 6 (6.8) | 0.770 |
+| META | OFF_HOURS | 155 | -0.0120 | 0.0782 | 7.90 | 29 | SHORT_ARCUS_LONG_HL | -7.90 | 33.5 | 18 | -13.99 | 6 (25.8) | -2.331 |
+| META | OFF_HOURS | 155 | -0.0120 | 0.0782 | 7.90 | 29 | LONG_ARCUS_SHORT_HL | 7.90 | 66.5 | 17 | 13.99 | 6 (25.8) | 2.331 |
+| META | ALL | 196 | -0.0221 | 0.0728 | 8.32 | 43 | SHORT_ARCUS_LONG_HL | -8.32 | 30.6 | 18 | -18.61 | 1 (196.0) | -18.607 |
+| META | ALL | 196 | -0.0221 | 0.0728 | 8.32 | 43 | LONG_ARCUS_SHORT_HL | 8.32 | 69.4 | 36 | 18.61 | 1 (196.0) | 18.607 |
+| INTC | RTH | 48 | 0.0476 | 0.2206 | 15.16 | 4 | SHORT_ARCUS_LONG_HL | -15.16 | 4.2 | 1 | -8.31 | 7 (6.9) | -1.187 |
+| INTC | RTH | 48 | 0.0476 | 0.2206 | 15.16 | 4 | LONG_ARCUS_SHORT_HL | 15.16 | 95.8 | 7 | 8.31 | 7 (6.9) | 1.187 |
+| INTC | OFF_HOURS | 172 | 0.0480 | 0.1651 | 10.26 | 21 | SHORT_ARCUS_LONG_HL | -10.26 | 23.8 | 18 | -20.15 | 7 (24.6) | -2.878 |
+| INTC | OFF_HOURS | 172 | 0.0480 | 0.1651 | 10.26 | 21 | LONG_ARCUS_SHORT_HL | 10.26 | 76.2 | 17 | 20.15 | 7 (24.6) | 2.878 |
+| INTC | ALL | 220 | 0.0479 | 0.1772 | 11.33 | 26 | SHORT_ARCUS_LONG_HL | -11.33 | 19.5 | 18 | -28.45 | 1 (220.0) | -28.454 |
+| INTC | ALL | 220 | 0.0479 | 0.1772 | 11.33 | 26 | LONG_ARCUS_SHORT_HL | 11.33 | 80.5 | 79 | 28.45 | 1 (220.0) | 28.454 |
+
+### Break-even and net after real round-trip fees — 30 d
+
+| Symbol | bucket | Direction | mode | RT fee bps | expected BE h (fee/mean) | BE h from 1st hour | net hold bps | blocks beating fee | net per-block strategy bps |
+|---|---|---|---|---|---|---|---|---|---|
+| NVDA | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | 125 | -8.40 | 0/22 | -140.70 |
+| NVDA | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 108 | -3.90 | 4/22 | -41.70 |
+| NVDA | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | 123 | -7.20 | 0/22 | -114.30 |
+| NVDA | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 443.7 | 35 | -4.20 | 0/22 | -136.50 |
+| NVDA | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 126.8 | 23 | 0.30 | 3/22 | -37.50 |
+| NVDA | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 359.2 | 31 | -3.00 | 1/22 | -110.10 |
+| NVDA | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -55.97 | 0/22 | -188.27 |
+| NVDA | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -51.47 | 2/22 | -89.27 |
+| NVDA | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -54.77 | 0/22 | -161.87 |
+| NVDA | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 72.6 | 54 | 43.37 | 2/22 | -88.93 |
+| NVDA | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 20.7 | 13 | 47.87 | 13/22 | 10.07 |
+| NVDA | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 58.7 | 51 | 44.57 | 3/22 | -62.53 |
+| NVDA | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -58.07 | 0/1 | -58.07 |
+| NVDA | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -53.57 | 0/1 | -53.57 |
+| NVDA | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -56.87 | 0/1 | -56.87 |
+| NVDA | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 87.6 | 66 | 45.47 | 1/1 | 45.47 |
+| NVDA | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 25.0 | 14 | 49.97 | 1/1 | 49.97 |
+| NVDA | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 70.9 | 41 | 46.67 | 1/1 | 46.67 |
+| SNDK | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 1224.5 | never | -5.54 | 0/22 | -137.84 |
+| SNDK | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 349.9 | 22 | -1.04 | 3/22 | -38.84 |
+| SNDK | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 991.3 | 110 | -4.34 | 0/22 | -111.44 |
+| SNDK | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -7.06 | 0/22 | -139.36 |
+| SNDK | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 7 | -2.56 | 3/22 | -40.36 |
+| SNDK | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -5.86 | 0/22 | -112.96 |
+| SNDK | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 275.9 | 435 | 6.58 | 2/23 | -132.02 |
+| SNDK | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 78.8 | 54 | 11.08 | 9/23 | -28.52 |
+| SNDK | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 223.4 | 435 | 7.78 | 3/23 | -104.42 |
+| SNDK | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | 174 | -19.18 | 0/23 | -157.78 |
+| SNDK | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 20 | -14.68 | 7/23 | -54.28 |
+| SNDK | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | 161 | -17.98 | 1/23 | -130.18 |
+| SNDK | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 328.9 | 98 | 7.34 | 1/2 | 1.04 |
+| SNDK | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 94.0 | 73 | 11.84 | 1/2 | 10.04 |
+| SNDK | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 266.2 | 77 | 8.54 | 1/2 | 3.44 |
+| SNDK | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | 40 | -19.94 | 0/2 | -26.24 |
+| SNDK | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 23 | -15.44 | 1/2 | -17.24 |
+| SNDK | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | 33 | -18.74 | 0/2 | -23.84 |
+| MU | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 80.2 | never | -4.18 | 0/4 | -23.08 |
+| MU | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 22.9 | 1 | 0.32 | 1/4 | -5.08 |
+| MU | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 64.9 | never | -2.98 | 0/4 | -18.28 |
+| MU | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -8.42 | 0/4 | -27.32 |
+| MU | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -3.92 | 0/4 | -9.32 |
+| MU | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -7.22 | 0/4 | -22.52 |
+| MU | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 16367.5 | never | -6.25 | 0/4 | -25.15 |
+| MU | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 4676.4 | 3 | -1.75 | 2/4 | -7.15 |
+| MU | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 13249.8 | never | -5.05 | 0/4 | -20.35 |
+| MU | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -6.35 | 0/4 | -25.25 |
+| MU | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 94 | -1.85 | 2/4 | -7.25 |
+| MU | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -5.15 | 0/4 | -20.45 |
+| MU | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 430.0 | 13 | -4.13 | 0/1 | -4.13 |
+| MU | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 122.9 | 1 | 0.37 | 1/1 | 0.37 |
+| MU | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 348.1 | 8 | -2.93 | 0/1 | -2.93 |
+| MU | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -8.47 | 0/1 | -8.47 |
+| MU | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 134 | -3.97 | 0/1 | -3.97 |
+| MU | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -7.27 | 0/1 | -7.27 |
+| DRAM | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 58.5 | 24 | 9.63 | 0/22 | -122.67 |
+| DRAM | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 16.7 | 10 | 14.13 | 3/22 | -23.67 |
+| DRAM | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 47.4 | 20 | 10.83 | 0/22 | -96.27 |
+| DRAM | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -22.23 | 0/22 | -154.53 |
+| DRAM | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -17.73 | 0/22 | -55.53 |
+| DRAM | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -21.03 | 0/22 | -128.13 |
+| DRAM | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 353.9 | 46 | 3.88 | 2/22 | -128.42 |
+| DRAM | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 101.1 | 31 | 8.38 | 5/22 | -29.42 |
+| DRAM | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 286.5 | 38 | 5.08 | 3/22 | -102.02 |
+| DRAM | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -16.48 | 0/22 | -148.78 |
+| DRAM | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -11.98 | 5/22 | -49.78 |
+| DRAM | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -15.28 | 0/22 | -122.38 |
+| DRAM | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 173.7 | 52 | 19.82 | 1/1 | 19.82 |
+| DRAM | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 49.6 | 28 | 24.32 | 1/1 | 24.32 |
+| DRAM | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 140.6 | 45 | 21.02 | 1/1 | 21.02 |
+| DRAM | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -32.42 | 0/1 | -32.42 |
+| DRAM | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -27.92 | 0/1 | -27.92 |
+| DRAM | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -31.22 | 0/1 | -31.22 |
+| NBIS | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -23.04 | 0/22 | -155.34 |
+| NBIS | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -18.54 | 1/22 | -56.34 |
+| NBIS | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -21.84 | 0/22 | -128.94 |
+| NBIS | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 55.7 | 40 | 10.44 | 0/22 | -121.86 |
+| NBIS | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 15.9 | 14 | 14.94 | 1/22 | -22.86 |
+| NBIS | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 45.1 | 32 | 11.64 | 0/22 | -95.46 |
+| NBIS | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -53.80 | 0/22 | -186.10 |
+| NBIS | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -49.30 | 3/22 | -87.10 |
+| NBIS | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -52.60 | 0/22 | -159.70 |
+| NBIS | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 75.9 | 44 | 41.20 | 2/22 | -91.10 |
+| NBIS | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 21.7 | 7 | 45.70 | 15/22 | 7.90 |
+| NBIS | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 61.4 | 35 | 42.40 | 3/22 | -64.70 |
+| NBIS | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -70.54 | 0/1 | -70.54 |
+| NBIS | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -66.04 | 0/1 | -66.04 |
+| NBIS | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -69.34 | 0/1 | -69.34 |
+| NBIS | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 70.6 | 45 | 57.94 | 1/1 | 57.94 |
+| NBIS | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 20.2 | 8 | 62.44 | 1/1 | 62.44 |
+| NBIS | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 57.2 | 35 | 59.14 | 1/1 | 59.14 |
+| AAPL | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -18.25 | 0/18 | -125.35 |
+| AAPL | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -13.75 | 1/18 | -44.35 |
+| AAPL | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -17.05 | 0/18 | -103.75 |
+| AAPL | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 64.3 | 1 | 5.65 | 0/18 | -101.45 |
+| AAPL | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 18.4 | 1 | 10.15 | 5/18 | -20.45 |
+| AAPL | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 52.1 | 1 | 6.85 | 0/18 | -79.85 |
+| AAPL | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -29.81 | 0/18 | -136.91 |
+| AAPL | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 1 | -25.31 | 2/18 | -55.91 |
+| AAPL | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -28.61 | 0/18 | -115.31 |
+| AAPL | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 121.9 | 5 | 17.21 | 1/18 | -89.89 |
+| AAPL | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 34.8 | 4 | 21.71 | 3/18 | -8.89 |
+| AAPL | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 98.7 | 5 | 18.41 | 2/18 | -68.29 |
+| AAPL | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -41.76 | 0/1 | -41.76 |
+| AAPL | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 4 | -37.26 | 0/1 | -37.26 |
+| AAPL | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -40.56 | 0/1 | -40.56 |
+| AAPL | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 102.5 | 1 | 29.16 | 1/1 | 29.16 |
+| AAPL | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 29.3 | 1 | 33.66 | 1/1 | 33.66 |
+| AAPL | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 83.0 | 1 | 30.36 | 1/1 | 30.36 |
+| CRCL | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -13.97 | 0/17 | -114.77 |
+| CRCL | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -9.47 | 2/17 | -38.27 |
+| CRCL | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -12.77 | 0/17 | -94.37 |
+| CRCL | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 96.1 | 8 | 1.37 | 1/17 | -99.43 |
+| CRCL | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 27.5 | 6 | 5.87 | 1/17 | -22.93 |
+| CRCL | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 77.8 | 7 | 2.57 | 1/17 | -79.03 |
+| CRCL | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 46.0 | 210 | 53.68 | 1/17 | -47.12 |
+| CRCL | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 13.1 | 210 | 58.18 | 5/17 | 29.38 |
+| CRCL | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 37.2 | 210 | 54.88 | 2/17 | -26.72 |
+| CRCL | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | 24 | -66.28 | 1/17 | -167.08 |
+| CRCL | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 17 | -61.78 | 6/17 | -90.58 |
+| CRCL | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | 21 | -65.08 | 2/17 | -146.68 |
+| CRCL | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 66.8 | 271 | 46.01 | 1/1 | 46.01 |
+| CRCL | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 19.1 | 8 | 50.51 | 1/1 | 50.51 |
+| CRCL | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 54.1 | 271 | 47.21 | 1/1 | 47.21 |
+| CRCL | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | 23 | -58.61 | 0/1 | -58.61 |
+| CRCL | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 22 | -54.11 | 0/1 | -54.11 |
+| CRCL | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | 23 | -57.41 | 0/1 | -57.41 |
+| GOOGL | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -8.69 | 0/2 | -14.99 |
+| GOOGL | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -4.19 | 0/2 | -5.99 |
+| GOOGL | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -7.49 | 0/2 | -12.59 |
+| GOOGL | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 34.2 | never | -3.91 | 0/2 | -10.21 |
+| GOOGL | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 9.8 | 3 | 0.59 | 1/2 | -1.21 |
+| GOOGL | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 27.7 | never | -2.71 | 0/2 | -7.81 |
+| GOOGL | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -10.38 | 0/2 | -16.68 |
+| GOOGL | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -5.88 | 0/2 | -7.68 |
+| GOOGL | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -9.18 | 0/2 | -14.28 |
+| GOOGL | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 60.2 | never | -2.22 | 0/2 | -8.52 |
+| GOOGL | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 17.2 | 10 | 2.28 | 1/2 | 0.48 |
+| GOOGL | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 48.7 | never | -1.02 | 0/2 | -6.12 |
+| GOOGL | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -12.77 | 0/1 | -12.77 |
+| GOOGL | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -8.27 | 0/1 | -8.27 |
+| GOOGL | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -11.57 | 0/1 | -11.57 |
+| GOOGL | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 50.6 | 34 | 0.17 | 1/1 | 0.17 |
+| GOOGL | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 14.5 | 3 | 4.67 | 1/1 | 4.67 |
+| GOOGL | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 41.0 | 19 | 1.37 | 1/1 | 1.37 |
+| META | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -10.92 | 0/6 | -42.42 |
+| META | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -6.42 | 0/6 | -15.42 |
+| META | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -9.72 | 0/6 | -35.22 |
+| META | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 55.9 | never | -1.68 | 0/6 | -33.18 |
+| META | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 16.0 | 24 | 2.82 | 2/6 | -6.18 |
+| META | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 45.2 | never | -0.48 | 0/6 | -25.98 |
+| META | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -20.29 | 0/6 | -51.79 |
+| META | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -15.79 | 0/6 | -24.79 |
+| META | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -19.09 | 0/6 | -44.59 |
+| META | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 69.8 | 34 | 7.69 | 0/6 | -23.81 |
+| META | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 19.9 | 14 | 12.19 | 4/6 | 3.19 |
+| META | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 56.5 | 31 | 8.89 | 0/6 | -16.61 |
+| META | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -24.91 | 0/1 | -24.91 |
+| META | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -20.41 | 0/1 | -20.41 |
+| META | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -23.71 | 0/1 | -23.71 |
+| META | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 66.4 | 47 | 12.31 | 1/1 | 12.31 |
+| META | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 19.0 | 24 | 16.81 | 1/1 | 16.81 |
+| META | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 53.7 | 43 | 13.51 | 1/1 | 13.51 |
+| INTC | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -14.61 | 0/7 | -52.41 |
+| INTC | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -10.11 | 0/7 | -20.91 |
+| INTC | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -13.41 | 0/7 | -44.01 |
+| INTC | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 36.4 | 34 | 2.01 | 0/7 | -35.79 |
+| INTC | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 10.4 | 17 | 6.51 | 1/7 | -4.29 |
+| INTC | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 29.5 | 31 | 3.21 | 0/7 | -27.39 |
+| INTC | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -26.45 | 0/7 | -64.25 |
+| INTC | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -21.95 | 0/7 | -32.75 |
+| INTC | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -25.25 | 0/7 | -55.85 |
+| INTC | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 53.8 | 42 | 13.85 | 1/7 | -23.95 |
+| INTC | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 15.4 | 9 | 18.35 | 5/7 | 7.55 |
+| INTC | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 43.5 | 32 | 15.05 | 1/7 | -15.55 |
+| INTC | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -34.75 | 0/1 | -34.75 |
+| INTC | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -30.25 | 0/1 | -30.25 |
+| INTC | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -33.55 | 0/1 | -33.55 |
+| INTC | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 48.7 | 45 | 22.15 | 1/1 | 22.15 |
+| INTC | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 13.9 | 13 | 26.65 | 1/1 | 26.65 |
+| INTC | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 39.4 | 37 | 23.35 | 1/1 | 23.35 |
+
+### Coverage — 30 d
+
+* NVDA: Arcus rows 720, HL rows 720, aligned 720 h {'RTH': 148, 'EXT': 193, 'CLOSED': 379}; Arcus off-hours modal rate 0.000005138888888888 (24.0 % of CLOSED h; ×8760 = 4.502 %/yr); Arcus distinct RTH rates 143; CLOSED hours: 13 distinct Arcus rates, 4 hour-to-hour changes (pinned SOFR + 0.5 %)
+* SNDK: Arcus rows 712, HL rows 720, aligned 712 h {'RTH': 148, 'EXT': 193, 'CLOSED': 371}; Arcus off-hours modal rate 0.000005138888888888 (24.5 % of CLOSED h; ×8760 = 4.502 %/yr); Arcus distinct RTH rates 136; CLOSED hours: 12 distinct Arcus rates, 3 hour-to-hour changes (pinned SOFR + 0.5 %)
+* MU: Arcus rows 720, HL rows 148, aligned 148 h {'RTH': 27, 'EXT': 31, 'CLOSED': 90}; Arcus off-hours modal rate 0.000005104166666666 (61.1 % of CLOSED h; ×8760 = 4.471 %/yr); Arcus distinct RTH rates 26; CLOSED hours: 5 distinct Arcus rates, 2 hour-to-hour changes (pinned SOFR + 0.5 %)
+* DRAM: Arcus rows 720, HL rows 720, aligned 720 h {'RTH': 148, 'EXT': 193, 'CLOSED': 379}; Arcus off-hours modal rate 0.000005138888888888 (23.7 % of CLOSED h; ×8760 = 4.502 %/yr); Arcus distinct RTH rates 125; CLOSED hours: 14 distinct Arcus rates, 5 hour-to-hour changes (pinned SOFR + 0.5 %)
+* NBIS: Arcus rows 720, HL rows 720, aligned 720 h {'RTH': 148, 'EXT': 193, 'CLOSED': 379}; Arcus off-hours modal rate 0.000005138888888888 (24.0 % of CLOSED h; ×8760 = 4.502 %/yr); Arcus distinct RTH rates 116; CLOSED hours: 12 distinct Arcus rates, 3 hour-to-hour changes (pinned SOFR + 0.5 %)
+* AAPL: Arcus rows 720, HL rows 577, aligned 577 h {'RTH': 122, 'EXT': 157, 'CLOSED': 298}; Arcus off-hours modal rate 0.00000511574074074 (26.5 % of CLOSED h; ×8760 = 4.481 %/yr); Arcus distinct RTH rates 117; CLOSED hours: 14 distinct Arcus rates, 5 hour-to-hour changes (pinned SOFR + 0.5 %)
+* CRCL: Arcus rows 720, HL rows 555, aligned 555 h {'RTH': 117, 'EXT': 148, 'CLOSED': 290}; Arcus off-hours modal rate 0.00000511574074074 (27.6 % of CLOSED h; ×8760 = 4.481 %/yr); Arcus distinct RTH rates 84; CLOSED hours: 11 distinct Arcus rates, 2 hour-to-hour changes (pinned SOFR + 0.5 %)
+* GOOGL: Arcus rows 720, HL rows 52, aligned 52 h {'RTH': 13, 'EXT': 13, 'CLOSED': 26}; Arcus off-hours modal rate 0.000005138888888888 (69.2 % of CLOSED h; ×8760 = 4.502 %/yr); Arcus distinct RTH rates 12; CLOSED hours: 2 distinct Arcus rates, 0 hour-to-hour changes (pinned SOFR + 0.5 %)
+* META: Arcus rows 720, HL rows 196, aligned 196 h {'RTH': 41, 'EXT': 49, 'CLOSED': 106}; Arcus off-hours modal rate 0.000005104166666666 (51.9 % of CLOSED h; ×8760 = 4.471 %/yr); Arcus distinct RTH rates 33; CLOSED hours: 5 distinct Arcus rates, 1 hour-to-hour changes (pinned SOFR + 0.5 %)
+* INTC: Arcus rows 720, HL rows 220, aligned 220 h {'RTH': 48, 'EXT': 58, 'CLOSED': 114}; Arcus off-hours modal rate 0.000005104166666666 (48.2 % of CLOSED h; ×8760 = 4.471 %/yr); Arcus distinct RTH rates 26; CLOSED hours: 6 distinct Arcus rates, 1 hour-to-hour changes (pinned SOFR + 0.5 %)
+
+## c) Funding back-test — last 14 days (hourly, both venues, aligned by payment hour)
+
+Session of a payment at H = label of H − 30 min (the accrual hour's midpoint). RTH = NYSE 09:30–16:00 ET (13:00 on early-close days, holidays excluded); OFF_HOURS = pre/post (EXT) + overnight/weekend/holiday (CLOSED). Carry = funding received per hour. Runs / flips only inside contiguous blocks. `net hold` = bucket carry − one round trip; `per-block` = round trip paid every block (e.g. every RTH session). Funding only: no basis / price PnL, slippage or buffer.
+
+### Summary (better direction per bucket; cheapest real mode MAKER_ARCUS_TAKER_HL and DUAL_TAKER)
+
+| Symbol | bucket | h | Δ ann. HL−Arcus % | better direction | carry ann. % | % h > 0 | flips | longest + run h | total carry bps | BE h (fee/mean) maker-A / dual | net hold bps maker-A / dual | per-block net bps maker-A / dual |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| NVDA | RTH | 65 | -2.70 | SHORT_ARCUS_LONG_HL | 2.70 | 55.4 | 11 | 7 | 2.01 | 58.3 / 204.2 | 0.21 / -4.29 | -15.99 / -60.99 |
+| NVDA | OFF_HOURS | 271 | 5.60 | LONG_ARCUS_SHORT_HL | 5.60 | 62.7 | 48 | 24 | 17.34 | 28.1 / 98.5 | 15.54 / 11.04 | -0.66 / -45.66 |
+| NVDA | ALL | 336 | 4.00 | LONG_ARCUS_SHORT_HL | 4.00 | 59.2 | 61 | 56 | 15.33 | 39.4 / 138.0 | 13.53 / 9.03 | 13.53 / 9.03 |
+| SNDK | RTH | 65 | 3.74 | LONG_ARCUS_SHORT_HL | 3.74 | 60.0 | 12 | 7 | 2.77 | 42.2 / 147.6 | 0.97 / -3.53 | -15.23 / -60.23 |
+| SNDK | OFF_HOURS | 263 | -5.11 | SHORT_ARCUS_LONG_HL | 5.11 | 50.6 | 45 | 29 | 15.34 | 30.9 / 108.0 | 13.54 / 9.04 | -4.46 / -53.96 |
+| SNDK | ALL | 328 | -3.36 | SHORT_ARCUS_LONG_HL | 3.36 | 48.5 | 65 | 29 | 12.56 | 47.0 / 164.5 | 10.76 / 6.26 | 8.96 / -0.04 |
+| MU | RTH | 27 | -6.88 | SHORT_ARCUS_LONG_HL | 6.88 | 40.7 | 1 | 6 | 2.12 | 22.9 / 80.2 | 0.32 / -4.18 | -5.08 / -23.08 |
+| MU | OFF_HOURS | 121 | -0.03 | SHORT_ARCUS_LONG_HL | 0.03 | 47.9 | 29 | 18 | 0.05 | 4676.4 / 16367.5 | -1.75 / -6.25 | -7.15 / -25.15 |
+| MU | ALL | 148 | -1.28 | SHORT_ARCUS_LONG_HL | 1.28 | 46.6 | 31 | 18 | 2.17 | 122.9 / 430.0 | 0.37 / -4.13 | 0.37 / -4.13 |
+| DRAM | RTH | 65 | -3.39 | SHORT_ARCUS_LONG_HL | 3.39 | 52.3 | 7 | 7 | 2.51 | 46.6 / 163.0 | 0.71 / -3.79 | -15.49 / -60.49 |
+| DRAM | OFF_HOURS | 271 | 1.03 | LONG_ARCUS_SHORT_HL | 1.03 | 53.1 | 55 | 17 | 3.19 | 152.7 / 534.6 | 1.39 / -3.11 | -14.81 / -59.81 |
+| DRAM | ALL | 336 | 0.18 | LONG_ARCUS_SHORT_HL | 0.18 | 52.1 | 70 | 23 | 0.68 | 887.8 / 3107.4 | -1.12 / -5.62 | -1.12 / -5.62 |
+| NBIS | RTH | 65 | 7.42 | LONG_ARCUS_SHORT_HL | 7.42 | 72.3 | 6 | 7 | 5.50 | 21.3 / 74.4 | 3.70 / -0.80 | -12.50 / -57.50 |
+| NBIS | OFF_HOURS | 271 | 7.00 | LONG_ARCUS_SHORT_HL | 7.00 | 65.7 | 46 | 30 | 21.65 | 22.5 / 78.8 | 19.85 / 15.35 | 3.65 / -41.35 |
+| NBIS | ALL | 336 | 7.08 | LONG_ARCUS_SHORT_HL | 7.08 | 67.0 | 57 | 50 | 27.16 | 22.3 / 77.9 | 25.36 / 20.86 | 25.36 / 20.86 |
+| AAPL | RTH | 65 | 3.11 | LONG_ARCUS_SHORT_HL | 3.11 | 55.4 | 11 | 7 | 2.31 | 50.7 / 177.4 | 0.51 / -3.99 | -15.69 / -60.69 |
+| AAPL | OFF_HOURS | 271 | -2.26 | SHORT_ARCUS_LONG_HL | 2.26 | 64.9 | 54 | 60 | 6.99 | 69.8 / 244.2 | 5.19 / 0.69 | -11.01 / -56.01 |
+| AAPL | ALL | 336 | -1.22 | SHORT_ARCUS_LONG_HL | 1.22 | 61.0 | 72 | 61 | 4.68 | 129.2 / 452.0 | 2.88 / -1.62 | 2.88 / -1.62 |
+| CRCL | RTH | 65 | 1.16 | LONG_ARCUS_SHORT_HL | 1.16 | 75.4 | 11 | 7 | 0.86 | 135.4 / 473.9 | -0.94 / -5.44 | -17.14 / -62.14 |
+| CRCL | OFF_HOURS | 271 | -24.00 | SHORT_ARCUS_LONG_HL | 24.00 | 47.6 | 36 | 54 | 74.26 | 6.6 / 23.0 | 72.46 / 67.96 | 56.26 / 11.26 |
+| CRCL | ALL | 336 | -19.14 | SHORT_ARCUS_LONG_HL | 19.14 | 43.2 | 49 | 66 | 73.40 | 8.2 / 28.8 | 71.60 / 67.10 | 71.60 / 67.10 |
+| GOOGL | RTH | 13 | 16.13 | LONG_ARCUS_SHORT_HL | 16.13 | 61.5 | 4 | 6 | 2.39 | 9.8 / 34.2 | 0.59 / -3.91 | -1.21 / -10.21 |
+| GOOGL | OFF_HOURS | 39 | 9.17 | LONG_ARCUS_SHORT_HL | 9.17 | 94.9 | 4 | 17 | 4.08 | 17.2 / 60.2 | 2.28 / -2.22 | 0.48 / -8.52 |
+| GOOGL | ALL | 52 | 10.91 | LONG_ARCUS_SHORT_HL | 10.91 | 86.5 | 10 | 23 | 6.47 | 14.5 / 50.6 | 4.67 / 0.17 | 4.67 / 0.17 |
+| META | RTH | 41 | 9.87 | LONG_ARCUS_SHORT_HL | 9.87 | 80.5 | 11 | 7 | 4.62 | 16.0 / 55.9 | 2.82 / -1.68 | -6.18 / -33.18 |
+| META | OFF_HOURS | 155 | 7.90 | LONG_ARCUS_SHORT_HL | 7.90 | 66.5 | 29 | 17 | 13.99 | 19.9 / 69.8 | 12.19 / 7.69 | 3.19 / -23.81 |
+| META | ALL | 196 | 8.32 | LONG_ARCUS_SHORT_HL | 8.32 | 69.4 | 43 | 36 | 18.61 | 19.0 / 66.4 | 16.81 / 12.31 | 16.81 / 12.31 |
+| INTC | RTH | 48 | 15.16 | LONG_ARCUS_SHORT_HL | 15.16 | 95.8 | 4 | 7 | 8.31 | 10.4 / 36.4 | 6.51 / 2.01 | -4.29 / -35.79 |
+| INTC | OFF_HOURS | 172 | 10.26 | LONG_ARCUS_SHORT_HL | 10.26 | 76.2 | 21 | 17 | 20.15 | 15.4 / 53.8 | 18.35 / 13.85 | 7.55 / -23.95 |
+| INTC | ALL | 220 | 11.33 | LONG_ARCUS_SHORT_HL | 11.33 | 80.5 | 26 | 79 | 28.45 | 13.9 / 48.7 | 26.65 / 22.15 | 26.65 / 22.15 |
+
+### Detail (both directions)
+
+| Symbol | bucket | h | Arcus mean bps/h | HL mean bps/h | Δ ann. HL−Arcus % | Δ flips | Direction | carry ann. % | % h > 0 | longest + run h | total carry bps | blocks (mean len h) | mean block carry bps |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| NVDA | RTH | 65 | 0.2888 | 0.2580 | -2.70 | 11 | SHORT_ARCUS_LONG_HL | 2.70 | 55.4 | 7 | 2.01 | 10 (6.5) | 0.201 |
+| NVDA | RTH | 65 | 0.2888 | 0.2580 | -2.70 | 11 | LONG_ARCUS_SHORT_HL | -2.70 | 44.6 | 7 | -2.01 | 10 (6.5) | -0.201 |
+| NVDA | OFF_HOURS | 271 | 0.1197 | 0.1837 | 5.60 | 48 | SHORT_ARCUS_LONG_HL | -5.60 | 37.3 | 15 | -17.34 | 10 (27.1) | -1.734 |
+| NVDA | OFF_HOURS | 271 | 0.1197 | 0.1837 | 5.60 | 48 | LONG_ARCUS_SHORT_HL | 5.60 | 62.7 | 24 | 17.34 | 10 (27.1) | 1.734 |
+| NVDA | ALL | 336 | 0.1524 | 0.1980 | 4.00 | 61 | SHORT_ARCUS_LONG_HL | -4.00 | 40.8 | 15 | -15.33 | 1 (336.0) | -15.334 |
+| NVDA | ALL | 336 | 0.1524 | 0.1980 | 4.00 | 61 | LONG_ARCUS_SHORT_HL | 4.00 | 59.2 | 56 | 15.33 | 1 (336.0) | 15.334 |
+| SNDK | RTH | 65 | 0.1729 | 0.2156 | 3.74 | 12 | SHORT_ARCUS_LONG_HL | -3.74 | 40.0 | 7 | -2.77 | 10 (6.5) | -0.277 |
+| SNDK | RTH | 65 | 0.1729 | 0.2156 | 3.74 | 12 | LONG_ARCUS_SHORT_HL | 3.74 | 60.0 | 7 | 2.77 | 10 (6.5) | 0.277 |
+| SNDK | OFF_HOURS | 263 | 0.0990 | 0.0407 | -5.11 | 45 | SHORT_ARCUS_LONG_HL | 5.11 | 50.6 | 29 | 15.34 | 11 (23.9) | 1.394 |
+| SNDK | OFF_HOURS | 263 | 0.0990 | 0.0407 | -5.11 | 45 | LONG_ARCUS_SHORT_HL | -5.11 | 49.4 | 24 | -15.34 | 11 (23.9) | -1.394 |
+| SNDK | ALL | 328 | 0.1137 | 0.0754 | -3.36 | 65 | SHORT_ARCUS_LONG_HL | 3.36 | 48.5 | 29 | 12.56 | 2 (164.0) | 6.282 |
+| SNDK | ALL | 328 | 0.1137 | 0.0754 | -3.36 | 65 | LONG_ARCUS_SHORT_HL | -3.36 | 51.5 | 32 | -12.56 | 2 (164.0) | -6.282 |
+| MU | RTH | 27 | 0.2543 | 0.1757 | -6.88 | 1 | SHORT_ARCUS_LONG_HL | 6.88 | 40.7 | 6 | 2.12 | 4 (6.8) | 0.530 |
+| MU | RTH | 27 | 0.2543 | 0.1757 | -6.88 | 1 | LONG_ARCUS_SHORT_HL | -6.88 | 59.3 | 7 | -2.12 | 4 (6.8) | -0.530 |
+| MU | OFF_HOURS | 121 | 0.0996 | 0.0992 | -0.03 | 29 | SHORT_ARCUS_LONG_HL | 0.03 | 47.9 | 18 | 0.05 | 4 (30.2) | 0.012 |
+| MU | OFF_HOURS | 121 | 0.0996 | 0.0992 | -0.03 | 29 | LONG_ARCUS_SHORT_HL | -0.03 | 52.1 | 13 | -0.05 | 4 (30.2) | -0.012 |
+| MU | ALL | 148 | 0.1278 | 0.1132 | -1.28 | 31 | SHORT_ARCUS_LONG_HL | 1.28 | 46.6 | 18 | 2.17 | 1 (148.0) | 2.168 |
+| MU | ALL | 148 | 0.1278 | 0.1132 | -1.28 | 31 | LONG_ARCUS_SHORT_HL | -1.28 | 53.4 | 15 | -2.17 | 1 (148.0) | -2.168 |
+| DRAM | RTH | 65 | 0.2454 | 0.2067 | -3.39 | 7 | SHORT_ARCUS_LONG_HL | 3.39 | 52.3 | 7 | 2.51 | 10 (6.5) | 0.251 |
+| DRAM | RTH | 65 | 0.2454 | 0.2067 | -3.39 | 7 | LONG_ARCUS_SHORT_HL | -3.39 | 47.7 | 7 | -2.51 | 10 (6.5) | -0.251 |
+| DRAM | OFF_HOURS | 271 | 0.0971 | 0.1089 | 1.03 | 55 | SHORT_ARCUS_LONG_HL | -1.03 | 46.9 | 18 | -3.19 | 10 (27.1) | -0.319 |
+| DRAM | OFF_HOURS | 271 | 0.0971 | 0.1089 | 1.03 | 55 | LONG_ARCUS_SHORT_HL | 1.03 | 53.1 | 17 | 3.19 | 10 (27.1) | 0.319 |
+| DRAM | ALL | 336 | 0.1258 | 0.1278 | 0.18 | 70 | SHORT_ARCUS_LONG_HL | -0.18 | 47.9 | 18 | -0.68 | 1 (336.0) | -0.681 |
+| DRAM | ALL | 336 | 0.1258 | 0.1278 | 0.18 | 70 | LONG_ARCUS_SHORT_HL | 0.18 | 52.1 | 23 | 0.68 | 1 (336.0) | 0.681 |
+| NBIS | RTH | 65 | 0.2595 | 0.3441 | 7.42 | 6 | SHORT_ARCUS_LONG_HL | -7.42 | 27.7 | 6 | -5.50 | 10 (6.5) | -0.550 |
+| NBIS | RTH | 65 | 0.2595 | 0.3441 | 7.42 | 6 | LONG_ARCUS_SHORT_HL | 7.42 | 72.3 | 7 | 5.50 | 10 (6.5) | 0.550 |
+| NBIS | OFF_HOURS | 271 | 0.0919 | 0.1718 | 7.00 | 46 | SHORT_ARCUS_LONG_HL | -7.00 | 34.3 | 29 | -21.65 | 10 (27.1) | -2.165 |
+| NBIS | OFF_HOURS | 271 | 0.0919 | 0.1718 | 7.00 | 46 | LONG_ARCUS_SHORT_HL | 7.00 | 65.7 | 30 | 21.65 | 10 (27.1) | 2.165 |
+| NBIS | ALL | 336 | 0.1243 | 0.2051 | 7.08 | 57 | SHORT_ARCUS_LONG_HL | -7.08 | 33.0 | 35 | -27.16 | 1 (336.0) | -27.157 |
+| NBIS | ALL | 336 | 0.1243 | 0.2051 | 7.08 | 57 | LONG_ARCUS_SHORT_HL | 7.08 | 67.0 | 50 | 27.16 | 1 (336.0) | 27.157 |
+| AAPL | RTH | 65 | -0.1196 | -0.0841 | 3.11 | 11 | SHORT_ARCUS_LONG_HL | -3.11 | 44.6 | 7 | -2.31 | 10 (6.5) | -0.231 |
+| AAPL | RTH | 65 | -0.1196 | -0.0841 | 3.11 | 11 | LONG_ARCUS_SHORT_HL | 3.11 | 55.4 | 7 | 2.31 | 10 (6.5) | 0.231 |
+| AAPL | OFF_HOURS | 271 | 0.0251 | -0.0007 | -2.26 | 54 | SHORT_ARCUS_LONG_HL | 2.26 | 64.9 | 60 | 6.99 | 10 (27.1) | 0.699 |
+| AAPL | OFF_HOURS | 271 | 0.0251 | -0.0007 | -2.26 | 54 | LONG_ARCUS_SHORT_HL | -2.26 | 35.1 | 14 | -6.99 | 10 (27.1) | -0.699 |
+| AAPL | ALL | 336 | -0.0029 | -0.0168 | -1.22 | 72 | SHORT_ARCUS_LONG_HL | 1.22 | 61.0 | 61 | 4.68 | 1 (336.0) | 4.683 |
+| AAPL | ALL | 336 | -0.0029 | -0.0168 | -1.22 | 72 | LONG_ARCUS_SHORT_HL | -1.22 | 39.0 | 15 | -4.68 | 1 (336.0) | -4.683 |
+| CRCL | RTH | 65 | 0.0882 | 0.1015 | 1.16 | 11 | SHORT_ARCUS_LONG_HL | -1.16 | 24.6 | 7 | -0.86 | 10 (6.5) | -0.086 |
+| CRCL | RTH | 65 | 0.0882 | 0.1015 | 1.16 | 11 | LONG_ARCUS_SHORT_HL | 1.16 | 75.4 | 7 | 0.86 | 10 (6.5) | 0.086 |
+| CRCL | OFF_HOURS | 271 | 0.0435 | -0.2305 | -24.00 | 36 | SHORT_ARCUS_LONG_HL | 24.00 | 47.6 | 54 | 74.26 | 10 (27.1) | 7.426 |
+| CRCL | OFF_HOURS | 271 | 0.0435 | -0.2305 | -24.00 | 36 | LONG_ARCUS_SHORT_HL | -24.00 | 52.4 | 17 | -74.26 | 10 (27.1) | -7.426 |
+| CRCL | ALL | 336 | 0.0522 | -0.1663 | -19.14 | 49 | SHORT_ARCUS_LONG_HL | 19.14 | 43.2 | 66 | 73.40 | 1 (336.0) | 73.397 |
+| CRCL | ALL | 336 | 0.0522 | -0.1663 | -19.14 | 49 | LONG_ARCUS_SHORT_HL | -19.14 | 56.8 | 41 | -73.40 | 1 (336.0) | -73.397 |
+| GOOGL | RTH | 13 | -0.0124 | 0.1717 | 16.13 | 4 | SHORT_ARCUS_LONG_HL | -16.13 | 38.5 | 3 | -2.39 | 2 (6.5) | -1.197 |
+| GOOGL | RTH | 13 | -0.0124 | 0.1717 | 16.13 | 4 | LONG_ARCUS_SHORT_HL | 16.13 | 61.5 | 6 | 2.39 | 2 (6.5) | 1.197 |
+| GOOGL | OFF_HOURS | 39 | 0.0118 | 0.1165 | 9.17 | 4 | SHORT_ARCUS_LONG_HL | -9.17 | 5.1 | 1 | -4.08 | 2 (19.5) | -2.040 |
+| GOOGL | OFF_HOURS | 39 | 0.0118 | 0.1165 | 9.17 | 4 | LONG_ARCUS_SHORT_HL | 9.17 | 94.9 | 17 | 4.08 | 2 (19.5) | 2.040 |
+| GOOGL | ALL | 52 | 0.0058 | 0.1303 | 10.91 | 10 | SHORT_ARCUS_LONG_HL | -10.91 | 13.5 | 3 | -6.47 | 1 (52.0) | -6.474 |
+| GOOGL | ALL | 52 | 0.0058 | 0.1303 | 10.91 | 10 | LONG_ARCUS_SHORT_HL | 10.91 | 86.5 | 23 | 6.47 | 1 (52.0) | 6.474 |
+| META | RTH | 41 | -0.0602 | 0.0525 | 9.87 | 11 | SHORT_ARCUS_LONG_HL | -9.87 | 19.5 | 2 | -4.62 | 6 (6.8) | -0.770 |
+| META | RTH | 41 | -0.0602 | 0.0525 | 9.87 | 11 | LONG_ARCUS_SHORT_HL | 9.87 | 80.5 | 7 | 4.62 | 6 (6.8) | 0.770 |
+| META | OFF_HOURS | 155 | -0.0120 | 0.0782 | 7.90 | 29 | SHORT_ARCUS_LONG_HL | -7.90 | 33.5 | 18 | -13.99 | 6 (25.8) | -2.331 |
+| META | OFF_HOURS | 155 | -0.0120 | 0.0782 | 7.90 | 29 | LONG_ARCUS_SHORT_HL | 7.90 | 66.5 | 17 | 13.99 | 6 (25.8) | 2.331 |
+| META | ALL | 196 | -0.0221 | 0.0728 | 8.32 | 43 | SHORT_ARCUS_LONG_HL | -8.32 | 30.6 | 18 | -18.61 | 1 (196.0) | -18.607 |
+| META | ALL | 196 | -0.0221 | 0.0728 | 8.32 | 43 | LONG_ARCUS_SHORT_HL | 8.32 | 69.4 | 36 | 18.61 | 1 (196.0) | 18.607 |
+| INTC | RTH | 48 | 0.0476 | 0.2206 | 15.16 | 4 | SHORT_ARCUS_LONG_HL | -15.16 | 4.2 | 1 | -8.31 | 7 (6.9) | -1.187 |
+| INTC | RTH | 48 | 0.0476 | 0.2206 | 15.16 | 4 | LONG_ARCUS_SHORT_HL | 15.16 | 95.8 | 7 | 8.31 | 7 (6.9) | 1.187 |
+| INTC | OFF_HOURS | 172 | 0.0480 | 0.1651 | 10.26 | 21 | SHORT_ARCUS_LONG_HL | -10.26 | 23.8 | 18 | -20.15 | 7 (24.6) | -2.878 |
+| INTC | OFF_HOURS | 172 | 0.0480 | 0.1651 | 10.26 | 21 | LONG_ARCUS_SHORT_HL | 10.26 | 76.2 | 17 | 20.15 | 7 (24.6) | 2.878 |
+| INTC | ALL | 220 | 0.0479 | 0.1772 | 11.33 | 26 | SHORT_ARCUS_LONG_HL | -11.33 | 19.5 | 18 | -28.45 | 1 (220.0) | -28.454 |
+| INTC | ALL | 220 | 0.0479 | 0.1772 | 11.33 | 26 | LONG_ARCUS_SHORT_HL | 11.33 | 80.5 | 79 | 28.45 | 1 (220.0) | 28.454 |
+
+### Break-even and net after real round-trip fees — 14 d
+
+| Symbol | bucket | Direction | mode | RT fee bps | expected BE h (fee/mean) | BE h from 1st hour | net hold bps | blocks beating fee | net per-block strategy bps |
+|---|---|---|---|---|---|---|---|---|---|
+| NVDA | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 204.2 | 26 | -4.29 | 0/10 | -60.99 |
+| NVDA | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 58.3 | 5 | 0.21 | 3/10 | -15.99 |
+| NVDA | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 165.3 | 21 | -3.09 | 0/10 | -48.99 |
+| NVDA | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -8.31 | 0/10 | -65.01 |
+| NVDA | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -3.81 | 1/10 | -20.01 |
+| NVDA | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -7.11 | 1/10 | -53.01 |
+| NVDA | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -23.64 | 0/10 | -80.34 |
+| NVDA | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 46 | -19.14 | 2/10 | -35.34 |
+| NVDA | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -22.44 | 0/10 | -68.34 |
+| NVDA | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 98.5 | 92 | 11.04 | 1/10 | -45.66 |
+| NVDA | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 28.1 | 5 | 15.54 | 6/10 | -0.66 |
+| NVDA | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 79.7 | 90 | 12.24 | 1/10 | -33.66 |
+| NVDA | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | 59 | -21.63 | 0/1 | -21.63 |
+| NVDA | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 26 | -17.13 | 0/1 | -17.13 |
+| NVDA | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | 45 | -20.43 | 0/1 | -20.43 |
+| NVDA | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 138.0 | 264 | 9.03 | 1/1 | 9.03 |
+| NVDA | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 39.4 | 7 | 13.53 | 1/1 | 13.53 |
+| NVDA | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 111.8 | 263 | 10.23 | 1/1 | 10.23 |
+| SNDK | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -9.07 | 0/10 | -65.77 |
+| SNDK | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 29 | -4.57 | 1/10 | -20.77 |
+| SNDK | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -7.87 | 0/10 | -53.77 |
+| SNDK | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 147.6 | never | -3.53 | 0/10 | -60.23 |
+| SNDK | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 42.2 | 56 | 0.97 | 2/10 | -15.23 |
+| SNDK | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 119.5 | never | -2.33 | 0/10 | -48.23 |
+| SNDK | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 108.0 | 133 | 9.04 | 2/11 | -53.96 |
+| SNDK | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 30.9 | 38 | 13.54 | 5/11 | -4.46 |
+| SNDK | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 87.4 | 60 | 10.24 | 2/11 | -40.76 |
+| SNDK | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -21.64 | 0/11 | -84.64 |
+| SNDK | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -17.14 | 2/11 | -35.14 |
+| SNDK | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -20.44 | 0/11 | -71.44 |
+| SNDK | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 164.5 | 71 | 6.26 | 1/2 | -0.04 |
+| SNDK | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 47.0 | 33 | 10.76 | 1/2 | 8.96 |
+| SNDK | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 133.1 | 60 | 7.46 | 1/2 | 2.36 |
+| SNDK | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -18.86 | 0/2 | -25.16 |
+| SNDK | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -14.36 | 1/2 | -16.16 |
+| SNDK | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -17.66 | 0/2 | -22.76 |
+| MU | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 80.2 | never | -4.18 | 0/4 | -23.08 |
+| MU | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 22.9 | 1 | 0.32 | 1/4 | -5.08 |
+| MU | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 64.9 | never | -2.98 | 0/4 | -18.28 |
+| MU | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -8.42 | 0/4 | -27.32 |
+| MU | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -3.92 | 0/4 | -9.32 |
+| MU | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -7.22 | 0/4 | -22.52 |
+| MU | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 16367.5 | never | -6.25 | 0/4 | -25.15 |
+| MU | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 4676.4 | 3 | -1.75 | 2/4 | -7.15 |
+| MU | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 13249.8 | never | -5.05 | 0/4 | -20.35 |
+| MU | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -6.35 | 0/4 | -25.25 |
+| MU | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 94 | -1.85 | 2/4 | -7.25 |
+| MU | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -5.15 | 0/4 | -20.45 |
+| MU | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 430.0 | 13 | -4.13 | 0/1 | -4.13 |
+| MU | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 122.9 | 1 | 0.37 | 1/1 | 0.37 |
+| MU | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 348.1 | 8 | -2.93 | 0/1 | -2.93 |
+| MU | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -8.47 | 0/1 | -8.47 |
+| MU | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 134 | -3.97 | 0/1 | -3.97 |
+| MU | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -7.27 | 0/1 | -7.27 |
+| DRAM | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 163.0 | never | -3.79 | 0/10 | -60.49 |
+| DRAM | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 46.6 | 64 | 0.71 | 1/10 | -15.49 |
+| DRAM | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 132.0 | never | -2.59 | 0/10 | -48.49 |
+| DRAM | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -8.81 | 0/10 | -65.51 |
+| DRAM | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 22 | -4.31 | 0/10 | -20.51 |
+| DRAM | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -7.61 | 0/10 | -53.51 |
+| DRAM | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -9.49 | 1/10 | -66.19 |
+| DRAM | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 45 | -4.99 | 1/10 | -21.19 |
+| DRAM | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -8.29 | 1/10 | -54.19 |
+| DRAM | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 534.6 | 107 | -3.11 | 0/10 | -59.81 |
+| DRAM | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 152.7 | 93 | 1.39 | 4/10 | -14.81 |
+| DRAM | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 432.8 | 103 | -1.91 | 0/10 | -47.81 |
+| DRAM | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -6.98 | 0/1 | -6.98 |
+| DRAM | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 55 | -2.48 | 0/1 | -2.48 |
+| DRAM | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -5.78 | 0/1 | -5.78 |
+| DRAM | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 3107.4 | 126 | -5.62 | 0/1 | -5.62 |
+| DRAM | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 887.8 | 108 | -1.12 | 0/1 | -1.12 |
+| DRAM | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 2515.5 | 123 | -4.42 | 0/1 | -4.42 |
+| NBIS | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -11.80 | 0/10 | -68.50 |
+| NBIS | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 8 | -7.30 | 1/10 | -23.50 |
+| NBIS | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -10.60 | 0/10 | -56.50 |
+| NBIS | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 74.4 | never | -0.80 | 0/10 | -57.50 |
+| NBIS | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 21.3 | 40 | 3.70 | 0/10 | -12.50 |
+| NBIS | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 60.2 | 64 | 0.40 | 0/10 | -45.50 |
+| NBIS | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -27.95 | 0/10 | -84.65 |
+| NBIS | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 46 | -23.45 | 2/10 | -39.65 |
+| NBIS | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -26.75 | 0/10 | -72.65 |
+| NBIS | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 78.8 | 101 | 15.35 | 1/10 | -41.35 |
+| NBIS | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 22.5 | 10 | 19.85 | 7/10 | 3.65 |
+| NBIS | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 63.8 | 94 | 16.55 | 2/10 | -29.35 |
+| NBIS | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | 69 | -33.46 | 0/1 | -33.46 |
+| NBIS | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 44 | -28.96 | 0/1 | -28.96 |
+| NBIS | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | 59 | -32.26 | 0/1 | -32.26 |
+| NBIS | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 77.9 | 124 | 20.86 | 1/1 | 20.86 |
+| NBIS | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 22.3 | 15 | 25.36 | 1/1 | 25.36 |
+| NBIS | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 63.1 | 119 | 22.06 | 1/1 | 22.06 |
+| AAPL | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -8.61 | 0/10 | -65.31 |
+| AAPL | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -4.11 | 1/10 | -20.31 |
+| AAPL | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -7.41 | 0/10 | -53.31 |
+| AAPL | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 177.4 | never | -3.99 | 0/10 | -60.69 |
+| AAPL | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 50.7 | 47 | 0.51 | 1/10 | -15.69 |
+| AAPL | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 143.6 | never | -2.79 | 0/10 | -48.69 |
+| AAPL | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 244.2 | 268 | 0.69 | 0/10 | -56.01 |
+| AAPL | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 69.8 | 70 | 5.19 | 2/10 | -11.01 |
+| AAPL | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 197.7 | 253 | 1.89 | 0/10 | -44.01 |
+| AAPL | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -13.29 | 0/10 | -69.99 |
+| AAPL | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 99 | -8.79 | 0/10 | -24.99 |
+| AAPL | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -12.09 | 0/10 | -57.99 |
+| AAPL | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 452.0 | never | -1.62 | 0/1 | -1.62 |
+| AAPL | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 129.2 | 73 | 2.88 | 1/1 | 2.88 |
+| AAPL | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 365.9 | never | -0.42 | 0/1 | -0.42 |
+| AAPL | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -10.98 | 0/1 | -10.98 |
+| AAPL | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 169 | -6.48 | 0/1 | -6.48 |
+| AAPL | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -9.78 | 0/1 | -9.78 |
+| CRCL | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -7.16 | 0/10 | -63.86 |
+| CRCL | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | 4 | -2.66 | 1/10 | -18.86 |
+| CRCL | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -5.96 | 0/10 | -51.86 |
+| CRCL | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 473.9 | never | -5.44 | 0/10 | -62.14 |
+| CRCL | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 135.4 | never | -0.94 | 0/10 | -17.14 |
+| CRCL | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 383.6 | never | -4.24 | 0/10 | -50.14 |
+| CRCL | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 23.0 | 19 | 67.96 | 1/10 | 11.26 |
+| CRCL | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 6.6 | 14 | 72.46 | 4/10 | 56.26 |
+| CRCL | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 18.6 | 18 | 69.16 | 2/10 | 23.26 |
+| CRCL | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -80.56 | 0/10 | -137.26 |
+| CRCL | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -76.06 | 3/10 | -92.26 |
+| CRCL | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -79.36 | 0/10 | -125.26 |
+| CRCL | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | 28.8 | 21 | 67.10 | 1/1 | 67.10 |
+| CRCL | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 8.2 | 15 | 71.60 | 1/1 | 71.60 |
+| CRCL | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 23.3 | 19 | 68.30 | 1/1 | 68.30 |
+| CRCL | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -79.70 | 0/1 | -79.70 |
+| CRCL | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -75.20 | 0/1 | -75.20 |
+| CRCL | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -78.50 | 0/1 | -78.50 |
+| GOOGL | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -8.69 | 0/2 | -14.99 |
+| GOOGL | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -4.19 | 0/2 | -5.99 |
+| GOOGL | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -7.49 | 0/2 | -12.59 |
+| GOOGL | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 34.2 | never | -3.91 | 0/2 | -10.21 |
+| GOOGL | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 9.8 | 3 | 0.59 | 1/2 | -1.21 |
+| GOOGL | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 27.7 | never | -2.71 | 0/2 | -7.81 |
+| GOOGL | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -10.38 | 0/2 | -16.68 |
+| GOOGL | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -5.88 | 0/2 | -7.68 |
+| GOOGL | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -9.18 | 0/2 | -14.28 |
+| GOOGL | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 60.2 | never | -2.22 | 0/2 | -8.52 |
+| GOOGL | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 17.2 | 10 | 2.28 | 1/2 | 0.48 |
+| GOOGL | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 48.7 | never | -1.02 | 0/2 | -6.12 |
+| GOOGL | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -12.77 | 0/1 | -12.77 |
+| GOOGL | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -8.27 | 0/1 | -8.27 |
+| GOOGL | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -11.57 | 0/1 | -11.57 |
+| GOOGL | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 50.6 | 34 | 0.17 | 1/1 | 0.17 |
+| GOOGL | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 14.5 | 3 | 4.67 | 1/1 | 4.67 |
+| GOOGL | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 41.0 | 19 | 1.37 | 1/1 | 1.37 |
+| META | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -10.92 | 0/6 | -42.42 |
+| META | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -6.42 | 0/6 | -15.42 |
+| META | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -9.72 | 0/6 | -35.22 |
+| META | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 55.9 | never | -1.68 | 0/6 | -33.18 |
+| META | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 16.0 | 24 | 2.82 | 2/6 | -6.18 |
+| META | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 45.2 | never | -0.48 | 0/6 | -25.98 |
+| META | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -20.29 | 0/6 | -51.79 |
+| META | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -15.79 | 0/6 | -24.79 |
+| META | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -19.09 | 0/6 | -44.59 |
+| META | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 69.8 | 34 | 7.69 | 0/6 | -23.81 |
+| META | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 19.9 | 14 | 12.19 | 4/6 | 3.19 |
+| META | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 56.5 | 31 | 8.89 | 0/6 | -16.61 |
+| META | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -24.91 | 0/1 | -24.91 |
+| META | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -20.41 | 0/1 | -20.41 |
+| META | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -23.71 | 0/1 | -23.71 |
+| META | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 66.4 | 47 | 12.31 | 1/1 | 12.31 |
+| META | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 19.0 | 24 | 16.81 | 1/1 | 16.81 |
+| META | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 53.7 | 43 | 13.51 | 1/1 | 13.51 |
+| INTC | RTH | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -14.61 | 0/7 | -52.41 |
+| INTC | RTH | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -10.11 | 0/7 | -20.91 |
+| INTC | RTH | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -13.41 | 0/7 | -44.01 |
+| INTC | RTH | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 36.4 | 34 | 2.01 | 0/7 | -35.79 |
+| INTC | RTH | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 10.4 | 17 | 6.51 | 1/7 | -4.29 |
+| INTC | RTH | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 29.5 | 31 | 3.21 | 0/7 | -27.39 |
+| INTC | OFF_HOURS | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -26.45 | 0/7 | -64.25 |
+| INTC | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -21.95 | 0/7 | -32.75 |
+| INTC | OFF_HOURS | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -25.25 | 0/7 | -55.85 |
+| INTC | OFF_HOURS | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 53.8 | 42 | 13.85 | 1/7 | -23.95 |
+| INTC | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 15.4 | 9 | 18.35 | 5/7 | 7.55 |
+| INTC | OFF_HOURS | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 43.5 | 32 | 15.05 | 1/7 | -15.55 |
+| INTC | ALL | SHORT_ARCUS_LONG_HL | DUAL_TAKER | 6.30 | never (mean ≤ 0) | never | -34.75 | 0/1 | -34.75 |
+| INTC | ALL | SHORT_ARCUS_LONG_HL | MAKER_ARCUS_TAKER_HL | 1.80 | never (mean ≤ 0) | never | -30.25 | 0/1 | -30.25 |
+| INTC | ALL | SHORT_ARCUS_LONG_HL | MAKER_HL_TAKER_ARCUS | 5.10 | never (mean ≤ 0) | never | -33.55 | 0/1 | -33.55 |
+| INTC | ALL | LONG_ARCUS_SHORT_HL | DUAL_TAKER | 6.30 | 48.7 | 45 | 22.15 | 1/1 | 22.15 |
+| INTC | ALL | LONG_ARCUS_SHORT_HL | MAKER_ARCUS_TAKER_HL | 1.80 | 13.9 | 13 | 26.65 | 1/1 | 26.65 |
+| INTC | ALL | LONG_ARCUS_SHORT_HL | MAKER_HL_TAKER_ARCUS | 5.10 | 39.4 | 37 | 23.35 | 1/1 | 23.35 |
+
+### Coverage — 14 d
+
+* NVDA: Arcus rows 336, HL rows 336, aligned 336 h {'RTH': 65, 'EXT': 85, 'CLOSED': 186}; Arcus off-hours modal rate 0.000005092592592592 (38.7 % of CLOSED h; ×8760 = 4.461 %/yr); Arcus distinct RTH rates 65; CLOSED hours: 7 distinct Arcus rates, 1 hour-to-hour changes (pinned SOFR + 0.5 %)
+* SNDK: Arcus rows 328, HL rows 336, aligned 328 h {'RTH': 65, 'EXT': 85, 'CLOSED': 178}; Arcus off-hours modal rate 0.000005092592592592 (36.0 % of CLOSED h; ×8760 = 4.461 %/yr); Arcus distinct RTH rates 56; CLOSED hours: 7 distinct Arcus rates, 1 hour-to-hour changes (pinned SOFR + 0.5 %)
+* MU: Arcus rows 336, HL rows 148, aligned 148 h {'RTH': 27, 'EXT': 31, 'CLOSED': 90}; Arcus off-hours modal rate 0.000005104166666666 (61.1 % of CLOSED h; ×8760 = 4.471 %/yr); Arcus distinct RTH rates 26; CLOSED hours: 5 distinct Arcus rates, 2 hour-to-hour changes (pinned SOFR + 0.5 %)
+* DRAM: Arcus rows 336, HL rows 336, aligned 336 h {'RTH': 65, 'EXT': 85, 'CLOSED': 186}; Arcus off-hours modal rate 0.000005092592592592 (38.7 % of CLOSED h; ×8760 = 4.461 %/yr); Arcus distinct RTH rates 49; CLOSED hours: 7 distinct Arcus rates, 1 hour-to-hour changes (pinned SOFR + 0.5 %)
+* NBIS: Arcus rows 336, HL rows 336, aligned 336 h {'RTH': 65, 'EXT': 85, 'CLOSED': 186}; Arcus off-hours modal rate 0.000005092592592592 (38.2 % of CLOSED h; ×8760 = 4.461 %/yr); Arcus distinct RTH rates 54; CLOSED hours: 8 distinct Arcus rates, 2 hour-to-hour changes (pinned SOFR + 0.5 %)
+* AAPL: Arcus rows 336, HL rows 336, aligned 336 h {'RTH': 65, 'EXT': 85, 'CLOSED': 186}; Arcus off-hours modal rate 0.000005092592592592 (38.7 % of CLOSED h; ×8760 = 4.461 %/yr); Arcus distinct RTH rates 63; CLOSED hours: 8 distinct Arcus rates, 2 hour-to-hour changes (pinned SOFR + 0.5 %)
+* CRCL: Arcus rows 336, HL rows 336, aligned 336 h {'RTH': 65, 'EXT': 85, 'CLOSED': 186}; Arcus off-hours modal rate 0.000005092592592592 (38.7 % of CLOSED h; ×8760 = 4.461 %/yr); Arcus distinct RTH rates 36; CLOSED hours: 7 distinct Arcus rates, 1 hour-to-hour changes (pinned SOFR + 0.5 %)
+* GOOGL: Arcus rows 336, HL rows 52, aligned 52 h {'RTH': 13, 'EXT': 13, 'CLOSED': 26}; Arcus off-hours modal rate 0.000005138888888888 (69.2 % of CLOSED h; ×8760 = 4.502 %/yr); Arcus distinct RTH rates 12; CLOSED hours: 2 distinct Arcus rates, 0 hour-to-hour changes (pinned SOFR + 0.5 %)
+* META: Arcus rows 336, HL rows 196, aligned 196 h {'RTH': 41, 'EXT': 49, 'CLOSED': 106}; Arcus off-hours modal rate 0.000005104166666666 (51.9 % of CLOSED h; ×8760 = 4.471 %/yr); Arcus distinct RTH rates 33; CLOSED hours: 5 distinct Arcus rates, 1 hour-to-hour changes (pinned SOFR + 0.5 %)
+* INTC: Arcus rows 336, HL rows 220, aligned 220 h {'RTH': 48, 'EXT': 58, 'CLOSED': 114}; Arcus off-hours modal rate 0.000005104166666666 (48.2 % of CLOSED h; ×8760 = 4.471 %/yr); Arcus distinct RTH rates 26; CLOSED hours: 6 distinct Arcus rates, 1 hour-to-hour changes (pinned SOFR + 0.5 %)
+
+## Docs
+
+* arcus_markets: https://docs.arcus.xyz/api-reference/public/get-markets.md
+* arcus_fee_schedules: https://docs.arcus.xyz/api-reference/public/get-market-fee-schedules.md
+* arcus_funding_rates: https://docs.arcus.xyz/api-reference/public/get-market-funding-rates.md
+* arcus_prices: https://docs.arcus.xyz/concepts/perpetuals/prices.md
+* hl_perp_info: https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint/perpetuals.md
+* hl_fees: https://hyperliquid.gitbook.io/hyperliquid-docs/trading/fees.md
+* hl_hip3: https://hyperliquid.gitbook.io/hyperliquid-docs/hyperliquid-improvement-proposals-hips/hip-3-builder-deployed-perpetuals.md
+* nyse_calendar: https://www.nyse.com/trade/hours-calendars/

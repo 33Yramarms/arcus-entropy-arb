@@ -6,6 +6,10 @@ Usage: uv run python scripts/record_spreads.py --duration-s 600 [--db reports/sp
 Staleness (PR #1.5) = network latency (local recv − exchange timestamp, Arcus corrected by the GET /v1/time clock
 offset) or a silent connection; book idleness is recorded (book_health.book_idle_ms) but never gates.
 --pair SYMBOL=HLCOIN maps Arcus ``SYMBOL-USD`` to a Hyperliquid coin (``BTC`` core, ``io:NVDA`` Entropy dex).
+PR #1.6 ``--record-trades``: also subscribes the public trade tape of every pair on both venues (Arcus ``trades``,
+HL ``trades``) on the EXISTING per-pair sockets (no extra WebSocket connection; HL allows 10 per IP) and stores
+(venue, symbol, exchange ts µs, local recv ms, price, size, side, raw side, trade id) in the ``trades`` table, prices
+and sizes as exact Decimal TEXT. Trades are never used as a price input of the opportunity model.
 """
 from __future__ import annotations
 
@@ -78,6 +82,7 @@ async def main(argv: list[str]) -> int:
     ap.add_argument("--resid-window-s", type=int, default=300)
     ap.add_argument("--resid-min-samples", type=int, default=30)
     ap.add_argument("--buffer-bps", default="2")
+    ap.add_argument("--record-trades", action="store_true", help="also record both venues' public trades (PR #1.6)")
     args = ap.parse_args(argv)
     pairs = [tuple(p.split("=", 1)) for p in (args.pair or ["BTC=BTC", "ETH=ETH", "SOL=SOL"])]
     qs = [D(q) for q in (args.q or ["100", "500", "2000"])]
@@ -92,6 +97,14 @@ async def main(argv: list[str]) -> int:
                                             f"server-time endpoint -> uncorrected)")
     store.put_meta("started_ms", str(now_ms()))
     store.put_meta("args", " ".join(argv))
+    store.put_meta("record_trades", "1" if args.record_trades else "0")
+    trade_counts = {"new": 0, "received": 0}
+
+    def trade_sink(rows: list) -> None:          # rows: list[Trade]; committed with the next 1 Hz sample
+        trade_counts["received"] += len(rows)
+        trade_counts["new"] += store.trades(rows)
+
+    tsink = trade_sink if args.record_trades else None
     stop = asyncio.Event()
     markets = ArcusMarketsFeed([f"{sym}-USD" for sym, _ in pairs], sink=lambda *a: None)
     rec = Recorder(store, [], markets, qs=qs, max_latency_ms=args.max_latency_ms,
@@ -100,9 +113,9 @@ async def main(argv: list[str]) -> int:
     markets.sink = rec.sink
     for sym, coin in pairs:
         sa, sb = specs[sym]
-        af = ArcusBookFeed(f"{sym}-USD", rec.sink)
+        af = ArcusBookFeed(f"{sym}-USD", rec.sink, trade_sink=tsink)
         af.book.clock_offset_ms = offset
-        rec.pairs.append(Pair(sym, af, HlBookFeed(sym, coin, rec.sink), sa, sb))
+        rec.pairs.append(Pair(sym, af, HlBookFeed(sym, coin, rec.sink, trade_sink=tsink), sa, sb))
         store.put_meta(f"spec:{sym}", f"arcus step={sa.step} min={sa.min_notional} maker={sa.maker_fee} "
                                       f"taker={sa.taker_fee} | hl coin={coin} step={sb.step} min={sb.min_notional} "
                                       f"maker={sb.maker_fee} taker={sb.taker_fee}")
@@ -124,6 +137,8 @@ async def main(argv: list[str]) -> int:
                                f"hb_mismatch={st.hb_mismatch} l2Book_checks_ok={st.checks_ok} "
                                f"l2Book_checks_bad={st.checks_bad} "
                                + " ".join(f"{k}={v}" for k, v in sorted(st.extra.items())))
+        if args.record_trades:
+            store.put_meta("trades_recorded", f"received={trade_counts['received']} new_rows={trade_counts['new']}")
         store.put_meta("ended_ms", str(now_ms()))
         store.close()
     logging.info("done: %s ticks -> %s", rec.ticks, args.db)

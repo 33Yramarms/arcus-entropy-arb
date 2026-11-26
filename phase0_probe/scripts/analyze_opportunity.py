@@ -2,6 +2,10 @@
 
 Usage: uv run python scripts/analyze_opportunity.py [--db reports/spreads.sqlite] [--window-h 24] [--out reports]
 The window is the last ``--window-h`` hours of data (works for shorter recordings: it then covers all of it).
+PR #1.6 Maker-Taker realism (``phase0_probe.realism``): ``--fill-window-s 5`` (signal window for the fill-through
+filter), ``--fill-through`` (require a trade / opposite-side quote strictly THROUGH the maker price instead of
+touching it). Adverse selection of the hedge leg at +1 / +3 / +5 s. Uses the ``trades`` table when the DB was
+recorded with ``record_spreads.py --record-trades``; otherwise only the book-advance criterion is available.
 """
 from __future__ import annotations
 
@@ -14,6 +18,7 @@ from typing import Any
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 
 from phase0_probe.analysis import summarize  # noqa: E402
+from phase0_probe.realism import maker_realism, side_consistency  # noqa: E402
 from phase0_probe.dec import D, dumps, fmt  # noqa: E402
 
 
@@ -52,6 +57,7 @@ def markdown(rep: dict[str, Any], db: sqlite3.Connection, title: str = "") -> st
                  f"{h['latency_ms_p90']} / {h['latency_ms_max']} | {fmt(h['pct_latency_over_threshold'], 2)} | "
                  f"{h['book_idle_ms_p50']} / {h['book_idle_ms_p90']} / {h['book_idle_ms_max']} | "
                  f"{h['conn_silence_ms_p50']} / {h['conn_silence_ms_max']} |")
+    L += realism_md(rep)
     L += ["", "## Meta / feed stats", ""]
     for k, v in db.execute("SELECT k, v FROM meta ORDER BY k"):
         L.append(f"* `{k}`: {v}")
@@ -61,6 +67,39 @@ def markdown(rep: dict[str, Any], db: sqlite3.Connection, title: str = "") -> st
     return "\n".join(L) + "\n"
 
 
+def realism_md(rep: dict[str, Any]) -> list[str]:
+    r = rep.get("maker_realism")
+    if not r:
+        return []
+    L = ["", f"## Maker-Taker realism (PR #1.6) — fill-through window {r['window_ms'] // 1000} s, "
+             f"{'strictly through' if r['through'] else 'touch or through'}", "",
+         ("Trades table present: " + ", ".join(f"{k} {v}" for k, v in sorted(r["trades_loaded"].items())) + " trades."
+          if r["trades_table"] else "**No `trades` table in this DB** (recorded without `--record-trades`): only the "
+          "book-advance criterion (opposite side of the maker venue's 1 Hz top of book reaching the maker price) "
+          "can apply."), "",
+         "| Symbol | Q $ | Mode | opp s raw | runs raw | max run raw | opp s filtered | runs filtered | max run filt. | "
+         "suppressed % | evidence trade / book | adverse +1s / +3s / +5s bps (triggers, n) | "
+         "adverse +1s / +3s / +5s bps (unfiltered triggers, n) |", "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    for x in r["rows"]:
+        def adv(label: str) -> str:
+            a = x["adverse_selection"][label]
+            return (" / ".join(fmt(a[k]["mean_adverse_bps"], 2) for k in ("+1s", "+3s", "+5s"))
+                    + f" (n={a['+1s']['n']})")
+        L.append(f"| {x['symbol']} | {x['q_usd']} | {x['mode']} | {x['opp_seconds_raw']} | {x['runs_raw']} | "
+                 f"{x['max_run_s_raw']} | {x['opp_seconds_filtered']} | {x['runs_filtered']} | {x['max_run_s_filtered']} | "
+                 f"{fmt(x['suppressed_pct'], 1)} | {x['evidence_trade']} / {x['evidence_book']} | {adv('triggers')} | "
+                 f"{adv('unfiltered_triggers')} |")
+    L += ["", "Adverse = move of the hedge (taker) leg's executable price against us after the signal (positive = "
+              "worse). Triggers = first second of each run of valid seconds."]
+    sc = rep.get("trade_side_consistency") or {}
+    if sc:
+        L += ["", "### Trade side consistency (TODO: VERIFY_FROM_DOCS side semantics)", "",
+              "| venue/raw side | trades | with 1 Hz mid | % at/above mid |", "|---|---|---|---|"]
+        for k, d in sorted(sc.items()):
+            L.append(f"| {k} | {d['trades']} | {d['with_mid']} | {fmt(d['pct_at_or_above_mid'], 1)} |")
+    return L
+
+
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--db", default="reports/spreads.sqlite")
@@ -68,10 +107,15 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--out", default="reports")
     ap.add_argument("--name", default="opportunity_summary", help="output file stem")
     ap.add_argument("--title", default="")
+    ap.add_argument("--fill-window-s", type=int, default=5)
+    ap.add_argument("--fill-through", action="store_true")
     args = ap.parse_args(argv)
     db = sqlite3.connect(args.db)
     window_ms = int(D(args.window_h) * 3_600_000)
     rep = summarize(db, window_ms=window_ms)
+    lo, hi = rep["window"]["from_ms"], rep["window"]["to_ms"]
+    rep["maker_realism"] = maker_realism(db, lo, hi, window_ms=args.fill_window_s * 1000, through=args.fill_through)
+    rep["trade_side_consistency"] = side_consistency(db, lo, hi)
     out = pathlib.Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / f"{args.name}.json").write_text(dumps(rep))

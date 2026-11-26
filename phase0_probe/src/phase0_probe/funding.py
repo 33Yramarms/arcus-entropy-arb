@@ -137,3 +137,93 @@ def direction_stats(carry: list[Decimal], fees: dict[str, Decimal]) -> dict[str,
             "net_pnl_hold_whole_window_bps": (total - fee) * BPS,
         }
     return out
+
+
+# ------------------------------------------------------------------------------------------------ PR #1.6 session split
+def round_trip_fees(arcus_maker: Decimal, arcus_taker: Decimal, hl_maker: Decimal, hl_taker: Decimal
+                    ) -> dict[str, Decimal]:
+    """Open + close, both legs, as a fraction of notional, per execution mode (each market's real tier-0 fees)."""
+    return {"DUAL_TAKER": 2 * (arcus_taker + hl_taker),
+            "MAKER_ARCUS_TAKER_HL": 2 * (arcus_maker + hl_taker),
+            "MAKER_HL_TAKER_ARCUS": 2 * (hl_maker + arcus_taker)}
+
+
+def contiguous_blocks(rows: list[tuple[int, Decimal]]) -> list[list[tuple[int, Decimal]]]:
+    """Split [(hour_ms, carry)] (ascending) into runs of consecutive payment hours (gap > 1 h starts a new block)."""
+    blocks: list[list[tuple[int, Decimal]]] = []
+    prev = None
+    for t, c in rows:
+        if prev is None or t - prev != HOUR_MS:
+            blocks.append([])
+        blocks[-1].append((t, c))
+        prev = t
+    return blocks
+
+
+def session_direction_stats(rows: list[tuple[int, Decimal]], fees: dict[str, Decimal]) -> dict[str, Any]:
+    """Statistics of one direction's hourly carry restricted to one session bucket (rows = (hour_ms, carry)).
+
+    Runs / sign flips are computed INSIDE contiguous blocks only (an overnight gap between two RTH sessions neither
+    extends a run nor counts as a flip). Two fee views:
+    * ``hold``: one round trip for the whole sample, carry of the bucket's hours only (``net_hold_bps``),
+      ``expected_breakeven_h`` = fee / mean carry (hours of this bucket needed to pay one round trip);
+    * ``per_block``: open at the start and close at the end of EVERY contiguous block (e.g. each RTH session),
+      paying the round trip each time: blocks whose carry beats the fee, and Σ(block carry − fee)."""
+    n = len(rows)
+    if n == 0:
+        return {"hours": 0}
+    carry = [c for _, c in rows]
+    blocks = contiguous_blocks(rows)
+    runs: list[int] = []
+    flips = 0
+    for b in blocks:
+        cs = [c for _, c in b]
+        runs += runs_positive(cs)
+        flips += sign_flips(cs)
+    total = sum(carry, ZERO)
+    mean = total / Decimal(n)
+    block_carry = [sum((c for _, c in b), ZERO) for b in blocks]
+    out: dict[str, Any] = {
+        "hours": n, "blocks": len(blocks), "mean_block_len_h": Decimal(n) / Decimal(len(blocks)),
+        "mean_hourly": mean, "mean_hourly_bps": mean * BPS, "annualized": mean * HOURS_PER_YEAR,
+        "pct_hours_positive": Decimal(sum(1 for c in carry if c > ZERO)) / Decimal(n) * 100,
+        "sign_flips": flips, "longest_positive_run_h": max(runs) if runs else 0, "positive_runs": len(runs),
+        "total_carry_bps": total * BPS,
+        "mean_block_carry_bps": sum(block_carry, ZERO) / Decimal(len(blocks)) * BPS, "by_fee_mode": {},
+    }
+    for mode, fee in fees.items():
+        out["by_fee_mode"][mode] = {
+            "round_trip_fee_bps": fee * BPS,
+            "expected_breakeven_h": (fee / mean) if mean > ZERO else None,
+            "breakeven_h_from_first_hour": hours_to_breakeven(carry, fee),
+            "net_hold_bps": (total - fee) * BPS,
+            "blocks_beating_fee": sum(1 for bc in block_carry if bc > fee),
+            "net_per_block_strategy_bps": sum((bc - fee for bc in block_carry), ZERO) * BPS,
+        }
+    return out
+
+
+def split_by_session(aligned: list[tuple[int, Decimal, Decimal]], label_of: Any, fees: dict[str, Decimal]
+                     ) -> dict[str, Any]:
+    """aligned = [(hour_ms, arcus_rate, hl_rate)]; ``label_of(hour_ms)`` -> bucket name. For each bucket (+ ``ALL``):
+    the HL − Arcus annualized differential and both directions' :func:`session_direction_stats`."""
+    groups: dict[str, list[tuple[int, Decimal, Decimal]]] = {"ALL": list(aligned)}
+    for row in aligned:
+        groups.setdefault(label_of(row[0]), []).append(row)
+    out: dict[str, Any] = {}
+    for name, rows in groups.items():
+        diffs = [h - a for _, a, h in rows]
+        out[name] = {
+            "hours": len(rows),
+            "arcus_mean_hourly": (sum((a for _, a, _ in rows), ZERO) / Decimal(len(rows))) if rows else None,
+            "hl_mean_hourly": (sum((h for _, _, h in rows), ZERO) / Decimal(len(rows))) if rows else None,
+            "diff_hl_minus_arcus_annualized": (sum(diffs, ZERO) / Decimal(len(diffs)) * HOURS_PER_YEAR)
+            if diffs else None,
+            "diff_sign_flips_within_blocks": sum(sign_flips([c for _, c in b])
+                                                 for b in contiguous_blocks([(t, h - a) for t, a, h in rows])),
+            "directions": {
+                "SHORT_ARCUS_LONG_HL": session_direction_stats([(t, a - h) for t, a, h in rows], fees),
+                "LONG_ARCUS_SHORT_HL": session_direction_stats([(t, h - a) for t, a, h in rows], fees),
+            },
+        }
+    return out

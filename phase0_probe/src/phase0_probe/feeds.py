@@ -15,10 +15,12 @@ import websockets
 from phase0_probe.book import (ArcusSync, BookIntegrityError, OrderBook, SequenceGap, arcus_heartbeat, hl_apply_diff,
                                hl_apply_snapshot, hl_check_against_snapshot)
 from phase0_probe.dec import D_opt, loads, now_ms
+from phase0_probe.trades import Trade, parse_arcus_trades, parse_hl_trades
 from phase0_probe.venues import ARCUS_WS, HL_WS
 
 log = logging.getLogger("phase0.feeds")
 EventSink = Callable[[str, str | None, str, str], None]          # (venue, symbol, kind, detail)
+TradeSink = Callable[[list[Trade]], None]                         # PR #1.6 --record-trades (None = not subscribed)
 N_LEVELS = 20            # levels compared by the l2Orderbook checksum (and HL l2 depth)
 ARCUS_DEPTH = 100        # l2OrderbookUpdates depth kept locally (deeper than the checksum to avoid edge churn)
 
@@ -46,10 +48,13 @@ class FeedStats:
 class ArcusBookFeed:
     """One connection per market: ``l2OrderbookUpdates`` (book + contiguous lastSequenceId) and ``l2Orderbook``
     (~200 ms full snapshot: baseline, liveness proof + checksum). Baseline per the documented resync procedure; once
-    LIVE, any ``lastSequenceId`` gap or checksum mismatch -> log + reconnect + rebuild."""
+    LIVE, any ``lastSequenceId`` gap or checksum mismatch -> log + reconnect + rebuild.
+    PR #1.6: with a ``trade_sink`` the public ``trades`` channel of the same market is subscribed on the SAME socket
+    (no extra connection)."""
 
-    def __init__(self, market: str, sink: EventSink, url: str = ARCUS_WS) -> None:
-        self.market, self.sink, self.url = market, sink, url
+    def __init__(self, market: str, sink: EventSink, url: str = ARCUS_WS, trade_sink: TradeSink | None = None) -> None:
+        self.market, self.sink, self.url, self.trade_sink = market, sink, url, trade_sink
+        self.symbol = market.split("-", 1)[0]
         self.book = OrderBook("arcus", market)
         self.sync = ArcusSync(self.book, ARCUS_DEPTH)
         self.stats = FeedStats()
@@ -77,6 +82,8 @@ class ArcusBookFeed:
             for ch in ("l2OrderbookUpdates", "l2Orderbook"):
                 await ws.send(json.dumps({"type": "subscribe", "channel": ch, "id": self.market,
                                           "nLevels": ARCUS_DEPTH}))
+            if self.trade_sink is not None:
+                await ws.send(json.dumps({"type": "subscribe", "channel": "trades", "id": self.market}))
             self.sink("arcus", self.market, "connected", self.url)
             while not stop.is_set():
                 try:
@@ -91,6 +98,13 @@ class ArcusBookFeed:
         typ, ch, c = msg.get("type"), msg.get("channel"), msg.get("contents")
         if typ == "error":
             self.sink("arcus", self.market, "server_error", json.dumps(msg, default=str)[:300])
+            return
+        if ch == "trades":
+            if self.trade_sink is not None:
+                tr = parse_arcus_trades(msg, self.symbol, self.market, recv)
+                if tr:
+                    self.stats.extra["trades"] = self.stats.extra.get("trades", 0) + len(tr)
+                    self.trade_sink(tr)
             return
         if msg.get("id") not in (None, self.market) or not isinstance(c, dict):
             return
@@ -169,11 +183,14 @@ class HlBookFeed:
     """One connection per coin: ``l2`` (snapshot + diffs; documented as item 23 of websocket/subscriptions.md),
     ``l2Book`` (checksum when ``time`` matches; pushed only every ~12 s with the default ``fast: false`` — see README)
     and ``activeAssetCtx`` (``funding``). Client ``{"method":"ping"}`` every ``ping_every_ms`` (docs require < 60 s;
-    5 s here so a pong proves connection health even when the book is idle)."""
+    5 s here so a pong proves connection health even when the book is idle).
+    PR #1.6: with a ``trade_sink`` the ``trades`` subscription for the coin is multiplexed on the SAME connection, so
+    ``--record-trades`` adds no WebSocket connection (HL limit: 10 per IP)."""
     ping_every_ms = 5_000
 
-    def __init__(self, symbol: str, coin: str, sink: EventSink, url: str = HL_WS) -> None:
-        self.symbol, self.coin, self.sink, self.url = symbol, coin, sink, url
+    def __init__(self, symbol: str, coin: str, sink: EventSink, url: str = HL_WS,
+                 trade_sink: TradeSink | None = None) -> None:
+        self.symbol, self.coin, self.sink, self.url, self.trade_sink = symbol, coin, sink, url, trade_sink
         self.book = OrderBook("hyperliquid", coin)
         self.funding = FundingState()
         self.stats = FeedStats()
@@ -195,8 +212,11 @@ class HlBookFeed:
 
     async def _session(self, stop: asyncio.Event) -> None:
         async with websockets.connect(self.url, max_size=2 ** 24, ping_interval=None, open_timeout=15) as ws:
-            for sub in ({"type": "l2", "c": self.coin}, {"type": "l2Book", "coin": self.coin},
-                        {"type": "activeAssetCtx", "coin": self.coin}):
+            subs = [{"type": "l2", "c": self.coin}, {"type": "l2Book", "coin": self.coin},
+                    {"type": "activeAssetCtx", "coin": self.coin}]
+            if self.trade_sink is not None:
+                subs.append({"type": "trades", "coin": self.coin})
+            for sub in subs:
                 await ws.send(json.dumps({"method": "subscribe", "subscription": sub}))
             self.sink("hyperliquid", self.symbol, "connected", self.url)
             last_ping = now_ms()
@@ -233,6 +253,12 @@ class HlBookFeed:
             elif ok is False:
                 self.stats.checks_bad += 1
                 raise BookIntegrityError(f"l2 diff book != l2Book snapshot at time {data.get('time')}")
+        elif ch == "trades" and isinstance(data, list):
+            if self.trade_sink is not None:
+                tr = parse_hl_trades(msg, self.symbol, self.coin, recv)
+                if tr:
+                    self.stats.extra["trades"] = self.stats.extra.get("trades", 0) + len(tr)
+                    self.trade_sink(tr)
         elif ch == "activeAssetCtx" and isinstance(data, dict) and data.get("coin") == self.coin:
             ctx = data.get("ctx") or {}
             self.funding.current_hourly = D_opt(None if ctx.get("funding") is None else str(ctx["funding"]))

@@ -138,6 +138,23 @@ def test_read_only_no_signing_keys_or_order_endpoints() -> None:
         assert not hits, f"{path}: {hits}"
 
 
+# PR #1.6: the public trade tape may be RECORDED (``--record-trades``) and used by the Maker fill-through filter,
+# but never as a price input: only these modules may touch the ``trades`` channel / table.
+TRADE_TAPE_ALLOWED = {"trades.py", "feeds.py", "store.py", "realism.py", "record_spreads.py", "analyze_opportunity.py"}
+PRICING_MODULES = {"model.py", "book.py", "recorder.py", "analysis.py", "funding.py", "discovery.py"}
+
+
 def test_never_reads_last_trade_price() -> None:
     for path in CODE:
-        assert "lastTradePrice" not in path.read_text() and "trades\"" not in path.read_text(), path
+        text = path.read_text()
+        assert "lastTradePrice" not in text, path
+        if path.name not in TRADE_TAPE_ALLOWED:
+            assert "trades\"" not in text, path
+
+
+def test_pricing_modules_never_touch_the_trade_tape() -> None:
+    for path in CODE:
+        if path.name in PRICING_MODULES:
+            text = path.read_text()
+            assert "phase0_probe.trades" not in text and "phase0_probe.realism" not in text, path
+            assert "trades\"" not in text and "FROM trades" not in text, path

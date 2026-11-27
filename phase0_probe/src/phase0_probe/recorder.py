@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import sqlite3
 from dataclasses import dataclass
 from decimal import Decimal
 
@@ -38,6 +39,8 @@ class Recorder:
         self.medians: dict[str, RollingMedian] = {}
         self.hl_predicted: dict[str, Decimal] = {}
         self.ticks = 0
+        self.commit_errors = 0                                # Sprint 2: seconds whose SQLite write/commit failed
+        self._db_errors: list[tuple[int, str]] = []           # error events not yet written (DB was locked)
 
     def sink(self, venue: str, symbol: str | None, kind: str, detail: str) -> None:
         lvl = logging.INFO if kind in ("connected", "snapshot", "baseline") else logging.WARNING
@@ -64,18 +67,32 @@ class Recorder:
                 health.append((ts, p.symbol, venue, int(b.ready), int(b.valid), b.latency_ms, b.idle_ms(ts),
                                b.silence_ms(ts), b.age_ms(ts), s(b.best_bid()), s(b.best_ask()), len(b.bids),
                                len(b.asks), b.last_seq))
-        self.store.opportunities(ts, rows)
-        self.store.book_health(health)
-        if self.ticks % 5 == 0:
-            fr = []
-            for p in self.pairs:
-                fa = self.markets.funding.get(p.spec_a.symbol + "-USD")
-                if fa is not None:
-                    fr.append((ts, p.symbol, "arcus", s(fa.current_hourly), s(fa.predicted_hourly)))
-                fr.append((ts, p.symbol, "hyperliquid", s(p.hl.funding.current_hourly),
-                           s(self.hl_predicted.get(p.hl.coin))))
-            self.store.funding(fr)
-        self.store.commit()
+        try:
+            if self._db_errors:                               # events of earlier failed seconds, now that we can write
+                for ev_ts, detail in self._db_errors:
+                    self.store.event(ev_ts, "recorder", None, "db_commit_error", detail)
+                self._db_errors.clear()                       # in the open transaction from here on
+            self.store.opportunities(ts, rows)
+            self.store.book_health(health)
+            if self.ticks % 5 == 0:
+                fr = []
+                for p in self.pairs:
+                    fa = self.markets.funding.get(p.spec_a.symbol + "-USD")
+                    if fa is not None:
+                        fr.append((ts, p.symbol, "arcus", s(fa.current_hourly), s(fa.predicted_hourly)))
+                    fr.append((ts, p.symbol, "hyperliquid", s(p.hl.funding.current_hourly),
+                               s(self.hl_predicted.get(p.hl.coin))))
+                self.store.funding(fr)
+            self.store.commit()
+        except sqlite3.OperationalError as exc:
+            # Sprint 2 (P1): a locked / busy DB must never kill the sampler. Skip this second; rows already inserted
+            # stay in the open transaction and are committed with the next successful second (no rollback, so
+            # buffered trades are not lost). The ``db_commit_error`` event is queued and written with the next second
+            # that can write (writing it now would hit the same lock).
+            self.commit_errors += 1
+            log.warning("sqlite write/commit failed at %s, second skipped: %s", ts, exc)
+            if len(self._db_errors) < 1000:
+                self._db_errors.append((now_ms(), f"ts={ts} {type(exc).__name__}: {exc}"))
         self.ticks += 1
 
     async def poll_predicted(self, stop: asyncio.Event, every_s: int = 60) -> None:

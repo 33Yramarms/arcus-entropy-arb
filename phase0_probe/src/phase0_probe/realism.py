@@ -11,9 +11,13 @@ Two checks remove that optimism:
       P (maker BUY: best ask ≤ P; maker SELL: best bid ≥ P; strict with ``through=True``).
     Seconds without such evidence are maker "artifacts" (a quote nobody traded against).
 (b) Adverse selection. For every valid (filtered) signal, the HEDGE (taker) leg's executable price — the VWAP for the
-    same Q from the opportunity row of the same direction/mode at t + k (status ``ok``), else the 1 Hz top of book —
-    is compared with its value at t; adverse move in bps (positive = worse for us): hedge SELL (p_t − p_{t+k}) / p_t,
-    hedge BUY (p_{t+k} − p_t) / p_t, k ∈ {1, 3, 5} s. Reported for every valid second and for run starts (triggers).
+    same Q from the opportunity row of the same direction/mode at t + k (status ``ok``) — is compared with its value at
+    t; adverse move in bps (positive = worse for us): hedge SELL (p_t − p_{t+k}) / p_t, hedge BUY (p_{t+k} − p_t) / p_t,
+    k ∈ {1, 3, 5} s. Reported for every valid second and for run starts (triggers).
+    Sprint 2: when the t + k row is missing / not ``ok`` (insufficient depth, stale, not ready) the sample is counted
+    in ``missing_hedge_vwap`` and EXCLUDED from the statistics. The former fallback to the 1 Hz top of book mixed a
+    BBO price into a VWAP series and biased adverse selection low; ``top_of_book_fallback`` is kept (always 0) for
+    report compatibility.
 """
 from __future__ import annotations
 
@@ -104,7 +108,17 @@ def _runs(stamps: list[int]) -> list[list[int]]:
 
 
 def has_trades_table(db: sqlite3.Connection) -> bool:
-    return db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='trades'").fetchone() is not None
+    """Whether this DB actually RECORDED the public trade tape (Sprint 2). ``store.SCHEMA`` always creates the
+    ``trades`` table, so its existence alone proves nothing. Rule: the ``meta.record_trades`` flag written by
+    ``record_spreads.py`` (PR #1.6+) decides when present ('1' = recorded); DBs without that flag (older or
+    hand-built) count as recorded only if the table exists AND holds at least one row."""
+    if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='trades'").fetchone() is None:
+        return False
+    if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='meta'").fetchone() is not None:
+        flag = db.execute("SELECT v FROM meta WHERE k = 'record_trades'").fetchone()
+        if flag is not None:
+            return str(flag[0]).strip() == "1"
+    return db.execute("SELECT 1 FROM trades LIMIT 1").fetchone() is not None
 
 
 def load_trades(db: sqlite3.Connection, lo: int, hi: int) -> dict[tuple[str, str], list[tuple[int, Decimal]]]:
@@ -136,7 +150,6 @@ def maker_realism(db: sqlite3.Connection, lo: int, hi: int, *, window_ms: int = 
     tops = load_tops(db, lo, hi + max(window_ms, max(horizons_s) * 1000))
     trade_keys = {k: [x[0] for x in v] for k, v in trades.items()}
     top_keys = {k: [x[0] for x in v] for k, v in tops.items()}
-    top_at = {k: {x[0]: (x[1], x[2]) for x in v} for k, v in tops.items()}
     rows: dict[tuple[str, str, str, str], dict[int, tuple[Decimal | None, Decimal | None]]] = {}
     sig: dict[tuple[str, str, str], dict[int, tuple[Decimal, str]]] = {}
     for ts, sym, q, mode, direction, status, nr, pb, ps in db.execute(
@@ -177,7 +190,7 @@ def maker_realism(db: sqlite3.Connection, lo: int, hi: int, *, window_ms: int = 
             adverse[label] = {}
             for k in horizons_s:
                 moves: list[Decimal] = []
-                fallback = missing = 0
+                missing = missing_hedge = 0
                 for t in stamps:
                     direction = per[t][1]
                     lg = legs(direction, mode)
@@ -185,10 +198,8 @@ def maker_realism(db: sqlite3.Connection, lo: int, hi: int, *, window_ms: int = 
                     series = rows[(sym, q, mode, direction)]
                     p0 = series[t][idx]
                     p1 = series.get(t + k * 1000, (None, None))[idx]
-                    if p1 is None:
-                        bb_ba = top_at.get((lg.hedge_venue, sym), {}).get(t + k * 1000)
-                        p1 = None if bb_ba is None else (bb_ba[0] if lg.hedge_side == "SELL" else bb_ba[1])
-                        fallback += p1 is not None
+                    if p1 is None:                     # no ``ok`` VWAP at t + k: missing, never a BBO substitute
+                        missing_hedge += 1
                     if p0 is None or p1 is None:
                         missing += 1
                         continue
@@ -197,7 +208,8 @@ def maker_realism(db: sqlite3.Connection, lo: int, hi: int, *, window_ms: int = 
                                             "median_adverse_bps": _median(moves),
                                             "pct_adverse": (Decimal(sum(1 for m in moves if m > ZERO)) /
                                                             Decimal(len(moves)) * 100) if moves else None,
-                                            "top_of_book_fallback": fallback, "missing": missing}
+                                            "top_of_book_fallback": 0, "missing_hedge_vwap": missing_hedge,
+                                            "missing": missing}
         n_trades = sum(len(v) for (_venue, s_), v in trades.items() if s_ == sym)
         out_rows.append({
             "symbol": sym, "q_usd": q, "mode": mode, "opp_seconds_raw": len(per), "runs_raw": len(runs_raw),

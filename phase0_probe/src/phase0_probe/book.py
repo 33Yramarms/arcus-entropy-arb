@@ -191,8 +191,11 @@ class ArcusSync:
                 self.book.invalidate()                      # -> NOT_READY until the rebuild completes
                 self.buffer = [(contents, recv_ms)]
                 return
+            prev = self.book.last_seq
             arcus_apply_delta(self.book, contents, recv_ms, self.depth)     # LIVE: strict +1 (gap -> SequenceGap)
-            if isinstance(seq, int) and self.book.last_seq == seq:
+            # Sprint 2: only a delta that was actually APPLIED (contiguous prev + 1) proves the baseline; a duplicate /
+            # replayed delta (seq <= prev, ignored by arcus_apply_delta) must not clear ``provisional``.
+            if isinstance(seq, int) and prev is not None and seq == prev + 1 and self.book.last_seq == seq:
                 self.book.provisional = False
             return
         self.buffer.append((contents, recv_ms))
@@ -282,6 +285,9 @@ def hl_apply_diff(book: OrderBook, diff: dict[str, Any], recv_ms: int) -> None:
             side.pop(ordered[idx][0], None)
         for lv in upserts[i] or []:
             p, s = D(str(lv["p"])), D(str(lv["s"]))
+            if p <= ZERO or s < ZERO:                   # Sprint 2: same rule as ``_pairs`` (invalidate + raise)
+                book.invalidate()
+                raise BookIntegrityError(f"bad l2 diff level {lv!r}")
             if s == ZERO:
                 side.pop(p, None)
             else:

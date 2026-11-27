@@ -34,7 +34,7 @@ on the same sockets, so HL stays at 5 of its 10 connections per IP), samples the
 overlaps every 5 min in parallel, then runs the analysis (touch and strictly-through variants):
 
 ```bash
-cd arcus-entropy-arb/phase0_probe && git fetch && git checkout phase0-6-rwa-prep && uv sync && \
+cd arcus-entropy-arb/phase0_probe && git checkout main && git pull && uv sync && \
 OUT=reports/rth_20261127 && mkdir -p $OUT && \
 START=$(date -d "2026-11-27 22:30:00 +0800" +%s) && END=$(date -d "2026-11-28 00:30:00 +0800" +%s) && \
 sleep $(( START > $(date +%s) ? START - $(date +%s) : 0 )) && \
@@ -93,9 +93,11 @@ the Entropy dex), `--q 100 --q 500 --q 2000`, `--stale-ms 500`, `--buffer-bps 2`
 * `net_bps = open_spread_bps − close_slip_bps − fees_bps − 2 bps buffer` — assumes the inter-venue basis converges to 0
   by the exit. A persistent structural basis (e.g. HL oracle in USDT vs Arcus in USD) breaks that assumption: read the
   `median basis` column before trusting a "persistent" opportunity.
-* `stale` if either book's age > 500 ms or it is not valid. Age = now − last time the local book was *proven* current:
-  Arcus — last contiguous delta or an `l2Orderbook` snapshot with the same `lastSequenceId` and identical top-20 levels;
-  HL — last `l2` message.
+* `not_ready` if either book is not valid / still provisional; `stale` (since PR #1.5, see below) if either book's
+  `network_latency_ms` > `--max-latency-ms` (500) or its connection has been silent > `--conn-timeout-ms` (5000).
+  Book idleness / proven age are recorded in `book_health` but never gate. Sprint 2: while Arcus `l2Orderbook`
+  heartbeats show a newer `lastSequenceId` than the delta-built book, its latency is measured from the first such
+  heartbeat (a stalled delta stream therefore turns `stale`), and after 5 s of that the book is rebuilt.
 * Funding differential: (HL − Arcus) hourly rate × 8760 (positive = long Arcus / short HL receives carry).
 
 ## Documented facts used (URLs)
@@ -234,3 +236,25 @@ uv run python scripts/backtest_dynamic_funding.py --from-pr16-report reports/rwa
   `isOutsideRth` after 13:00 ET).
 * PR #1.6: HIP-3 io has no session-dependent margin field in `metaAndAssetCtxs` ([待实测确认]).
 * PR #1.6: io MU listed ~2026-11-20 (148 aligned hours), GOOGL / META / INTC also shorter than 30 days on io.
+
+## Sprint 2 — P0/P1 hardening (recording only; no CLI / table change)
+
+* **Supervised tasks** (`scripts/record_spreads.py::_supervise`): every feed / sampler / poll task restarts after an
+  unexpected exception with backoff; each crash writes a `task_crash` event and invalidates the related book(s)
+  immediately. End-of-run meta: `task_crashes:<task>`, `task_crashes_total`, `db_commit_errors`, `stop_reason`,
+  `tasks_not_finished`. SIGTERM / SIGHUP (tmux closed, `kill`) stop the run cleanly: `ended_ms`, stats, checkpoint.
+* **SQLite** (`store.py`): `journal_mode=WAL`, `synchronous=NORMAL`, `busy_timeout=30000`; analysing the DB while it
+  is being recorded no longer locks the recorder. A failed write/commit skips the second (`db_commit_error` event),
+  the sampler keeps running. Copy a DB that is still open together with its `-wal` / `-shm` files.
+* **Reconnects** (`feeds.py::Backoff`): exponential 1 s → 30 s with jitter, reset after a 60 s stable session;
+  malformed payloads (`ValueError`, `KeyError`, `TypeError`, `IndexError`, `InvalidOperation`, `zlib.error`) log a
+  `payload_error` event and reconnect instead of killing the task. HL: 15 s no-frame watchdog (`watchdog_reconnect`).
+  Arcus: delta-stall guard (`delta_stall_rebuild` in the stats meta).
+* **Books**: a duplicate delta no longer ends the provisional state; an HL diff level with price ≤ 0 or size < 0
+  invalidates the book (`BookIntegrityError`, same rule as Arcus).
+* **Realism**: `trades_table` is true only if trades were actually recorded (`meta.record_trades`, else a non-empty
+  table); adverse selection uses the hedge VWAP only — a missing t + k VWAP is counted in `missing_hedge_vwap` and
+  excluded (no top-of-book substitute; `top_of_book_fallback` is always 0).
+* Monday 7-symbol run: same command as above on `main`, with
+  `--pair NVDA=io:NVDA --pair SNDK=io:SNDK --pair DRAM=io:DRAM --pair MU=io:MU --pair NBIS=io:NBIS
+  --pair CRCL=io:CRCL --pair INTC=io:INTC` (7 HL + 8 Arcus sockets) and a new `OUT` directory / dates.

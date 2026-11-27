@@ -38,9 +38,19 @@ def s(v: Decimal | None) -> str | None:
     return None if v is None else format(v, "f")
 
 
+BUSY_TIMEOUT_S = 30
+
+
 class Store:
+    """Sprint 2: WAL journal (readers such as ``analyze_opportunity.py`` never block the recorder's commits and vice
+    versa), ``synchronous=NORMAL`` (durable at checkpoints; a crash can lose at most the last commits, never corrupt)
+    and a 30 s busy timeout. Copy a live / unclean DB together with its ``-wal`` and ``-shm`` files."""
+
     def __init__(self, path: str) -> None:
-        self.db = sqlite3.connect(path)
+        self.db = sqlite3.connect(path, timeout=BUSY_TIMEOUT_S)
+        self.db.execute("PRAGMA journal_mode=WAL")          # ':memory:' DBs answer 'memory' (no WAL): harmless
+        self.db.execute("PRAGMA synchronous=NORMAL")
+        self.db.execute(f"PRAGMA busy_timeout={BUSY_TIMEOUT_S * 1000}")
         self.db.executescript(SCHEMA)
 
     def put_meta(self, k: str, v: str) -> None:
@@ -77,6 +87,13 @@ class Store:
     def commit(self) -> None:
         self.db.commit()
 
+    def journal_mode(self) -> str:
+        return str(self.db.execute("PRAGMA journal_mode").fetchone()[0])
+
     def close(self) -> None:
-        self.db.commit()
-        self.db.close()
+        try:
+            self.db.commit()
+            # fold the WAL back into the main file so the .sqlite alone is complete after a clean exit
+            self.db.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+        finally:
+            self.db.close()
